@@ -57,7 +57,7 @@ def Class FrozenConfig:
                 print(e)
         self.dir_cmip6_inter = info['dirs']['cmip6_inter']
         self.dir_root_inter = info['dirs']['root_inter']
-        self.freeze_year = info['em_meta']['freeze_year']
-        self.freeze_isos = info['em_meta']['freeze_isos']
-        self.freeze_species = info['em_meta']['species']
+        self.freeze_year = info['freeze']['year']
+        self.freeze_isos = info['freeze']['isos']
+        self.freeze_species = info['freeze']['species']
        
