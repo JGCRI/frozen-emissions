@@ -25,10 +25,10 @@ def Class FrozenConfig:
             Freeze emissions for these CEDS ISOs. Default is 'all'.
         freeze_species : str or list of str
             Emission species to freeze.
-        dir_cmip6_inter : str
+        dir_cmip6 : str
             Path of the CMIP6 'intermediate-output' directory, which holds the 
             raw emission factor files.
-        dir_root_inter : str
+        dir_inter : str
             Path of the project's 'intermediate-output' directory.
         input_file : str
             Name of the input file
@@ -36,8 +36,9 @@ def Class FrozenConfig:
         self.freeze_year = None
         self.freeze_isos = None
         self.freeze_species = None
-        self.dir_cmip6_inter = None
-        self.dir_root_inter = None
+        self.dir_cmip6 = None
+        self.dir_inter = None
+        self.log_dir = None
         self.input_file = None
         self._parse_yaml(yaml_path)
         
@@ -55,8 +56,9 @@ def Class FrozenConfig:
                 info = yaml.safe_load(in_stream)
             except yaml.YAMLError as e:
                 print(e)
-        self.dir_cmip6_inter = info['dirs']['cmip6_inter']
-        self.dir_root_inter = info['dirs']['root_inter']
+        self.dir_cmip6 = info['dirs']['cmip6_inter']
+        self.dir_log = info['dirs']['logs']
+        self.dir_inter = info['dirs']['root_inter']
         self.freeze_year = info['freeze']['year']
         self.freeze_isos = info['freeze']['isos']
         self.freeze_species = info['freeze']['species']

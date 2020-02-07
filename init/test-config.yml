@@ -15,6 +15,7 @@
 ---
 
 dirs:
+  logs: ./logs
   cmip6_inter: C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output
   root_inter: C:\Users\nich980\data\e-freeze\python-output\intermediate-output
 freeze:
