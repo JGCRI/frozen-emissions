@@ -17,6 +17,6 @@ dirs:
   root_inter: C:\Users\nich980\data\e-freeze\python-output\intermediate-output
 em_meta:
   freeze_year: 1970
-  freeze_isos: [all]
+  freeze_isos: all
   species: [BC, CH4, CO, CO2, NH3, NMVOC, NOx, OC, SO2]
   

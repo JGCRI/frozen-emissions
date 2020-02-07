@@ -1,7 +1,9 @@
 """
 I/O functions for CEDS input & output files
-"""
 
+Matt Nicholson
+7 Feb 2020
+"""
 import re
 import logging
 import pandas as pd
