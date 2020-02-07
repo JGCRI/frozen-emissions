@@ -1,0 +1,25 @@
+# A test configureation YAML file 
+#
+# Matt Nicholson
+# 7 Feb 2020
+#
+# Members
+# --------
+# dirs
+#   cmip6_inter : Path to the CMIP6 emissions 'intermediate-output' directory.
+#   root_inter  : Path of the root intermediate output directory.
+# freeze
+#   year : Freeze emission factors for years >= freeze_year.
+#   isos : ISOs to freeze.
+#   species     : Emission species to freeze
+---
+
+dirs:
+  logs: ./logs
+  cmip6_inter: C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output
+  root_inter: C:\Users\nich980\data\e-freeze\python-output\intermediate-output
+freeze:
+  year: 1970
+  isos: all
+  species: [BC, CH4, CO, CO2, NH3, NMVOC, NOx, OC, SO2]
+  
