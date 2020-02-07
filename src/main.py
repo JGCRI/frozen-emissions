@@ -49,7 +49,6 @@ def init_parser():
     return parser
 
 
-
 def main():
     # Create a new argument parser & parse the command line args 
     parser = init_parser()
@@ -59,7 +58,9 @@ def main():
     logger = frozen_logger.init_logger(log_dir, "main", level='debug')
     
     # Parse the input YAML file
+    logger.info('Parsing input file {}'.format(args.input_file))
     config = frozen_config.FrozenConfig(args.input_file)
-    
+
+
 if __name__ == '__main__':
     main()
