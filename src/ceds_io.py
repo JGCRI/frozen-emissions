@@ -381,7 +381,6 @@ def subset_yr_span(df, yr, yr_rng=5):
     return sub_df
 
 
-
 def filter_data_sector(df):
     """
     Filter the CEDS Emissions DataFrame to remove all emissions for sectors 
