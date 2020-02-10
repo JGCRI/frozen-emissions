@@ -12,6 +12,7 @@ import os
 import frozen_logger
 import ceds_io
 import config
+import efsubset
 
 def init_parser():
     """
@@ -68,20 +69,20 @@ def freeze_emissions():
     None
     """
      # Unpack config directory paths for better readability
-    data_path = CONFIG.dirs['cmip6']
-    out_path = CONFIG.dirs['inter_out']
+    data_path = config.CONFIG.dirs['cmip6']
+    out_path = config.CONFIG.dirs['inter_out']
     
     main_log = logging.getLogger("main")
     main_log.info("In main::freeze_emissions()")
     main_log.info("data_path = {}".format(data_path))
-    main_log.info("year = {}\n".format(CONFIG.freeze_year))
+    main_log.info("year = {}\n".format(config.CONFIG.freeze_year))
     
     # Get all Emission Factor filenames in the directory
     ef_files = ceds_io.fetch_ef_files(data_path)
         
     # Construct the column header strings for years >= 'year' param
-    year_strs = ['X{}'.format(yr) for yr in range(CONFIG.freeze_year,
-                                                  CONFIG.ceds_meta['year_last'] + 1)]
+    year_strs = ['X{}'.format(yr) for yr in range(config.CONFIG.freeze_year,
+                                                  config.CONFIG.ceds_meta['year_last'] + 1)]
     
     # Begin for-loop over each species EF file
     for f_name in ef_files:
@@ -96,7 +97,7 @@ def freeze_emissions():
         
         # If applicable, filter out any ISOs that are not designated to be frozen
         # in the global CONFIG object
-        if (CONFIG.freeze_isos != 'all'):
+        if (config.CONFIG.freeze_isos != 'all'):
             ef_df = ceds_io.filter_isos(ef_df)
         
         max_yr = ef_df.columns.values.tolist()[-1]
@@ -113,8 +114,9 @@ def freeze_emissions():
                 print("Processing {}...{}...{}...".format(species, sector, fuel))
         
                 # Read the EF data into an EFSubset object
-                main_log.info("Subsetting EF DF for year {}".format(CONFIG.freeze_year))
-                efsubset_obj = efsubset.EFSubset(ef_df, sector, fuel, species, CONFIG.freeze_year)
+                main_log.info("Subsetting EF DF for year {}".format(config.CONFIG.freeze_year))
+                efsubset_obj = efsubset.EFSubset(ef_df, sector, fuel, species,
+                                                 config.CONFIG.freeze_year)
                 
                 if (efsubset_obj.ef_data.size != 0):
         
@@ -175,8 +177,8 @@ def calc_emissions():
     logger.info('In main::calc_emissions()')
     
     # Unpack for better readability
-    dir_inter_out = CONFIG.dirs['inter_out']
-    dir_cmip6 = CONFIG.dirs['cmip6']
+    dir_inter_out = config.CONFIG.dirs['inter_out']
+    dir_cmip6 = config.CONFIG.dirs['cmip6']
     
     logger.info('Searing for available species in {}'.format(dir_inter_out))
     
@@ -186,8 +188,8 @@ def calc_emissions():
     logger.info('Emission species found: {}\n'.format(len(em_species)))
     
     # Create list of strings representing year column headers
-    data_col_headers = ['X{}'.format(i) for i in range(CONFIG.ceds_meta['year_first'],
-                                                       CONFIG.ceds_meta['year_first'])]
+    data_col_headers = ['X{}'.format(i) for i in range(config.CONFIG.ceds_meta['year_first'],
+                                                       config.CONFIG.ceds_meta['year_first'])]
     
     for species in em_species:
         info_str = 'Calculating frozen total emissions for {}\n{}'.format(species, "="*45)
@@ -274,12 +276,11 @@ def main():
     parser = init_parser()
     args = parser.parse_args()
     
-    # Parse the input YAML file
-    global config.CONFIG 
+    # Parse the input YAML file & initialize global CONFIG 'constant'
     config.CONFIG = config.ConfigObj(args.input_file)
     
     # Initialize a new main log
-    logger = frozen_logger.init_logger(CONFIG.dirs['logs'], "main", level='debug')
+    logger = frozen_logger.init_logger(config.CONFIG.dirs['logs'], "main", level='debug')
     logger.info('Input file {}'.format(args.input_file))
     
     # Execute the specified function(s)

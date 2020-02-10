@@ -7,7 +7,7 @@ Created on Mon Dec  9 08:53:36 2019
 import logging
 import numpy as np
 
-from config_obj import CONFIG
+import config
 
 class EFSubset:
     """

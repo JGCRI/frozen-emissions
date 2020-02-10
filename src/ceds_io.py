@@ -193,10 +193,10 @@ def filter_isos(df):
     """
     logger = logging.getLogger('main')
     # Filter ISOs, if applicable
-    if (CONFIG.freeze_isos != 'all'):
-        if (isinstance(CONFIG.freeze_isos, list)):
+    if (config.CONFIG.freeze_isos != 'all'):
+        if (isinstance(config.CONFIG.freeze_isos, list)):
             logger.info('Filtering combustion sector ISOs')
-            df_filtered = df_filtered.loc[df_filtered['iso'].isin(CONFIG.freeze_isos)]
+            df_filtered = df_filtered.loc[df_filtered['iso'].isin(config.CONFIG.freeze_isos)]
         else:
             raise ValueError('Config "freeze_isos" member must be "all" or list of str')
 
@@ -430,7 +430,7 @@ def filter_data_sector(df):
     logger = logging.getLogger('main')
     logger.info('Filtering combustion sectors')
     
-    f_in = join(CONFIG.dirs['input'], 'combustion_sectors.csv')
+    f_in = join(config.CONFIG.dirs['input'], 'combustion_sectors.csv')
     if (not isfile(f_in)):
         print( ("Warning: Combustion sector csv not found in current directory. "
                 "Calling create_comb_sector_df.py to create the file.\n"

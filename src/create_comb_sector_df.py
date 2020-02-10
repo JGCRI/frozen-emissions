@@ -8,7 +8,7 @@ and extracts a subset of the DataFrame for combustion sectors
 import pandas as pd
 from os.path import join
 
-from config_obj import CONFIG
+import config
 
 def create_csv():
     """
