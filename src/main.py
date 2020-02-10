@@ -9,7 +9,7 @@ import argparse
 
 import frozen_logger
 import ceds_io
-import frozen_config
+import config_obj
 
 
 def init_parser():
@@ -49,7 +49,7 @@ def init_parser():
     return parser
 
 
-def freeze_emissions(dirs, year, ef_files=None):
+def freeze_emissions(config):
     """
     Freeze emissions factors for years >= 'year'
     
@@ -60,14 +60,13 @@ def freeze_emissions(dirs, year, ef_files=None):
     
     Parameters
     -----------
-    dirs : dict of {str, str}
-        Dictionary holding paths to various input & output directories
-    year : int or str
-        Year at which to freeze the emission factors
-    ef_files : list of str, optional
-        List of emission factor files. If given, only those files and their 
-        associated species will be frozen. Default is 'None', meaning all
-        species are frozen.
+    config : ConfigObj object
+        ConfigObj object containing input/output directory paths and other
+        metadata
+    
+    Return
+    -------
+    None
     """
     data_path = dirs['dir_cmip6']
     out_path = dirs['dir_inter_out']
@@ -75,14 +74,14 @@ def freeze_emissions(dirs, year, ef_files=None):
     main_log = logging.getLogger("main")
     main_log.info("In main::freeze_emissions()")
     main_log.info("data_path = {}".format(data_path))
-    main_log.info("year = {}\n".format(year))
+    main_log.info("year = {}\n".format(config.freeze_year))
     
     # Get all Emission Factor filenames in the directory
-    if (not ef_files):
-        ef_files = ceds_io.fetch_ef_files(data_path)
+    ef_files = ceds_io.fetch_ef_files(data_path)
         
     # Construct the column header strings for years >= 'year' param
-    year_strs = ['X{}'.format(yr) for yr in range(year, 2014 + 1)]
+    year_strs = ['X{}'.format(yr) for yr in range(config.freeze_year,
+                                                  config.ceds_meta['year_last'] + 1)]
     
     # Begin for-loop over each species EF file
     for f_name in ef_files:
@@ -110,8 +109,8 @@ def freeze_emissions(dirs, year, ef_files=None):
                 print("Processing {}...{}...{}...".format(species, sector, fuel))
         
                 # Read the EF data into an EFSubset object
-                main_log.info("Subsetting EF DF for year {}".format(year))
-                efsubset_obj = efsubset.EFSubset(ef_df, sector, fuel, species, year)
+                main_log.info("Subsetting EF DF for year {}".format(config.freeze_year))
+                efsubset_obj = efsubset.EFSubset(ef_df, sector, fuel, species, config.freeze_year)
                 
                 if (efsubset_obj.ef_data.size != 0):
         
@@ -153,7 +152,7 @@ def freeze_emissions(dirs, year, ef_files=None):
     main_log.info("Leaving main::freeze_emissions()\n")
     
     
-def calc_emissions(dir_dict, em_species=None):
+def calc_emissions(config):
     """
     Calculate the hypothetical emissions from the frozen emissions and the CMIP6
     activity files
@@ -162,9 +161,9 @@ def calc_emissions(dir_dict, em_species=None):
     
     Parameters
     -----------
-    dir_dict : dictionary of {str: str}
-        Dictionary holding the paths to directories for the various files needed.
-        Keys: ['dir_inter_out', 'base_dir_act', 'dir_inter_out']
+    config : ConfigObj object
+        ConfigObj object containing input/output directory paths and other
+        metadata
         
     Return
     -------
@@ -174,8 +173,8 @@ def calc_emissions(dir_dict, em_species=None):
     logger.info('In main::calc_emissions()')
     
     # Unpack for better readability
-    dir_inter_out = dir_dict['dir_inter_out']
-    base_dir_act = dir_dict['dir_cmip6']
+    dir_inter_out = config.dirs['inter_out']
+    dir_cmip6 = config.dirs['cmip6']
     
     logger.info('Searing for available species in {}'.format(dir_inter_out))
     
@@ -185,7 +184,8 @@ def calc_emissions(dir_dict, em_species=None):
     logger.info('Emission species found: {}\n'.format(len(em_species)))
     
     # Create list of strings representing year column headers
-    data_col_headers = ['X{}'.format(i) for i in range(1750, 2015)]
+    data_col_headers = ['X{}'.format(i) for i in range(config.ceds_meta['year_first'],
+                                                       config.ceds_meta['year_first'])]
     
     for species in em_species:
         info_str = 'Calculating frozen total emissions for {}\n{}'.format(species, "="*45)
@@ -197,9 +197,9 @@ def calc_emissions(dir_dict, em_species=None):
         frozen_ef_file = ceds_io.get_file_for_species(dir_inter_out, species, "ef")
         
         # Get activity file for species
-        logger.info('Fetching activity file from {}'.format(base_dir_act))
+        logger.info('Fetching activity file from {}'.format(dir_cmip6))
         try:
-            activity_file = ceds_io.get_file_for_species(base_dir_act, species, "activity")
+            activity_file = ceds_io.get_file_for_species(dir_cmip6, species, "activity")
         except:
             err_msg = 'No activity file found for {}'.format(species)
             logger.error(err_msg)
@@ -207,7 +207,7 @@ def calc_emissions(dir_dict, em_species=None):
             continue
         
         ef_path = join(dir_inter_out, frozen_ef_file)
-        act_path = join(base_dir_act, activity_file)
+        act_path = join(dir_cmip6, activity_file)
         
         # Read emission factor & activity files into DataFrames
         logger.info('Reading emission factor file from {}'.format(ef_path))
@@ -275,7 +275,19 @@ def main():
     
     # Parse the input YAML file
     logger.info('Parsing input file {}'.format(args.input_file))
-    config = frozen_config.FrozenConfig(args.input_file)
+    config = config_obj.ConfigObj(args.input_file)
+    
+    # Execute the specified function(s)
+    if (args.function == 'all'):
+        freeze_emissions(config)
+        calc_emissions(config)
+    elif (args.function == 'freeze_emissions'):
+        freeze_emissions(config)
+    elif (args.function == 'calc_emissions'):
+        calc_emissions(config)
+    else:
+        raise ValueError('Invalid function argument. Valid args are "freeze_emissions" and "calc_emissions")
+        
 
 
 if __name__ == '__main__':

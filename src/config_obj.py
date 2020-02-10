@@ -21,14 +21,19 @@ class ConfigObj:
             
         Attributes
         -----------
+        ceds_meta : dict of {str : int}
+            Dictionary containing CEDS metadata. 
+            Keys: 
+                year_first : First year of CEDS output
+                year_last  : Last (most current) year of CEDS output
+        dirs : dict of {str : str}
+            Dictionary containing various input and output directory paths
         freeze_year : int
             Freeze emission factors for years >= this year.
         freeze_isos : str or list of str
             Freeze emissions for these CEDS ISOs. Default is 'all'.
         freeze_species : str or list of str
             Emission species to freeze.
-        dirs : dict of {str : str}
-            Dictionary containing various input and output directory paths
         init_file : str
             Name of the init .yml file
         """
