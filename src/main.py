@@ -93,8 +93,10 @@ def freeze_emissions():
         main_log.info("Loading EF DataFrame from {}".format(join(data_path, f_name)))
         ef_df = ceds_io.read_ef_file(join(data_path, f_name))
         
-        # print(ef_df.shape)
-        # exit(0)
+        # If applicable, filter out any ISOs that are not designated to be frozen
+        # in the global CONFIG object
+        if (CONFIG.freeze_isos != 'all'):
+            ef_df = ceds_io.filter_isos(ef_df)
         
         max_yr = ef_df.columns.values.tolist()[-1]
         
