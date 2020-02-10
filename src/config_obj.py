@@ -55,7 +55,8 @@ class ConfigObj:
                 'input'    : None,
                 'output'   : None,
                 'logs'     : None,
-                'init'     : None}
+                'init'     : None,
+                'ceds'     : None}
         self.dirs = dirs
         
     def _parse_yaml(self, yaml_path):
@@ -86,6 +87,7 @@ class ConfigObj:
         self.dirs['cmip6']     = info['dirs'][op_sys]['cmip6_inter']
         self.dirs['inter_out'] = info['dirs'][op_sys]['root_inter']
         self.dirs['proj_root'] = info['dirs'][op_sys]['root_proj']
+        self.dirs['ceds']      = info['dirs'][op_sys]['ceds']
         self.dirs['input']     = info['dirs']['input']
         self.dirs['output']    = info['dirs']['output']
         self.dirs['logs']      = info['dirs']['logs']
