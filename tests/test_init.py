@@ -55,6 +55,13 @@ class TestInit(unittest.TestCase):
         self.assertIsInstance(config.freeze_isos, str)
         self.assertIsInstance(config.freeze_species, list)
         self.assertIsInstance(config.init_file, str)
+    
+    def test_configObj_vals(self):
+        """Test some of the values of the ConfigObj attributes
+        """
+        config = config_obj.ConfigObj(TestInit.f_init)
+        
+        
 
 
 

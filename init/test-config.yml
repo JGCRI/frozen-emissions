@@ -1,4 +1,8 @@
-# A test configureation YAML file 
+# A test configuration YAML file
+#
+# !!! DO NOT CHANGE ANY MEMBERS OR VALUES IN THIS FILE WITHOUT UPDATING TESTS !!!
+#
+# Changing members/values in this file will cause tests in test_init.py to fail.
 #
 # Matt Nicholson
 # 7 Feb 2020
