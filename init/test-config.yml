@@ -40,7 +40,7 @@ dirs:
   input: ../input
   output: ../output
   init: ../init
-  logs: ./logs
+  logs: logs
 freeze:
   year: 1970
   isos: all

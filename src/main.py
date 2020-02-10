@@ -6,6 +6,8 @@ Matt Nicholson
 """
 # import logging
 import argparse
+import logging
+import os
 
 import frozen_logger
 import ceds_io
@@ -88,8 +90,10 @@ def freeze_emissions():
         species = ceds_io.get_species_from_fname(f_name)
         main_log.info("Processing species: {}".format(species))
         
-        main_log.info("Loading EF DataFrame from {}".format(join(data_path, f_name)))
-        ef_df = ceds_io.read_ef_file(join(data_path, f_name))
+        f_path = os.path.join(data_path, f_name)
+        
+        main_log.info("Loading EF DataFrame from {}".format(f_path))
+        ef_df = ceds_io.read_ef_file(f_path)
         
         # If applicable, filter out any ISOs that are not designated to be frozen
         # in the global CONFIG object
@@ -271,13 +275,13 @@ def main():
     parser = init_parser()
     args = parser.parse_args()
     
-    # Init a log
-    logger = frozen_logger.init_logger(log_dir, "main", level='debug')
-    
     # Parse the input YAML file
-    logger.info('Parsing input file {}'.format(args.input_file))
     global CONFIG 
-    CONFIG= config_obj.ConfigObj(args.input_file)
+    CONFIG = config_obj.ConfigObj(args.input_file)
+    
+    # Initialize a new main log
+    logger = frozen_logger.init_logger(CONFIG.dirs['logs'], "main", level='debug')
+    logger.info('Input file {}'.format(args.input_file))
     
     # Execute the specified function(s)
     if (args.function == 'all'):
