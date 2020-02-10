@@ -81,8 +81,8 @@ def freeze_emissions(dirs, year, ef_files=None):
     if (not ef_files):
         ef_files = ceds_io.fetch_ef_files(data_path)
         
-    # Construct the column header strings for years >= 1970
-    year_strs = ['X{}'.format(yr) for yr in range(1970, 2014 + 1)]
+    # Construct the column header strings for years >= 'year' param
+    year_strs = ['X{}'.format(yr) for yr in range(year, 2014 + 1)]
     
     # Begin for-loop over each species EF file
     for f_name in ef_files:

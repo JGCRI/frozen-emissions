@@ -8,16 +8,30 @@
 # dirs
 #   cmip6_inter : Path to the CMIP6 emissions 'intermediate-output' directory.
 #   root_inter  : Path of the root intermediate output directory.
+#   rot_proj    : Root project directory
+#   input       : Project input directory
+#   output      : Project output directory
+#   logs        : Project log directory
+#   init        : Project initialization/configuration directory
 # freeze
-#   year : Freeze emission factors for years >= freeze_year.
-#   isos : ISOs to freeze.
-#   species     : Emission species to freeze
+#   year    : Freeze emission factors for years >= freeze_year.
+#   isos    : ISOs to freeze.
+#   species : Emission species to freeze
 ---
 
 dirs:
+  win:
+    cmip6_inter: C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output
+    root_inter: C:\Users\nich980\data\e-freeze\python-output\intermediate-output
+    root_proj : C:\Users\nich980\code\frozen-emissions
+  linux: 
+    cmip6_inter: /mnt/c/Users/nich980/data/e-freeze/CMIP6-emissions/intermediate-output
+    root_inter: /mnt/c/Users/nich980/data/e-freeze/python-output/intermediate-output
+    root_proj: /mnt/c/Users/nich980/code/frozen-emissions
+  input: ../input
+  output: ../output
+  init: ../init
   logs: ./logs
-  cmip6_inter: C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output
-  root_inter: C:\Users\nich980\data\e-freeze\python-output\intermediate-output
 freeze:
   year: 1970
   isos: all
