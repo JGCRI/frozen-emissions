@@ -14,52 +14,59 @@ sys.path.insert(1, '../src')
 import config_obj
 
 class TestInit(unittest.TestCase):
-
-    f_init = '../init/test-config.yml'
     
-    def setup(self):
-        pass
+    def setUp(self):
+        """Initialize TestInit attributes for use in test cases.
+        Not a test case
+        """
+        self.f_init = '../init/test-config.yml'
+        self.config = config_obj.ConfigObj(self.f_init)
     
     def test_parse_basic(self):
-        """Test basic YAML input file reading & ConfigObj instantiation
+        """Test basic YAML input file reading & ConfigObj instantiation. 
+        Test Case 1
         """
-        config = config_obj.ConfigObj(TestInit.f_init)
-        config_class = config.__class__.__name__
+        config_class = self.config.__class__.__name__
         self.assertEqual(config_class, 'ConfigObj')
     
     def test_parse_winPaths(self):
         """Check that the path formats are correct for Windows. Only runs if 
-        the detected OS executing the script is Windows.
+        the detected OS executing the script is Windows. 
+        Test Case 2
         """
         if (not sys.platform.startswith('win')):
             pass
         else:
-            config = config_obj.ConfigObj(TestInit.f_init)
             paths = ['cmip6', 'inter_out', 'proj_root']
             for path in paths:
-                self.assertEqual(config.dirs[path].split("\\")[0], "C:")
+                self.assertEqual(self.config.dirs[path].split("\\")[0], "C:")
         
     def test_init_configObj(self):
-        """Check that expected ConfigObjs are present and valid
+        """Check that expected ConfigObjs are present and of the correct types 
+        Test Case 3
         """
-        config = config_obj.ConfigObj(TestInit.f_init)
-        self.assertIsInstance(config.dirs, dict)
-        self.assertIsInstance(config.dirs['cmip6'], str)
-        self.assertIsInstance(config.dirs['inter_out'], str)
-        self.assertIsInstance(config.dirs['proj_root'], str)
-        self.assertIsInstance(config.dirs['input'], str)
-        self.assertIsInstance(config.dirs['output'], str)
-        self.assertIsInstance(config.dirs['logs'], str)
-        self.assertIsInstance(config.dirs['init'], str)
-        self.assertIsInstance(config.freeze_year, int)
-        self.assertIsInstance(config.freeze_isos, str)
-        self.assertIsInstance(config.freeze_species, list)
-        self.assertIsInstance(config.init_file, str)
+        self.assertIsInstance(self.config.dirs, dict)
+        self.assertIsInstance(self.config.dirs['cmip6'], str)
+        self.assertIsInstance(self.config.dirs['inter_out'], str)
+        self.assertIsInstance(self.config.dirs['proj_root'], str)
+        self.assertIsInstance(self.config.dirs['input'], str)
+        self.assertIsInstance(self.config.dirs['output'], str)
+        self.assertIsInstance(self.config.dirs['logs'], str)
+        self.assertIsInstance(self.config.dirs['init'], str)
+        self.assertIsInstance(self.config.freeze_year, int)
+        self.assertIsInstance(self.config.freeze_isos, str)
+        self.assertIsInstance(self.config.freeze_species, list)
+        self.assertIsInstance(self.config.init_file, str)
     
     def test_configObj_vals(self):
         """Test some of the values of the ConfigObj attributes
+        Test Case 4
         """
-        config = config_obj.ConfigObj(TestInit.f_init)
+        species_list = ['BC', 'CH4', 'CO', 'CO2', 'NH3', 'NMVOC', 'NOx', 'OC', 'SO2']
+        self.assertIsInstance(self.config.freeze_species, list)
+        self.assertEqual(species_list, self.config.freeze_species)
+        self.assertEqual(1970, self.config.freeze_year)
+        self.assertEqual('all', self.config.freeze_isos)
         
         
 
