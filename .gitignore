@@ -1,7 +1,6 @@
-# Input, output, & log directories
-intput/
+# Output & log directories
 output/
-/logs/
+logs/
 
 # Those pesky pycache dirs
 **/__pycache__

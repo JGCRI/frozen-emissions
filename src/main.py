@@ -6,11 +6,14 @@ Matt Nicholson
 """
 # import logging
 import argparse
+import logging
+import os
 
 import frozen_logger
 import ceds_io
-import config_obj
-
+import config
+import efsubset
+import stats
 
 def init_parser():
     """
@@ -38,8 +41,8 @@ def init_parser():
     
     parser = argparse.ArgumentParser(description=parse_desc)
     
-    parser.add_argument(metavar='input_file', required=True,
-                        dest='input_file', action='store', type=str,
+    parser.add_argument(metavar='input_file', dest='input_file',
+                        action='store', type=str,
                         help='Path of the input YAML file')
                         
     parser.add_argument('-f', '--function', metavar='function', required=False,
@@ -49,7 +52,7 @@ def init_parser():
     return parser
 
 
-def freeze_emissions(config):
+def freeze_emissions():
     """
     Freeze emissions factors for years >= 'year'
     
@@ -60,28 +63,27 @@ def freeze_emissions(config):
     
     Parameters
     -----------
-    config : ConfigObj object
-        ConfigObj object containing input/output directory paths and other
-        metadata
+    None, uses global CONFIG object
     
     Return
     -------
     None
     """
-    data_path = dirs['dir_cmip6']
-    out_path = dirs['dir_inter_out']
+     # Unpack config directory paths for better readability
+    data_path = config.CONFIG.dirs['cmip6']
+    out_path = config.CONFIG.dirs['inter_out']
     
     main_log = logging.getLogger("main")
     main_log.info("In main::freeze_emissions()")
     main_log.info("data_path = {}".format(data_path))
-    main_log.info("year = {}\n".format(config.freeze_year))
+    main_log.info("year = {}\n".format(config.CONFIG.freeze_year))
     
     # Get all Emission Factor filenames in the directory
     ef_files = ceds_io.fetch_ef_files(data_path)
         
     # Construct the column header strings for years >= 'year' param
-    year_strs = ['X{}'.format(yr) for yr in range(config.freeze_year,
-                                                  config.ceds_meta['year_last'] + 1)]
+    year_strs = ['X{}'.format(yr) for yr in range(config.CONFIG.freeze_year,
+                                                  config.CONFIG.ceds_meta['year_last'] + 1)]
     
     # Begin for-loop over each species EF file
     for f_name in ef_files:
@@ -89,11 +91,15 @@ def freeze_emissions(config):
         species = ceds_io.get_species_from_fname(f_name)
         main_log.info("Processing species: {}".format(species))
         
-        main_log.info("Loading EF DataFrame from {}".format(join(data_path, f_name)))
-        ef_df = ceds_io.read_ef_file(join(data_path, f_name))
+        f_path = os.path.join(data_path, f_name)
         
-        # print(ef_df.shape)
-        # exit(0)
+        main_log.info("Loading EF DataFrame from {}".format(f_path))
+        ef_df = ceds_io.read_ef_file(f_path)
+        
+        # If applicable, filter out any ISOs that are not designated to be frozen
+        # in the global CONFIG object
+        if (config.CONFIG.freeze_isos != 'all'):
+            ef_df = ceds_io.filter_isos(ef_df)
         
         max_yr = ef_df.columns.values.tolist()[-1]
         
@@ -109,17 +115,18 @@ def freeze_emissions(config):
                 print("Processing {}...{}...{}...".format(species, sector, fuel))
         
                 # Read the EF data into an EFSubset object
-                main_log.info("Subsetting EF DF for year {}".format(config.freeze_year))
-                efsubset_obj = efsubset.EFSubset(ef_df, sector, fuel, species, config.freeze_year)
+                main_log.info("Subsetting EF DF for year {}".format(config.CONFIG.freeze_year))
+                efsubset_obj = efsubset.EFSubset(ef_df, sector, fuel, species,
+                                                 config.CONFIG.freeze_year)
                 
                 if (efsubset_obj.ef_data.size != 0):
         
                     # Calculate the median of the EF values
-                    ef_median = quick_stats.get_ef_median(efsubset_obj)
+                    ef_median = stats.get_ef_median(efsubset_obj)
                     main_log.debug("EF data array median: {}".format(ef_median))
                     
                     main_log.info("Identifying outliers")
-                    outliers = quick_stats.get_outliers_zscore(efsubset_obj)
+                    outliers = stats.get_outliers_zscore(efsubset_obj)
                     
                     if (len(outliers) != 0):
                         main_log.info("Setting outlier values to median EF value")
@@ -152,7 +159,7 @@ def freeze_emissions(config):
     main_log.info("Leaving main::freeze_emissions()\n")
     
     
-def calc_emissions(config):
+def calc_emissions():
     """
     Calculate the hypothetical emissions from the frozen emissions and the CMIP6
     activity files
@@ -161,9 +168,7 @@ def calc_emissions(config):
     
     Parameters
     -----------
-    config : ConfigObj object
-        ConfigObj object containing input/output directory paths and other
-        metadata
+    None, uses global CONFIG object
         
     Return
     -------
@@ -173,8 +178,8 @@ def calc_emissions(config):
     logger.info('In main::calc_emissions()')
     
     # Unpack for better readability
-    dir_inter_out = config.dirs['inter_out']
-    dir_cmip6 = config.dirs['cmip6']
+    dir_inter_out = config.CONFIG.dirs['inter_out']
+    dir_cmip6 = config.CONFIG.dirs['cmip6']
     
     logger.info('Searing for available species in {}'.format(dir_inter_out))
     
@@ -184,8 +189,8 @@ def calc_emissions(config):
     logger.info('Emission species found: {}\n'.format(len(em_species)))
     
     # Create list of strings representing year column headers
-    data_col_headers = ['X{}'.format(i) for i in range(config.ceds_meta['year_first'],
-                                                       config.ceds_meta['year_first'])]
+    data_col_headers = ['X{}'.format(i) for i in range(config.CONFIG.ceds_meta['year_first'],
+                                                       config.CONFIG.ceds_meta['year_first'])]
     
     for species in em_species:
         info_str = 'Calculating frozen total emissions for {}\n{}'.format(species, "="*45)
@@ -226,7 +231,9 @@ def calc_emissions(config):
             raise ValueError(err_str)
         
         # Get a subset of the emission factor & activity files that contain numerical
-        # data so we can compute emissions
+        # data so we can compute emissions. We *could* skip this step and just
+        # do the slicing whithin the dataframe multiplication step (~line 245),
+        # but that is much messier and confusing to read
         logger.info('Subsetting emission factor & activity DataFrames')
         ef_subs = ef_df[data_col_headers]
         act_subs = act_df[data_col_headers]
@@ -270,23 +277,23 @@ def main():
     parser = init_parser()
     args = parser.parse_args()
     
-    # Init a log
-    logger = frozen_logger.init_logger(log_dir, "main", level='debug')
+    # Parse the input YAML file & initialize global CONFIG 'constant'
+    config.CONFIG = config.ConfigObj(args.input_file)
     
-    # Parse the input YAML file
-    logger.info('Parsing input file {}'.format(args.input_file))
-    config = config_obj.ConfigObj(args.input_file)
+    # Initialize a new main log
+    logger = frozen_logger.init_logger(config.CONFIG.dirs['logs'], "main", level='debug')
+    logger.info('Input file {}'.format(args.input_file))
     
     # Execute the specified function(s)
     if (args.function == 'all'):
-        freeze_emissions(config)
-        calc_emissions(config)
+        freeze_emissions()
+        calc_emissions()
     elif (args.function == 'freeze_emissions'):
-        freeze_emissions(config)
+        freeze_emissions()
     elif (args.function == 'calc_emissions'):
-        calc_emissions(config)
+        calc_emissions()
     else:
-        raise ValueError('Invalid function argument. Valid args are "freeze_emissions" and "calc_emissions")
+        raise ValueError('Invalid function argument. Valid args are "freeze_emissions" and "calc_emissions"')
         
 
 

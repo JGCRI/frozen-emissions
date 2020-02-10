@@ -22,11 +22,14 @@ def nuke_logs(log_dir, target=None):
     if (target):
         if (not target.endswith('.log')):
             target = target + '.log'
-        os.remove(os.path.join(log_dir, target))
+        files = [target]
     else:
-        for f in listdir(log_dir):
-            if f.endswith(".log"):
-                os.remove(os.path.join(log_dir, f))
+        files = [f for f in os.listdir(log_dir) if f.endswith(".log")]
+    for f in files:
+        try:
+            os.remove(os.path.join(log_dir, f))
+        except:
+            pass
 
 
 def init_logger(log_dir, log_name, level='debug'):
@@ -55,12 +58,12 @@ def init_logger(log_dir, log_name, level='debug'):
     
     nuke_logs(log_dir, target=log_name)
     
-    if (not isdir(log_dir)):
+    if (not os.path.isdir(log_dir)):
         os.mkdir(log_dir)
     
     if (not log_name.endswith('.log')):
         log_name = '{}.log'.format(log_name)
-    log_path = join(log_dir, f_name)
+    log_path = os.path.join(log_dir, log_name)
     
     log_format = logging.Formatter("%(asctime)s %(levelname)6s: %(message)s", "%Y-%m-%d %H:%M:%S")
     

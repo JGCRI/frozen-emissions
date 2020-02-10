@@ -11,7 +11,7 @@ import sys
 # Insert src directory to Python path for importing
 sys.path.insert(1, '../src')
 
-import config_obj
+import config
 
 class TestInit(unittest.TestCase):
     
@@ -20,7 +20,7 @@ class TestInit(unittest.TestCase):
         Not a test case
         """
         self.f_init = '../init/test-config.yml'
-        self.config = config_obj.ConfigObj(self.f_init)
+        self.config = config.ConfigObj(self.f_init)
     
     def test_parse_basic(self):
         """Test basic YAML input file reading & ConfigObj instantiation. 
@@ -49,6 +49,7 @@ class TestInit(unittest.TestCase):
         self.assertIsInstance(self.config.dirs['cmip6'], str)
         self.assertIsInstance(self.config.dirs['inter_out'], str)
         self.assertIsInstance(self.config.dirs['proj_root'], str)
+        self.assertIsInstance(self.config.dirs['ceds'], str)
         self.assertIsInstance(self.config.dirs['input'], str)
         self.assertIsInstance(self.config.dirs['output'], str)
         self.assertIsInstance(self.config.dirs['logs'], str)
