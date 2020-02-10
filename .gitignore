@@ -1,5 +1,4 @@
-# Input, output, & log directories
-intput/
+# Output & log directories
 output/
 /logs/
 
