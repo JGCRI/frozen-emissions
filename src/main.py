@@ -13,6 +13,7 @@ import frozen_logger
 import ceds_io
 import config
 import efsubset
+import stats
 
 def init_parser():
     """
@@ -121,11 +122,11 @@ def freeze_emissions():
                 if (efsubset_obj.ef_data.size != 0):
         
                     # Calculate the median of the EF values
-                    ef_median = quick_stats.get_ef_median(efsubset_obj)
+                    ef_median = stats.get_ef_median(efsubset_obj)
                     main_log.debug("EF data array median: {}".format(ef_median))
                     
                     main_log.info("Identifying outliers")
-                    outliers = quick_stats.get_outliers_zscore(efsubset_obj)
+                    outliers = stats.get_outliers_zscore(efsubset_obj)
                     
                     if (len(outliers) != 0):
                         main_log.info("Setting outlier values to median EF value")
