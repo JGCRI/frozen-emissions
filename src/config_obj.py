@@ -37,6 +37,7 @@ class ConfigObj:
         self.freeze_isos    = None
         self.freeze_species = None
         self.init_file      = None
+        self.ceds_meta      = {}
         self._parse_yaml(yaml_path)
     
     def _init_dirs(self):
@@ -88,6 +89,8 @@ class ConfigObj:
         self.freeze_isos       = info['freeze']['isos']
         self.freeze_species    = info['freeze']['species']
         self.init_file         = basename(yaml_path)
+        self.ceds_meta['year_first'] = info['ceds']['year_first']
+        self.ceds_meta['year_last'] = info['ceds']['year_last']
         
         
     def __repr__(self):

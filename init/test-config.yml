@@ -9,7 +9,7 @@
 #
 # Members
 # --------
-# dirs
+# dirs:
 #   cmip6_inter : Path to the CMIP6 emissions 'intermediate-output' directory.
 #   root_inter  : Path of the root intermediate output directory.
 #   rot_proj    : Root project directory
@@ -17,10 +17,13 @@
 #   output      : Project output directory
 #   logs        : Project log directory
 #   init        : Project initialization/configuration directory
-# freeze
+# freeze:
 #   year    : Freeze emission factors for years >= freeze_year.
 #   isos    : ISOs to freeze.
 #   species : Emission species to freeze
+# ceds:
+#   year_first : First year of CEDS output. Default is 1750
+#   year_last  : Last year of CEDS output. Default is 2015
 ---
 
 dirs:
@@ -40,4 +43,7 @@ freeze:
   year: 1970
   isos: all
   species: [BC, CH4, CO, CO2, NH3, NMVOC, NOx, OC, SO2]
+ceds:
+  year_first: 1750
+  year_last: 2015
   

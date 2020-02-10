@@ -57,7 +57,11 @@ class TestInit(unittest.TestCase):
         self.assertIsInstance(self.config.freeze_isos, str)
         self.assertIsInstance(self.config.freeze_species, list)
         self.assertIsInstance(self.config.init_file, str)
-    
+        self.assertIsInstance(self.config.init_file, str)
+        self.assertIsInstance(self.config.init_file, str)
+        self.assertIsInstance(self.config.ceds_meta['year_first'], int)
+        self.assertIsInstance(self.config.ceds_meta['year_last'], int)
+        
     def test_configObj_vals(self):
         """Test some of the values of the ConfigObj attributes
         Test Case 4
@@ -65,8 +69,10 @@ class TestInit(unittest.TestCase):
         species_list = ['BC', 'CH4', 'CO', 'CO2', 'NH3', 'NMVOC', 'NOx', 'OC', 'SO2']
         self.assertIsInstance(self.config.freeze_species, list)
         self.assertEqual(species_list, self.config.freeze_species)
-        self.assertEqual(1970, self.config.freeze_year)
-        self.assertEqual('all', self.config.freeze_isos)
+        self.assertEqual(1970, self.config.freeze_year)    # Freeze year
+        self.assertEqual('all', self.config.freeze_isos)   # Freeze ISOs
+        self.assertEqual(1750, self.config.ceds_meta['year_first']) # CEDS first year
+        self.assertEqual(2015, self.config.ceds_meta['year_last'])  # CEDS last year
         
         
 
