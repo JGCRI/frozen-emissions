@@ -38,8 +38,8 @@ def init_parser():
     
     parser = argparse.ArgumentParser(description=parse_desc)
     
-    parser.add_argument(metavar='input_file', required=True,
-                        dest='input_file', action='store', type=str,
+    parser.add_argument(metavar='input_file', dest='input_file',
+                        action='store', type=str,
                         help='Path of the input YAML file')
                         
     parser.add_argument('-f', '--function', metavar='function', required=False,
@@ -276,7 +276,8 @@ def main():
     
     # Parse the input YAML file
     logger.info('Parsing input file {}'.format(args.input_file))
-    global CONFIG = config_obj.ConfigObj(args.input_file)
+    global CONFIG 
+    CONFIG= config_obj.ConfigObj(args.input_file)
     
     # Execute the specified function(s)
     if (args.function == 'all'):
@@ -287,7 +288,7 @@ def main():
     elif (args.function == 'calc_emissions'):
         calc_emissions()
     else:
-        raise ValueError('Invalid function argument. Valid args are "freeze_emissions" and "calc_emissions")
+        raise ValueError('Invalid function argument. Valid args are "freeze_emissions" and "calc_emissions"')
         
 
 

@@ -194,7 +194,7 @@ def filter_isos(df):
     logger = logging.getLogger('main')
     # Filter ISOs, if applicable
     if (CONFIG.freeze_isos != 'all'):
-        if (isinstance(CONFIG.freeze_isos, list):
+        if (isinstance(CONFIG.freeze_isos, list)):
             logger.info('Filtering combustion sector ISOs')
             df_filtered = df_filtered.loc[df_filtered['iso'].isin(CONFIG.freeze_isos)]
         else:
