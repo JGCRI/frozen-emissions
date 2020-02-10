@@ -6,7 +6,7 @@ Matt Nicholson
 """
 import yaml
 
-def Class FrozenConfig:
+def Class ConfigObj:
     
     def __init__(self, yaml_path):
         """
