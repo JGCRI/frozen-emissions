@@ -20,17 +20,27 @@ class TestInit(unittest.TestCase):
     def setup(self):
         pass
     
-    def test_parse_yaml_1(self):
-        """
-        Test basic YAML input file reading & ConfigObj instantiation
+    def test_parse_basic(self):
+        """Test basic YAML input file reading & ConfigObj instantiation
         """
         config = config_obj.ConfigObj(TestInit.f_init)
         config_class = config.__class__.__name__
         self.assertEqual(config_class, 'ConfigObj')
-        
-    def test_parse_yaml_2(self):
+    
+    def test_parse_winPaths(self):
+        """Check that the path formats are correct for Windows. Only runs if 
+        the detected OS executing the script is Windows.
         """
-        Check that expected ConfigObjs are present and valid
+        if (not sys.platform.startswith('win')):
+            pass
+        else:
+            config = config_obj.ConfigObj(TestInit.f_init)
+            paths = ['cmip6', 'inter_out', 'proj_root']
+            for path in paths:
+                self.assertEqual(config.dirs[path].split("\\")[0], "C:")
+        
+    def test_init_configObj(self):
+        """Check that expected ConfigObjs are present and valid
         """
         config = config_obj.ConfigObj(TestInit.f_init)
         self.assertIsInstance(config.dirs, dict)
