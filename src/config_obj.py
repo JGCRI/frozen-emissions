@@ -8,6 +8,9 @@ import yaml
 from sys import platform
 from os.path import basename
 
+# Global config 'constant'
+CONFIG = None
+
 class ConfigObj:
     
     def __init__(self, yaml_path):

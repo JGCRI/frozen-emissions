@@ -7,6 +7,8 @@ Created on Mon Dec  9 08:53:36 2019
 import logging
 import numpy as np
 
+from config_obj import CONFIG
+
 class EFSubset:
     """
     A simple class to hold CEDS emission factor data for a given emission

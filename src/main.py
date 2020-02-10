@@ -10,9 +10,7 @@ import argparse
 import frozen_logger
 import ceds_io
 import config_obj
-
-# Global config 'constant'
-CONFIG = None
+from config_obj import CONFIG
 
 def init_parser():
     """

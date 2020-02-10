@@ -11,6 +11,7 @@ from os.path import isfile, join
 from os import listdir, getcwd
 
 import create_comb_sector_df
+from config_obj import CONFIG
 
 
 def read_ef_file(abs_path):
