@@ -35,7 +35,6 @@ def read_ef_file(abs_path):
     return ef_df
 
 
-
 def fetch_ef_files(dir_path):
     """
     Get the names of all emission factor files in a given directory
@@ -50,17 +49,10 @@ def fetch_ef_files(dir_path):
     f_names : list of str
         Names of the emission factor files found within the specified directory
     """
-    
-    patterns = {
-            "base" : r'(^H\.\w{1,7}_total_EFs_extended.csv$)'
-            }
-                    
+    patterns = {"base" : r'(^H\.\w{1,7}_total_EFs_extended.csv$)'}   
     re_pat = patterns["base"]
-    
     f_names = [f for f in listdir(dir_path) if (isfile(join(dir_path, f)) and re.match(re_pat, f))]
-    
     return f_names
-
 
 
 def fetch_activity_files(dir_path):
@@ -77,17 +69,10 @@ def fetch_activity_files(dir_path):
     f_names : list of str
         Names of the activity files found within the specified directory
     """
-    
-    patterns = {
-            "base" : r'(^H\.\w{1,7}_total_activity_extended.csv$)'
-            }
-                    
+    patterns = {"base" : r'(^H\.\w{1,7}_total_activity_extended.csv$)'}          
     re_pat = patterns["base"]
-    
     f_names = [f for f in listdir(dir_path) if (isfile(join(dir_path, f)) and re.match(re_pat, f))]
-    
     return f_names
-
 
 
 def get_file_for_species(dir_path, species, f_type):
@@ -127,7 +112,6 @@ def get_file_for_species(dir_path, species, f_type):
         return f_name
     
 
-
 def get_avail_species(dir_path):
     """
     Get the emission species available in a given directory
@@ -143,21 +127,17 @@ def get_avail_species(dir_path):
         List containing the emission species found in the directory
     """
     pattern = r'^H\.(\w{1,7})_total_EFs_extended.csv$'
-    
     species = [re.match(pattern, f).group(1) for f in listdir(dir_path) if (re.match(pattern, f))]
     return species
 
 
-
 def get_species_from_fname(f_name):
     pattern = r'^H\.(\w{1,7})_'
-    
     match = re.search(pattern, f_name)
     if (match):
         return match.group(1)
     else:
         return -1
-
 
 
 def get_species(dir_path):
@@ -168,18 +148,14 @@ def get_species(dir_path):
         match = re.match(pattern, f)
         if (match):
             species.append(match.group(1))
-    
     # Remove duplicate species
     species_set = set(species)
     species = list(species_set)
-    
     return species
-
 
 
 def chunker(iso_list, size):
     return (iso_list[pos:pos + size] for pos in range(0, len(iso_list), size))
-    
         
         
 def get_isos(df):
@@ -198,7 +174,30 @@ def get_isos(df):
     """
     isos = list(df['iso'].unique())
     return isos
-
+    
+    
+def filter_isos(df):
+    """
+    Take a subset of the parameter DataFrame using the list of ISOs defined
+    by CONFIG.freeze_isos
+    
+    Parameters
+    -----------
+    df : Pandas DataFrame
+        DataFrame containing emissions factors
+        
+    Return
+    -------
+    df_filtered : Pandas DataFrame
+    """
+    logger = logging.getLogger('main')
+    # Filter ISOs, if applicable
+    if (CONFIG.freeze_isos != 'all'):
+        if (isinstance(CONFIG.freeze_isos, list):
+            logger.info('Filtering combustion sector ISOs')
+            df_filtered = df_filtered.loc[df_filtered['iso'].isin(CONFIG.freeze_isos)]
+        else:
+            raise ValueError('Config "freeze_isos" member must be "all" or list of str')
 
 
 def get_sectors(df, comb_filter=True):
@@ -233,12 +232,10 @@ def get_sectors(df, comb_filter=True):
     return (sectors, fuels)
     
     
-    
 def get_isf(df, iso):
     sectors = list(df[df['iso'] == iso]['sectors'])
     fuels = list(df[df['iso'] == iso]['fuel'])
     return zip(sectors, fuels)
-
 
 
 def subset_iso(df, iso):
@@ -265,7 +262,6 @@ def subset_iso(df, iso):
     return subs_df
 
 
-
 def subset_sector(df, sector):
     """
     Return a subset of an emissions DataFrame where the value in the 'sector'
@@ -287,7 +283,6 @@ def subset_sector(df, sector):
     return subs_df
 
 
-
 def subset_fuel(df, fuel):
     """
     Return a subset of an emissions DataFrame where the value in the 'fuel'
@@ -307,7 +302,6 @@ def subset_fuel(df, fuel):
     """
     subs_df = df.loc[df['fuel'] == fuel]
     return subs_df
-
 
 
 def subset_yr(df, yr):
@@ -341,9 +335,7 @@ def subset_yr(df, yr):
     # of the dataframe
     for idx, col in enumerate([iso, sector, fuel, units]):
         sub_df.insert(idx, col_names[idx], col)
-    
     return sub_df
-    
 
 
 def subset_yr_span(df, yr, yr_rng=5):
@@ -366,7 +358,6 @@ def subset_yr_span(df, yr, yr_rng=5):
         DataFrame containing data within the range defined by yr +/ yr_rng
     """
     col_names = ['iso', 'sector', 'fuel', 'units']
-    
     iso = df['iso']
     sector = df['sector']
     fuel = df['fuel']
@@ -398,7 +389,7 @@ def filter_data_sector(df):
     Parameters
     ----------
     df : Pandas DataFrame
-        DataFrame containing CEDS CMIP6 emission data to be filteres
+        DataFrame containing CEDS CMIP6 emission data to be filtered
    
     Returns
     -------
@@ -435,27 +426,27 @@ def filter_data_sector(df):
     1A4c_Agriculture-forestry-fishing
     1A5_Other-unspecified
     """
-    if (not isfile('combustion_sectors.csv')):
+    logger = logging.getLogger('main')
+    logger.info('Filtering combustion sectors')
+    
+    f_in = join(CONFIG.dirs['input'], 'combustion_sectors.csv')
+    if (not isfile(f_in)):
         print( ("Warning: Combustion sector csv not found in current directory. "
                 "Calling create_comb_sector_df.py to create the file.\n"
                 "Please ensure the variable 'ceds_dir' in create_comb_sector_df.py "
                 "contains the correct path to your local CEDS directory") )
-                
-        dir_dict = create_comb_sector_df.parse_dir_dict()
-        dir_dict['out_dir'] = getcwd()
-        
-        _, comb_df = create_comb_sector_df.create_csv(dir_dict)
+        logger.info('Creating new combustion_sectors.csv file')
+        _, comb_df = create_comb_sector_df.create_csv()
     else:
-        comb_df = pd.read_csv('combustion_sectors.csv', sep=',', header=0)
+        combust_sector_lut = pd.read_csv(f_in, sep=',', header=0)
     
     # Construct a list of combustion sectors from the DataFrame
-    comb_sectors = comb_df['sector'].values.tolist()
+    combust_sectors = combust_sector_lut['sector'].values.tolist()
     
     # Create a new DataFrame containing only combustion sectors from the input dataframe
-    df_filtered = df.loc[df['sector'].isin(comb_sectors)]
+    df_filtered = df.loc[df['sector'].isin(combust_sectors)]
     
     return df_filtered
-
 
 
 def reconstruct_ef_df(ef_df_actual, efsubset_obj, year_strs):
@@ -478,8 +469,7 @@ def reconstruct_ef_df(ef_df_actual, efsubset_obj, year_strs):
                          year_strs] = efsubset_obj.ef_data[idx]
         
     return ef_df_actual
-    
-    
+        
     
 def reconstruct_ef_df_final(ef_df_actual, efsubset_obj, year_strs):
     logger = logging.getLogger('main')
@@ -494,21 +484,16 @@ def reconstruct_ef_df_final(ef_df_actual, efsubset_obj, year_strs):
         ef_df_actual[yr] = ef_df_actual[year_str_0]
         
     return ef_df_actual
-    
-    
+       
     
 def arr_to_csv(arr, out_path):
     import csv
-    
     print('Writing {}...'.format(arr))
-    
     with open(out_path, "wb") as fh:
         writer = csv.writer(fh)
         writer.writerows(arr)
-    
     print("Done!")
-    
-    
+     
     
 def print_full_df(df):
     pd.set_option('display.max_rows', len(df))
