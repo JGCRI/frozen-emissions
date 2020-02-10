@@ -31,10 +31,12 @@ dirs:
     cmip6_inter: C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output
     root_inter: C:\Users\nich980\data\e-freeze\python-output\intermediate-output
     root_proj : C:\Users\nich980\code\frozen-emissions
+    ceds: C:\Users\nich980\code\CEDS-dev
   linux: 
     cmip6_inter: /mnt/c/Users/nich980/data/e-freeze/CMIP6-emissions/intermediate-output
     root_inter: /mnt/c/Users/nich980/data/e-freeze/python-output/intermediate-output
     root_proj: /mnt/c/Users/nich980/code/frozen-emissions
+    ceds: /mnt/c/Users/nich980/code/CEDS-dev
   input: ../input
   output: ../output
   init: ../init

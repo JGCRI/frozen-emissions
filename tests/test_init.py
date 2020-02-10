@@ -49,6 +49,7 @@ class TestInit(unittest.TestCase):
         self.assertIsInstance(self.config.dirs['cmip6'], str)
         self.assertIsInstance(self.config.dirs['inter_out'], str)
         self.assertIsInstance(self.config.dirs['proj_root'], str)
+        self.assertIsInstance(self.config.dirs['ceds'], str)
         self.assertIsInstance(self.config.dirs['input'], str)
         self.assertIsInstance(self.config.dirs['output'], str)
         self.assertIsInstance(self.config.dirs['logs'], str)
