@@ -1,25 +1,49 @@
-# A test configureation YAML file 
+# A test configuration YAML file
+#
+# !!! DO NOT CHANGE ANY MEMBERS OR VALUES IN THIS FILE WITHOUT UPDATING TESTS !!!
+#
+# Changing members/values in this file will cause tests in test_init.py to fail.
 #
 # Matt Nicholson
 # 7 Feb 2020
 #
 # Members
 # --------
-# dirs
+# dirs:
 #   cmip6_inter : Path to the CMIP6 emissions 'intermediate-output' directory.
 #   root_inter  : Path of the root intermediate output directory.
-# freeze
-#   year : Freeze emission factors for years >= freeze_year.
-#   isos : ISOs to freeze.
-#   species     : Emission species to freeze
+#   rot_proj    : Root project directory
+#   input       : Project input directory
+#   output      : Project output directory
+#   logs        : Project log directory
+#   init        : Project initialization/configuration directory
+# freeze:
+#   year    : Freeze emission factors for years >= freeze_year.
+#   isos    : ISOs to freeze.
+#   species : Emission species to freeze
+# ceds:
+#   year_first : First year of CEDS output. Default is 1750
+#   year_last  : Last year of CEDS output. Default is 2015
 ---
 
 dirs:
+  win:
+    cmip6_inter: C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output
+    root_inter: C:\Users\nich980\data\e-freeze\python-output\intermediate-output
+    root_proj : C:\Users\nich980\code\frozen-emissions
+  linux: 
+    cmip6_inter: /mnt/c/Users/nich980/data/e-freeze/CMIP6-emissions/intermediate-output
+    root_inter: /mnt/c/Users/nich980/data/e-freeze/python-output/intermediate-output
+    root_proj: /mnt/c/Users/nich980/code/frozen-emissions
+  input: ../input
+  output: ../output
+  init: ../init
   logs: ./logs
-  cmip6_inter: C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output
-  root_inter: C:\Users\nich980\data\e-freeze\python-output\intermediate-output
 freeze:
   year: 1970
   isos: all
   species: [BC, CH4, CO, CO2, NH3, NMVOC, NOx, OC, SO2]
+ceds:
+  year_first: 1750
+  year_last: 2015
   
