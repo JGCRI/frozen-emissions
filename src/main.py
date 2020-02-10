@@ -11,8 +11,7 @@ import os
 
 import frozen_logger
 import ceds_io
-import config_obj
-from config_obj import CONFIG
+import config
 
 def init_parser():
     """
@@ -276,8 +275,8 @@ def main():
     args = parser.parse_args()
     
     # Parse the input YAML file
-    global CONFIG 
-    CONFIG = config_obj.ConfigObj(args.input_file)
+    global config.CONFIG 
+    config.CONFIG = config.ConfigObj(args.input_file)
     
     # Initialize a new main log
     logger = frozen_logger.init_logger(CONFIG.dirs['logs'], "main", level='debug')

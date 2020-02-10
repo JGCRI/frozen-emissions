@@ -9,17 +9,14 @@ import sys
 # Insert src directory to Python path for importing
 sys.path.insert(1, '../src')
 
-import config_obj
-from config_obj import CONFIG
+import config
 
 f_init = '../init/test-config.yml'
 
-global CONFIG 
-CONFIG = config_obj.ConfigObj(f_init)
+config.CONFIG = config.ConfigObj(f_init)
 
 def update_config():
-    global CONFIG
-    CONFIG.freeze_isos = ['USA']
-    CONFIG.freeze_year = 2020
-    CONFIG.ceds_meta['year_first'] = -1
-    CONFIG.ceds_meta['year_last'] = 42069
+    config.CONFIG.freeze_isos = ['USA']
+    config.CONFIG.freeze_year = 2020
+    config.CONFIG.ceds_meta['year_first'] = -1
+    config.CONFIG.ceds_meta['year_last'] = 42069
