@@ -1,0 +1,50 @@
+# Configuration file for the package's logging
+#
+# Matt Nicholson
+# 11 Feb 2020
+#
+# Members
+# --------
+# - formatters
+#       The corresponding value will be a dict in which each key is a formatter ID
+#       and each value is a dict describing how to configure the corresponding
+#       Formatter instance.
+# - filters
+#       The corresponding value will be a dict in which each key is a filter ID
+#       and each value is a dict describing how to configure the corresponding
+#       Filter instance
+# - handlers
+#       The corresponding value will be a dict in which each key is a handler ID
+#       and each value is a dict describing how to configure the corresponding
+#       Handler instance.
+#       
+#       The configuring dict is searched for the following keys:
+#           * class: mandatory; This is the fully qualified name of the handler class
+#           * level: optional; The level of the handler
+#           * formatter: optional; The ID of the formatter for this handler
+#           * filters: optional; A lift of IDs of the filters for this handler
+
+version: 1      # Schema version; MUST stay at 1
+formatters:
+  brief: "%(message)s"
+  default:
+    format: "%(asctime)s %(levelname)6s: %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: default
+    stream: ext://sys.stdout
+  file:
+    class : logging.handlers.RotatingFileHandler
+    formatter: default
+    filename: main.log
+loggers:
+  main:
+    level: DEBUG
+    handlers: [file]
+    propagate: no
+root:
+  level: DEBUG
+  handlers: [file]
