@@ -8,8 +8,9 @@ Matt Nicholson
 import argparse
 import logging
 import os
+import pandas as pd
 
-import frozen_logger
+import log_config
 import ceds_io
 import config
 import efsubset
@@ -125,28 +126,28 @@ def freeze_emissions():
                     ef_median = stats.get_ef_median(efsubset_obj)
                     main_log.debug("EF data array median: {}".format(ef_median))
                     
-                    main_log.info("Identifying outliers")
+                    main_log.debug("Identifying outliers")
                     outliers = stats.get_outliers_zscore(efsubset_obj)
                     
                     if (len(outliers) != 0):
-                        main_log.info("Setting outlier values to median EF value")
+                        main_log.debug("Setting outlier values to median EF value")
                         
                         # Set the EF value of each idenfitied outlier to the median of the EF values
                         for olr in outliers:
                             efsubset_obj.ef_data[olr[2]] = ef_median
                     else:
-                        main_log.info("No outliers were identified")
+                        main_log.debug("No outliers were identified")
                     
                     # Overwrite the current EFs for years >= 1970
-                    main_log.info("Overwriting original EF DataFrame with new EF values")
+                    main_log.debug("Overwriting original EF DataFrame with new EF values")
                     ef_df = ceds_io.reconstruct_ef_df(ef_df, efsubset_obj, year_strs)
                 else:
                     main_log.warning("Subsetted EF dataframe is empty")
                 
-            # End fuel for-loop
-        # End sector for-loop
+            # --- End fuel loop ---
+        # --- End sector loop ---
         
-        f_out = join(out_path, f_name)
+        f_out = os.path.join(out_path, f_name)
         
         main_log.info("Writing resulting {} DataFrame to file".format(species))
         
@@ -181,28 +182,27 @@ def calc_emissions():
     dir_inter_out = config.CONFIG.dirs['inter_out']
     dir_cmip6 = config.CONFIG.dirs['cmip6']
     
-    logger.info('Searing for available species in {}'.format(dir_inter_out))
+    logger.debug('Searing for available species in {}'.format(dir_inter_out))
     
-    if (not em_species):
-        em_species = ceds_io.get_avail_species(dir_inter_out)
+    em_species = ceds_io.get_avail_species(dir_inter_out)
     
-    logger.info('Emission species found: {}\n'.format(len(em_species)))
+    logger.debug('Emission species found: {}\n'.format(len(em_species)))
     
     # Create list of strings representing year column headers
     data_col_headers = ['X{}'.format(i) for i in range(config.CONFIG.ceds_meta['year_first'],
                                                        config.CONFIG.ceds_meta['year_first'])]
     
     for species in em_species:
-        info_str = 'Calculating frozen total emissions for {}\n{}'.format(species, "="*45)
-        logger.info(info_str)
+        info_str = '\nCalculating frozen total emissions for {}...'.format(species)
+        logger.debug(info_str)
         print(info_str)
         
         # Get emission factor file for species
-        logger.info('Fetching emission factor file from {}'.format(dir_inter_out))
+        logger.debug('Fetching emission factor file from {}'.format(dir_inter_out))
         frozen_ef_file = ceds_io.get_file_for_species(dir_inter_out, species, "ef")
         
         # Get activity file for species
-        logger.info('Fetching activity file from {}'.format(dir_cmip6))
+        logger.debug('Fetching activity file from {}'.format(dir_cmip6))
         try:
             activity_file = ceds_io.get_file_for_species(dir_cmip6, species, "activity")
         except:
@@ -211,14 +211,14 @@ def calc_emissions():
             print(err_msg)
             continue
         
-        ef_path = join(dir_inter_out, frozen_ef_file)
-        act_path = join(dir_cmip6, activity_file)
+        ef_path = os.path.join(dir_inter_out, frozen_ef_file)
+        act_path = os.path.join(dir_cmip6, activity_file)
         
         # Read emission factor & activity files into DataFrames
-        logger.info('Reading emission factor file from {}'.format(ef_path))
+        logger.debug('Reading emission factor file from {}'.format(ef_path))
         ef_df = pd.read_csv(ef_path, sep=',', header=0)
         
-        logger.info('Reading activity file from {}'.format(act_path))
+        logger.debug('Reading activity file from {}'.format(act_path))
         act_df = pd.read_csv(act_path, sep=',', header=0)
         
         # Get the 'iso', 'sector', 'fuel', & 'units' columns
@@ -234,7 +234,7 @@ def calc_emissions():
         # data so we can compute emissions. We *could* skip this step and just
         # do the slicing whithin the dataframe multiplication step (~line 245),
         # but that is much messier and confusing to read
-        logger.info('Subsetting emission factor & activity DataFrames')
+        logger.debug('Subsetting emission factor & activity DataFrames')
         ef_subs = ef_df[data_col_headers]
         act_subs = act_df[data_col_headers]
         
@@ -253,16 +253,16 @@ def calc_emissions():
         
         # Insert the meta ('iso', 'sector', 'fuel', 'units') columns at the 
         # beginning of the DataFrame
-        logger.info('Concatinating meta_cols and emissions_df DataFrames along axis 1')
+        logger.debug('Concatinating meta_cols and emissions_df DataFrames along axis 1')
         emissions_df = pd.concat([meta_cols, emissions_df], axis=1)
        
         f_name = '{}_total_CEDS_emissions.csv'.format(species)
         
-        f_out = join(dir_inter_out, f_name)
+        f_out = os.path.join(dir_inter_out, f_name)
         
         info_str = 'Writing emissions DataFrame to {}'.format(f_out)
-        logger.info(info_str)
-        print('     {}\n'.format(info_str))
+        logger.debug(info_str)
+        print(info_str)
         
         emissions_df.to_csv(f_out, sep=',', header=True, index=False)
         logger.info('Finished calculating total emissions for {}'.format(species))
@@ -281,7 +281,7 @@ def main():
     config.CONFIG = config.ConfigObj(args.input_file)
     
     # Initialize a new main log
-    logger = frozen_logger.init_logger(config.CONFIG.dirs['logs'], "main", level='debug')
+    logger = log_config.init_logger(config.CONFIG.dirs['logs'], "main", level='debug')
     logger.info('Input file {}'.format(args.input_file))
     
     # Execute the specified function(s)
