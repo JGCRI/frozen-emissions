@@ -427,7 +427,7 @@ def filter_data_sector(df):
     1A5_Other-unspecified
     """
     logger = logging.getLogger('main')
-    logger.info('Filtering combustion sectors')
+    logger.debug('Filtering combustion sectors')
     
     f_in = join(config.CONFIG.dirs['input'], 'combustion_sectors.csv')
     if (not isfile(f_in)):
@@ -435,7 +435,7 @@ def filter_data_sector(df):
                 "Calling create_comb_sector_df.py to create the file.\n"
                 "Please ensure the variable 'ceds_dir' in create_comb_sector_df.py "
                 "contains the correct path to your local CEDS directory") )
-        logger.info('Creating new combustion_sectors.csv file')
+        logger.debug('Creating new combustion_sectors.csv file')
         _, comb_df = create_comb_sector_df.create_csv()
     else:
         combust_sector_lut = pd.read_csv(f_in, sep=',', header=0)
@@ -451,7 +451,7 @@ def filter_data_sector(df):
 
 def reconstruct_ef_df(ef_df_actual, efsubset_obj, year_strs):
     logger = logging.getLogger('main')
-    logger.info("Constructing final EF DataFrame")
+    logger.debug("Constructing final EF DataFrame")
     
     sector = efsubset_obj.sector
     fuel   = efsubset_obj.fuel
@@ -473,7 +473,7 @@ def reconstruct_ef_df(ef_df_actual, efsubset_obj, year_strs):
     
 def reconstruct_ef_df_final(ef_df_actual, efsubset_obj, year_strs):
     logger = logging.getLogger('main')
-    logger.info("Overwriting EF DataFrame values for years >= 1970\n")
+    logger.debug("Overwriting EF DataFrame values for years >= 1970\n")
     
     # X1970
     year_str_0 = year_strs[0]
