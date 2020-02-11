@@ -125,20 +125,20 @@ def freeze_emissions():
                     ef_median = stats.get_ef_median(efsubset_obj)
                     main_log.debug("EF data array median: {}".format(ef_median))
                     
-                    main_log.info("Identifying outliers")
+                    main_log.debug("Identifying outliers")
                     outliers = stats.get_outliers_zscore(efsubset_obj)
                     
                     if (len(outliers) != 0):
-                        main_log.info("Setting outlier values to median EF value")
+                        main_log.debug("Setting outlier values to median EF value")
                         
                         # Set the EF value of each idenfitied outlier to the median of the EF values
                         for olr in outliers:
                             efsubset_obj.ef_data[olr[2]] = ef_median
                     else:
-                        main_log.info("No outliers were identified")
+                        main_log.debug("No outliers were identified")
                     
                     # Overwrite the current EFs for years >= 1970
-                    main_log.info("Overwriting original EF DataFrame with new EF values")
+                    main_log.debug("Overwriting original EF DataFrame with new EF values")
                     ef_df = ceds_io.reconstruct_ef_df(ef_df, efsubset_obj, year_strs)
                 else:
                     main_log.warning("Subsetted EF dataframe is empty")
