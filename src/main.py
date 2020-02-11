@@ -143,10 +143,10 @@ def freeze_emissions():
                 else:
                     main_log.warning("Subsetted EF dataframe is empty")
                 
-            # End fuel for-loop
-        # End sector for-loop
+            # --- End fuel loop ---
+        # --- End sector loop ---
         
-        f_out = join(out_path, f_name)
+        f_out = os.path.join(out_path, f_name)
         
         main_log.info("Writing resulting {} DataFrame to file".format(species))
         
