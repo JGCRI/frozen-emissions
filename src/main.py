@@ -8,6 +8,7 @@ Matt Nicholson
 import argparse
 import logging
 import os
+import pandas as pd
 
 import log_config
 import ceds_io
@@ -192,7 +193,7 @@ def calc_emissions():
                                                        config.CONFIG.ceds_meta['year_first'])]
     
     for species in em_species:
-        info_str = 'Calculating frozen total emissions for {}\n{}'.format(species, "="*45)
+        info_str = '\nCalculating frozen total emissions for {}...'.format(species)
         logger.debug(info_str)
         print(info_str)
         
@@ -261,7 +262,7 @@ def calc_emissions():
         
         info_str = 'Writing emissions DataFrame to {}'.format(f_out)
         logger.debug(info_str)
-        print('     {}\n'.format(info_str))
+        print(info_str)
         
         emissions_df.to_csv(f_out, sep=',', header=True, index=False)
         logger.info('Finished calculating total emissions for {}'.format(species))
