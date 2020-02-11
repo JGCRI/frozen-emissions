@@ -25,7 +25,6 @@
 #   year_first : First year of CEDS output. Default is 1750
 #   year_last  : Last year of CEDS output. Default is 2015
 ---
-
 dirs:
   win:
     cmip6_inter: C:\Users\nich980\data\e-freeze\test\CMIP6-emissions\intermediate-output
@@ -48,4 +47,5 @@ freeze:
 ceds:
   year_first: 1750
   year_last: 2014
+
   

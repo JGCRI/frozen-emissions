@@ -9,7 +9,7 @@ import argparse
 import logging
 import os
 
-import frozen_logger
+import log_config
 import ceds_io
 import config
 import efsubset
