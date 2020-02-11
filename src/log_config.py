@@ -1,6 +1,10 @@
 """
 Logging functions for frozen-emission scripts
 
+Usage
+------
+python main.py /path/to/config.yml
+
 Matt Nicholson
 7 Feb 2020
 """

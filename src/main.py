@@ -280,7 +280,7 @@ def main():
     config.CONFIG = config.ConfigObj(args.input_file)
     
     # Initialize a new main log
-    logger = frozen_logger.init_logger(config.CONFIG.dirs['logs'], "main", level='debug')
+    logger = log_config.init_logger(config.CONFIG.dirs['logs'], "main", level='debug')
     logger.info('Input file {}'.format(args.input_file))
     
     # Execute the specified function(s)
