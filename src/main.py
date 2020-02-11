@@ -181,12 +181,11 @@ def calc_emissions():
     dir_inter_out = config.CONFIG.dirs['inter_out']
     dir_cmip6 = config.CONFIG.dirs['cmip6']
     
-    logger.info('Searing for available species in {}'.format(dir_inter_out))
+    logger.debug('Searing for available species in {}'.format(dir_inter_out))
     
-    if (not em_species):
-        em_species = ceds_io.get_avail_species(dir_inter_out)
+    em_species = ceds_io.get_avail_species(dir_inter_out)
     
-    logger.info('Emission species found: {}\n'.format(len(em_species)))
+    logger.debug('Emission species found: {}\n'.format(len(em_species)))
     
     # Create list of strings representing year column headers
     data_col_headers = ['X{}'.format(i) for i in range(config.CONFIG.ceds_meta['year_first'],
@@ -194,15 +193,15 @@ def calc_emissions():
     
     for species in em_species:
         info_str = 'Calculating frozen total emissions for {}\n{}'.format(species, "="*45)
-        logger.info(info_str)
+        logger.debug(info_str)
         print(info_str)
         
         # Get emission factor file for species
-        logger.info('Fetching emission factor file from {}'.format(dir_inter_out))
+        logger.debug('Fetching emission factor file from {}'.format(dir_inter_out))
         frozen_ef_file = ceds_io.get_file_for_species(dir_inter_out, species, "ef")
         
         # Get activity file for species
-        logger.info('Fetching activity file from {}'.format(dir_cmip6))
+        logger.debug('Fetching activity file from {}'.format(dir_cmip6))
         try:
             activity_file = ceds_io.get_file_for_species(dir_cmip6, species, "activity")
         except:
@@ -211,14 +210,14 @@ def calc_emissions():
             print(err_msg)
             continue
         
-        ef_path = join(dir_inter_out, frozen_ef_file)
-        act_path = join(dir_cmip6, activity_file)
+        ef_path = os.path.join(dir_inter_out, frozen_ef_file)
+        act_path = os.path.join(dir_cmip6, activity_file)
         
         # Read emission factor & activity files into DataFrames
-        logger.info('Reading emission factor file from {}'.format(ef_path))
+        logger.debug('Reading emission factor file from {}'.format(ef_path))
         ef_df = pd.read_csv(ef_path, sep=',', header=0)
         
-        logger.info('Reading activity file from {}'.format(act_path))
+        logger.debug('Reading activity file from {}'.format(act_path))
         act_df = pd.read_csv(act_path, sep=',', header=0)
         
         # Get the 'iso', 'sector', 'fuel', & 'units' columns
@@ -234,7 +233,7 @@ def calc_emissions():
         # data so we can compute emissions. We *could* skip this step and just
         # do the slicing whithin the dataframe multiplication step (~line 245),
         # but that is much messier and confusing to read
-        logger.info('Subsetting emission factor & activity DataFrames')
+        logger.debug('Subsetting emission factor & activity DataFrames')
         ef_subs = ef_df[data_col_headers]
         act_subs = act_df[data_col_headers]
         
@@ -253,15 +252,15 @@ def calc_emissions():
         
         # Insert the meta ('iso', 'sector', 'fuel', 'units') columns at the 
         # beginning of the DataFrame
-        logger.info('Concatinating meta_cols and emissions_df DataFrames along axis 1')
+        logger.debug('Concatinating meta_cols and emissions_df DataFrames along axis 1')
         emissions_df = pd.concat([meta_cols, emissions_df], axis=1)
        
         f_name = '{}_total_CEDS_emissions.csv'.format(species)
         
-        f_out = join(dir_inter_out, f_name)
+        f_out = os.path.join(dir_inter_out, f_name)
         
         info_str = 'Writing emissions DataFrame to {}'.format(f_out)
-        logger.info(info_str)
+        logger.debug(info_str)
         print('     {}\n'.format(info_str))
         
         emissions_df.to_csv(f_out, sep=',', header=True, index=False)
