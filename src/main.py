@@ -101,7 +101,7 @@ def freeze_emissions():
         # in the global CONFIG object
         if (config.CONFIG.freeze_isos != 'all'):
             ef_df = ceds_io.filter_isos(ef_df)
-        
+
         max_yr = ef_df.columns.values.tolist()[-1]
         
         # Get all non-combustion sectors

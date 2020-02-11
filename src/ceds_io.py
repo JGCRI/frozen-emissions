@@ -13,6 +13,7 @@ from os import listdir, getcwd
 import create_comb_sector_df
 import config
 
+logger = logging.getLogger('main')
 
 def read_ef_file(abs_path):
     """
@@ -100,8 +101,6 @@ def get_file_for_species(dir_path, species, f_type):
             "activity": "H.{}_total_activity_extended.csv"
             }
             
-    logger = logging.getLogger('main')
-    
     f_name = bases[f_type].format(species)
     f_abs = join(dir_path, f_name)
     
@@ -191,14 +190,18 @@ def filter_isos(df):
     -------
     df_filtered : Pandas DataFrame
     """
-    logger = logging.getLogger('main')
     # Filter ISOs, if applicable
     if (config.CONFIG.freeze_isos != 'all'):
         if (isinstance(config.CONFIG.freeze_isos, list)):
-            logger.info('Filtering combustion sector ISOs')
-            df_filtered = df_filtered.loc[df_filtered['iso'].isin(config.CONFIG.freeze_isos)]
+            logger.debug('Filtering combustion sector for ISOs {}'.format(config.CONFIG.freeze_isos))
+            df_filtered = df.loc[df['iso'].isin(config.CONFIG.freeze_isos)]
+            logger.debug('Filtered combustion sector ISO DataFrame shape {}'.format(df_filtered.shape))
         else:
             raise ValueError('Config "freeze_isos" member must be "all" or list of str')
+        ret_val = df_filtered
+    else:
+        ret_val = df
+    return ret_val
 
 
 def get_sectors(df, comb_filter=True):
@@ -217,7 +220,6 @@ def get_sectors(df, comb_filter=True):
     sectors = numpy array of str
         Array containing the sectors present in the emissions DataFrame
     """
-    logger = logging.getLogger('main')
     logger.info("In ceds_io::get_sectors")
     
     if (comb_filter):
@@ -322,7 +324,6 @@ def subset_yr(df, yr):
         DataFrame containing data for the specified year
     """
     yr_str = 'X{}'.format(yr)
-    
     col_names = ['iso', 'sector', 'fuel', 'units']
     
     iso = df['iso']
@@ -426,7 +427,6 @@ def filter_data_sector(df):
     1A4c_Agriculture-forestry-fishing
     1A5_Other-unspecified
     """
-    logger = logging.getLogger('main')
     logger.debug('Filtering combustion sectors')
     
     f_in = join(config.CONFIG.dirs['input'], 'combustion_sectors.csv')
@@ -450,7 +450,6 @@ def filter_data_sector(df):
 
 
 def reconstruct_ef_df(ef_df_actual, efsubset_obj, year_strs):
-    logger = logging.getLogger('main')
     logger.debug("Constructing final EF DataFrame")
     
     sector = efsubset_obj.sector
@@ -472,7 +471,6 @@ def reconstruct_ef_df(ef_df_actual, efsubset_obj, year_strs):
         
     
 def reconstruct_ef_df_final(ef_df_actual, efsubset_obj, year_strs):
-    logger = logging.getLogger('main')
     logger.debug("Overwriting EF DataFrame values for years >= 1970\n")
     
     # X1970

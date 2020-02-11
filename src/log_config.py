@@ -66,8 +66,8 @@ def init_logger(log_dir, log_name, level='debug'):
         os.mkdir(log_dir)
     
     if (not log_name.endswith('.log')):
-        log_name = '{}.log'.format(log_name)
-    log_path = os.path.join(log_dir, log_name)
+        f_name = '{}.log'.format(log_name)
+    log_path = os.path.join(log_dir, f_name)
     
     log_format = logging.Formatter("%(asctime)s %(levelname)6s: %(message)s", "%Y-%m-%d %H:%M:%S")
     
