@@ -88,7 +88,7 @@ def get_outliers_zscore(ef_obj, sector, fuel, thresh=3):
         ISOs and their respective EFs & z-scores that have been identified as outliers
     """
     logger = logging.getLogger('main')
-    logger.info("Calculating Z-scores...")
+    logger.debug("Calculating Z-scores...")
     iso_list = ef_obj.get_isos(unique=False)
     ef_df = ef_obj.get_factors_combustion()
     ef_df = ef_df.loc[(ef_df['sector'] == sector) & (ef_df['fuel'] == fuel)]
