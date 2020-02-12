@@ -109,4 +109,4 @@ class ISO:
         return combustion_df
         
     def __repr__(self):
-        return "<ISO object - {} {}".format(self.name, self.species)
+        return "<ISO object - {} {}>".format(self.name, self.species)

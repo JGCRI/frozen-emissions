@@ -122,6 +122,6 @@ class EmissionFactorFile:
         return iso_dict
     
     def __repr__(self):
-        return "<EmissionFactorFile object - {} {}".format(self.species, self.shape)
+        return "<EmissionFactorFile object - {} {}>".format(self.species, self.shape)
     
     
