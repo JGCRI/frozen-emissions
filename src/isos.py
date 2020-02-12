@@ -43,7 +43,7 @@ class ISO:
         -------
         List of str
         """
-        return self.emissions_factors['sector'].tolist()
+        return self.emissions_factors['sector'].unique().tolist()
     
     def get_fuels(self):
         """
@@ -76,6 +76,9 @@ class ISO:
     
     def get_species(self):
         return self.species
+    
+    def get_efs(self):
+        return self.emissions_factors
     
     def _get_combustion_sector_efs(self, iso_efs):
         """

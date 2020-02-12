@@ -52,16 +52,27 @@ class EmissionFactorFile:
     def get_shape(self):
         return self.shape
     
-    def get_min_year(self):
-        return self.isos.values()[0].columns.values.tolist()[0]
-    
-    def get_max_year(self):
-        return self.isos.values()[0].columns.values.tolist()[0]
-    
     def get_sectors(self):
-        return self.isos.values()[0].get_sectors()
+        """
+        Get the sectors from an arbitraty ISO object using the object's own
+        get_sectors() method
+        
+        Return
+        -------
+        List of str
+        """
+        vals = list(self.isos.values())
+        return vals[0].get_sectors()
     
     def get_fuels(self):
+        """
+        Get the fuels from an arbitraty ISO object using the object's own
+        get_fuels() method
+        
+        Return
+        -------
+        List of str
+        """
         return self.isos.values()[0].get_fuels()
     
     def _filter_isos(self, iso_dict):
@@ -105,7 +116,7 @@ class EmissionFactorFile:
         self.shape = ef_df.shape
         for iso_name in iso_dict.keys():
             iso_dict[iso_name] = isos.ISO(iso_name, self.species, ef_df.loc[ef_df['iso'] == iso_name])
-        if (config.CONFIG.freeze_isos != 'all' or config.CONFIG.freeze_isos != ['all']):
+        if (config.CONFIG.freeze_isos != 'all' and config.CONFIG.freeze_isos != ['all']):
             iso_dict = self._filter_isos(iso_dict)
         return iso_dict
     
