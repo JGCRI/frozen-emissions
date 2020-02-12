@@ -42,6 +42,8 @@ class EmissionFactorFile:
         self.all_factors = self._parse_file(f_path)
         self.combustion_factors = self._get_comb_factors()
         self.freeze_year = 'X{}'.format(config.CONFIG.freeze_year)
+        if (config.CONFIG.freeze_isos != 'all' and config.CONFIG.freeze_isos != ['all']):
+            self._filter_isos()
     
     def get_species(self):
         return self.species
@@ -122,25 +124,15 @@ class EmissionFactorFile:
     def reconstruct_emissions(self):
         self.all_factors.update(self.combustion_factors)
     
-    def _filter_isos(self, ef_df):
+    def _filter_isos(self):
         """
         Remove any ISOs from the combustion EF DataFrame that are not meant to be frozen
-        
-        Parameters
-        -----------
-        ef_df : Pandas DataFrame
-            DataFrame or combuistion-related emissions factors to filter 
-        
-        Return
-        -------
-        Pandas DataFrame
         """
         iso_list = config.CONFIG.freeze_isos
         logger.debug("Filtering ISOs for {}".format(iso_list))
         if (not isinstance(iso_list, list)):
             iso_list = [iso_list]
-        ret_val = self.combustion_factors.loc[elf.combustion_factors['iso'].isin(iso_list)]
-        return ret_val
+        self.combustion_factors = self.combustion_factors.loc[self.combustion_factors['iso'].isin(iso_list)].copy()
         
     def _parse_file(self, f_path):
         """
@@ -186,8 +178,6 @@ class EmissionFactorFile:
                               '1A4a_Commercial-institutional', '1A4b_Residential',
                               '1A4c_Agriculture-forestry-fishing', '1A5_Other-unspecified']
         combustion_df = self.all_factors.loc[self.all_factors['sector'].isin(combustion_sectors)].copy()
-        if (config.CONFIG.freeze_isos != 'all' and config.CONFIG.freeze_isos != ['all']):
-            combustion_df = self._filter_isos(combustion_df)
         return combustion_df
     
     def __repr__(self):
