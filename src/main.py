@@ -190,7 +190,7 @@ def calc_emissions():
     
     # Create list of strings representing year column headers
     data_col_headers = ['X{}'.format(i) for i in range(config.CONFIG.ceds_meta['year_first'],
-                                                       config.CONFIG.ceds_meta['year_first'])]
+                                                       config.CONFIG.ceds_meta['year_last'])]
     
     for species in em_species:
         info_str = '\nCalculating frozen total emissions for {}...'.format(species)

@@ -193,8 +193,10 @@ def filter_isos(df):
     # Filter ISOs, if applicable
     if (config.CONFIG.freeze_isos != 'all'):
         if (isinstance(config.CONFIG.freeze_isos, list)):
-            logger.debug('Filtering combustion sector for ISOs {}'.format(config.CONFIG.freeze_isos))
-            df_filtered = df.loc[df['iso'].isin(config.CONFIG.freeze_isos)]
+            # Insure the ISOs are all lowercase or none will match
+            frz_isos = [x.lower() for x in config.CONFIG.freeze_isos]
+            logger.debug('Filtering combustion sector for ISOs {}'.format(frz_isos))
+            df_filtered = df.loc[df['iso'].isin(frz_isos)]
             logger.debug('Filtered combustion sector ISO DataFrame shape {}'.format(df_filtered.shape))
         else:
             raise ValueError('Config "freeze_isos" member must be "all" or list of str')

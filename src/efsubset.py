@@ -9,6 +9,8 @@ import numpy as np
 
 import config
 
+logger = logging.getLogger('main')
+
 class EFSubset:
     """
     A simple class to hold CEDS emission factor data for a given emission
@@ -61,7 +63,7 @@ class EFSubset:
         EFSubset obj
         """
         logger = logging.getLogger('main')
-        logger.info("Initializing EFSubset object: {} {} {}".format(sector, fuel, year))
+        logger.debug("Initializing EFSubset object: {} {} {}".format(sector, fuel, year))
         
         self.sector     = sector
         self.fuel       = fuel
@@ -69,8 +71,6 @@ class EFSubset:
         self.year       = year
         self.year_str   = 'X{}'.format(year)
         self.isos, self.ef_data = self.subset_df(ef_df)
-        
-        
         
     def subset_df(self, ef_df):
         """
@@ -94,13 +94,40 @@ class EFSubset:
         ef_df = ef_df[ef_df['sector'] == self.sector]
         ef_df = ef_df[ef_df['fuel'] == self.fuel]
         
-        isos = ef_df['iso'].tolist()
+        # If applicable, filter out any ISOs that are not designated to be frozen
+        # in the global CONFIG object
+        if (config.CONFIG.freeze_isos != 'all'):
+            filtered_df = self._filter_isos(ef_df)
+            isos = filtered_df['iso'].tolist()
+        else:
+            isos = ef_df['iso'].tolist()
         ef_list = ef_df['X{}'.format(self.year)].tolist()
         ef_list = np.asarray(ef_list, dtype=np.float64)
-        
         return (isos, ef_list)
     
-    
+    def _filter_isos(self, df):
+        """
+        Take a subset of the parameter DataFrame using the list of ISOs defined
+        by CONFIG.freeze_isos
+        
+        Parameters
+        -----------
+        df : Pandas DataFrame
+            DataFrame containing emissions factors
+            
+        Return
+        -------
+        df_filtered : Pandas DataFrame
+        """
+        if (isinstance(config.CONFIG.freeze_isos, list)):
+            # Insure the ISOs are all lowercase or none will match
+            frz_isos = [x.lower() for x in config.CONFIG.freeze_isos]
+            logger.debug('Filtering combustion sector for ISOs {}'.format(frz_isos))
+            df_filtered = df.loc[df['iso'].isin(frz_isos)]
+            logger.debug('Filtered combustion sector ISO DataFrame shape {}'.format(df_filtered.shape))
+        else:
+            raise ValueError('Config "freeze_isos" member must be "all" or list of str')
+        return df_filtered
     
     def __repr__(self):
         return '<EFSubset object - {} {} {} {}>'.format(self.species, self.sector, self.fuel, self.year)

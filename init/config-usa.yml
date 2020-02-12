@@ -40,7 +40,7 @@ dirs:
   logs: logs
 freeze:
   year: 1970
-  isos: [USA]
+  isos: [usa]
   species: [BC, CH4, CO, CO2, NH3, NMVOC, NOx, OC, SO2]
 ceds:
   year_first: 1750
