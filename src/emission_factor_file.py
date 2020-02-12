@@ -73,7 +73,8 @@ class EmissionFactorFile:
         -------
         List of str
         """
-        return self.isos.values()[0].get_fuels()
+        vals = list(self.isos.values())
+        return vals[0].get_fuels()
     
     def _filter_isos(self, iso_dict):
         """
