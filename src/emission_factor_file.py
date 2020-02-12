@@ -52,6 +52,38 @@ class EmissionFactorFile:
     def get_shape(self):
         return self.shape
     
+    def get_min_year(self):
+        return self.isos.values()[0].columns.values.tolist()[0]
+    
+    def get_max_year(self):
+        return self.isos.values()[0].columns.values.tolist()[0]
+    
+    def get_sectors(self):
+        return self.isos.values()[0].get_sectors()
+    
+    def get_fuels(self):
+        return self.isos.values()[0].get_fuels()
+    
+    def _filter_isos(self, iso_dict):
+        """
+        Remove any ISOs from the 'isos' dictionary that do not appear in the given
+        'iso_list'
+        
+        Parameters
+        -----------
+        iso_list : list of str
+            List of ISOs to keep
+        
+        Return
+        -------
+        Dict of {str : ISO obj}
+        """
+        iso_list = config.CONFIG.freeze_isos
+        if (not isinstance(iso_list, list)):
+            iso_list = [iso_list]
+        ret_dict = {key: val for key, val in iso_dict.items() if key in iso_list}
+        return ret_dict
+    
     def _parse_isos(self, ef_path):
         """
         Parse a CMIP6 EF file and create a new ISO object for each
@@ -72,7 +104,9 @@ class EmissionFactorFile:
         iso_dict = dict.fromkeys(ef_df['iso'].unique().tolist())
         self.shape = ef_df.shape
         for iso_name in iso_dict.keys():
-            iso_dict[iso_name] = isos.ISO(iso_name, ef_df.loc[ef_df['iso'] == iso_name])
+            iso_dict[iso_name] = isos.ISO(iso_name, self.species, ef_df.loc[ef_df['iso'] == iso_name])
+        if (config.CONFIG.freeze_isos != 'all' or config.CONFIG.freeze_isos != ['all']):
+            iso_dict = self._filter_isos(iso_dict)
         return iso_dict
     
     def __repr__(self):

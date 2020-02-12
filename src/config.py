@@ -96,7 +96,10 @@ class ConfigObj:
         self.dirs['logs']      = info['dirs']['logs']
         self.dirs['init']      = info['dirs']['init']
         self.freeze_year       = int(info['freeze']['year'])
-        self.freeze_isos       = info['freeze']['isos']
+        try:     # Is freeze_isos a string?
+            self.freeze_isos = info['freeze']['isos'].lower()
+        except:  # We have determined that freeze_isos is not a string
+            self.freeze_isos = [x.lower() for x in info['freeze']['isos']]
         self.freeze_species    = info['freeze']['species']
         self.init_file         = basename(yaml_path)
         self.ceds_meta['year_first'] = info['ceds']['year_first']

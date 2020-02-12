@@ -15,6 +15,7 @@ import ceds_io
 import config
 import efsubset
 import stats
+import emission_factor_file
 
 def init_parser():
     """
@@ -95,17 +96,16 @@ def freeze_emissions():
         f_path = os.path.join(data_path, f_name)
         
         main_log.info("Loading EF DataFrame from {}".format(f_path))
-        ef_df = ceds_io.read_ef_file(f_path)
+        # ef_df = ceds_io.read_ef_file(f_path)
+        ef_obj = emission_factor_file.EmissionFactorFile(species, f_path)
         
-        # If applicable, filter out any ISOs that are not designated to be frozen
-        # in the global CONFIG object
-        if (config.CONFIG.freeze_isos != 'all'):
-            ef_df = ceds_io.filter_isos(ef_df)
+        # ISO filtering now handled by EmissionFactorFile instantiation
 
-        max_yr = ef_df.columns.values.tolist()[-1]
+        max_yr = ef_obj.get_max_year()
         
-        # Get all non-combustion sectors
-        sectors, fuels = ceds_io.get_sectors(ef_df)
+        # Get combustion sectors
+        sectors = ef_obj.get_sectors()
+        fuels = ef_obj.get_fuels()
         
         for sector in sectors:
             
