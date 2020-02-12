@@ -10,7 +10,6 @@ import pandas as pd
 from os.path import isfile, join
 from os import listdir, getcwd
 
-import create_comb_sector_df
 import config
 
 logger = logging.getLogger('main')
@@ -293,73 +292,6 @@ def subset_yr_span(df, yr, yr_rng=5):
         sub_df.insert(idx, col_names[idx], col)
     
     return sub_df
-
-
-def filter_data_sector(df):
-    """
-    Filter the CEDS Emissions DataFrame to remove all emissions for sectors 
-    not related to combustion
-    
-    Parameters
-    ----------
-    df : Pandas DataFrame
-        DataFrame containing CEDS CMIP6 emission data to be filtered
-   
-    Returns
-    -------
-    df_filtered : Pandas DataFrame
-        DataFrame containing data only for the specified sector
-        
-    Combustion sectors (defined by Master_Fuel_Sector_List.xlsx)
-    -------------------
-    1A1a_Electricity-public
-    1A1a_Electricity-autoproducer
-    1A1a_Heat-production
-    1A2a_Ind-Comb-Iron-steel
-    1A2b_Ind-Comb-Non-ferrous-metals
-    1A2c_Ind-Comb-Chemicals
-    1A2d_Ind-Comb-Pulp-paper
-    1A2e_Ind-Comb-Food-tobacco
-    1A2f_Ind-Comb-Non-metalic-minerals
-    1A2g_Ind-Comb-Construction
-    1A2g_Ind-Comb-transpequip
-    1A2g_Ind-Comb-machinery
-    1A2g_Ind-Comb-mining-quarying
-    1A2g_Ind-Comb-wood-products
-    1A2g_Ind-Comb-textile-leather
-    1A2g_Ind-Comb-other
-    1A3ai_International-aviation
-    1A3aii_Domestic-aviation
-    1A3b_Road
-    1A3c_Rail
-    1A3di_International-shipping
-    1A3dii_Domestic-navigation
-    1A3eii_Other-transp
-    1A4a_Commercial-institutional
-    1A4b_Residential
-    1A4c_Agriculture-forestry-fishing
-    1A5_Other-unspecified
-    """
-    logger.debug('Filtering combustion sectors')
-    
-    f_in = join(config.CONFIG.dirs['input'], 'combustion_sectors.csv')
-    if (not isfile(f_in)):
-        print( ("Warning: Combustion sector csv not found in current directory. "
-                "Calling create_comb_sector_df.py to create the file.\n"
-                "Please ensure the variable 'ceds_dir' in create_comb_sector_df.py "
-                "contains the correct path to your local CEDS directory") )
-        logger.debug('Creating new combustion_sectors.csv file')
-        _, comb_df = create_comb_sector_df.create_csv()
-    else:
-        combust_sector_lut = pd.read_csv(f_in, sep=',', header=0)
-    
-    # Construct a list of combustion sectors from the DataFrame
-    combust_sectors = combust_sector_lut['sector'].values.tolist()
-    
-    # Create a new DataFrame containing only combustion sectors from the input dataframe
-    df_filtered = df.loc[df['sector'].isin(combust_sectors)]
-    
-    return df_filtered
     
 
 def arr_to_csv(arr, out_path):
