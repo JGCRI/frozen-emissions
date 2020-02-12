@@ -55,31 +55,30 @@ def write_stats(ef_df, species, year, f_paths):
                 fh.write('\n')
 
 
-
-def get_ef_median(efsubset_obj):
+def get_ef_median(ef_obj):
     """
     Get the median of an array of EF values
     
     Parameters
     -----------
-    efsubset_obj : EFSubset obj
+    ef_obj : EmissionFactorFile obj
     
     Return
     -------
     NumPy float 64
     """
-    med = np.median(efsubset_obj.ef_data)
+    ef_list = ef_obj.get_factors_combustion()[ef_obj.freeze_year].tolist()
+    med = np.median(ef_list)
     return med
 
 
-
-def get_outliers_zscore(efsubset_obj, thresh=3):
+def get_outliers_zscore(ef_obj, sector, fuel, thresh=3):
     """
     Identify outliers using their Z-Scores
     
     Parameters
     ----------
-    efsubset_obj : EFSubset object
+    ef_obj : EmissionFactorFile obj
     thresh : int, optional
         Absolute value of the Z-score threshold used to identify outliers
         
@@ -90,28 +89,26 @@ def get_outliers_zscore(efsubset_obj, thresh=3):
     """
     logger = logging.getLogger('main')
     logger.info("Calculating Z-scores...")
-    
+    iso_list = ef_obj.get_isos(unique=False)
+    ef_df = ef_obj.get_factors_combustion()
+    ef_df = ef_df.loc[(ef_df['sector'] == sector) & (ef_df['fuel'] == fuel)]
+    ef_list = ef_df[ef_obj.freeze_year].tolist()
+    ef_list = np.asarray(ef_list, dtype=np.float64)
     outliers = []
-    
     # If we have an array of all zeros, do nothing
-    if (not np.all(efsubset_obj.ef_data[0] == 0.0)):
-        
+    if (not np.all(ef_list == 0.0)):
         try:
-            score = np.abs(stats.zscore(efsubset_obj.ef_data))
-            
+            score = np.abs(stats.zscore(ef_list))
             bad_z = np.where(score > thresh)[0]
         except RuntimeWarning:
             logger.error("RuntimeWarning caught while calculating z-score. Returning empty outlier array")
         else:
             for z_idx in bad_z:
-                outliers.append((efsubset_obj.isos[z_idx], efsubset_obj.ef_data[z_idx], z_idx))
-                
+                outliers.append((iso_list[z_idx], ef_list[z_idx], z_idx))
             logger.debug("Outliers identified: {}".format(len(outliers)))
     else:
         logger.debug("EF data array is all zeros. Returning empty outlier array")
-        
     return outliers
-
 
 
 def get_outliers_std(efsubset_obj):
@@ -151,7 +148,6 @@ def get_outliers_std(efsubset_obj):
     return outliers
 
 
-
 def get_outliers_iqr(efsubset_obj, outlier_const=1.5):
     """
     IQR method from 
@@ -189,7 +185,6 @@ def get_outliers_iqr(efsubset_obj, outlier_const=1.5):
     logger.debug("Outliers identified: {}".format(len(outliers)))
     
     return outliers
-
 
 
 def get_boxcox(efsubset_obj):
@@ -245,7 +240,6 @@ def get_boxcox(efsubset_obj):
             logger.debug("Box Cox transform successful")
     
     return (xt, lam)
-    
     
 
 def plot_df(efsubset_obj, plt_opts):
@@ -314,8 +308,7 @@ def plot_df(efsubset_obj, plt_opts):
         plt.savefig(f_path, dpi=300)
     
     plt.close()
-    
-    
+       
 
 def main():
     
