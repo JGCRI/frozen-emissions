@@ -1,0 +1,256 @@
+﻿iso,country_name,region
+ussr,Soviet Union,FSU
+dza,Algeria,Africa
+arg,Argentina,Latin America
+aus,Australia,OtherOECD90
+aut,Austria,Western Europe
+aze,Azerbaijan,FSU
+bgd,Bangladesh,Asia
+blr,Belarus,FSU
+bel,Belgium,Western Europe
+bra,Brazil,Latin America
+bgr,Bulgaria,Eastern Europe
+can,Canada,OtherOECD90
+chl,Chile,Latin America
+chn,China,Asia
+hkg,"Hong Kong, China",Asia
+col,Colombia,Latin America
+cze,Czech Republic,Eastern Europe
+dnk,Denmark,Western Europe
+eth,Ethiopia,Africa
+ken,Kenya,Africa
+moz,Mozambique,Africa
+sdn,Sudan,Africa
+som,Somalia,Africa
+ssd,South Sudan,Africa
+tza,Tanzania,Africa
+tza,Tanzania,Africa
+eri,Eritrea,Africa
+mdg,Madagascar,Africa
+reu,Reunion,Africa
+syc,Seychelles,Africa
+ecu,Ecuador,Latin America
+egy,Egypt,Africa
+est,Estonia,FSU
+fin,Finland,Western Europe
+fra,France,Western Europe
+deu,Germany,Western Europe
+grc,Greece,Western Europe
+hun,Hungary,Eastern Europe
+isl,Iceland,Western Europe
+ind,India,Asia
+idn,Indonesia,Asia
+irn,Islamic Republic of Iran,Middle East
+irl,Ireland,Western Europe
+isr,Israel,Middle East
+ita,Italy,Western Europe
+jpn,Japan,OtherOECD90
+kaz,Kazakhstan,FSU
+kwt,Kuwait,Middle East
+lva,Latvia,FSU
+ltu,Lithuania,FSU
+mys,Malaysia,Asia
+mex,Mexico,Latin America
+ner,Niger,Africa
+rwa,Rwanda,Africa
+bdi,Burundi,Africa
+caf,Central African Republic,Africa
+mli,Mali,Africa
+uga,Uganda,Africa
+nld,Netherlands,Western Europe
+nzl,New Zealand,Asia
+global,Global,Global
+nor,Norway,Western Europe
+mda,Moldova,FSU
+bfa,Burkina Faso,Africa
+com,Comoros,Africa
+dji,Djibouti,Africa
+mus,Mauritius,Africa
+nam,Namibia,Africa
+stp,Sao Tome and Principe,Africa
+tgo,Togo,Africa
+afg,Afghanistan,Asia
+bwa,Botswana,Africa
+nga,Nigeria,Africa
+lso,Lesotho,Africa
+mwi,Malawi,Africa
+swz,Swaziland,Africa
+zmb,Zambia,Africa
+zwe,Zimbabwe,Africa
+brn,Brunei Darussalam,Asia
+btn,Bhutan,Asia
+cok,Cook Islands,Islands
+fji,Fiji,Asia
+fsm,Federated States of Micronesia,Asia
+khm,Cambodia,Asia
+kir,Kiribati,Asia
+lao,Laos,Asia
+lka,Sri Lanka,Asia
+mac,Macao,Asia
+mdv,Maldives,Islands
+mhl,Marshall Islands,Islands
+mmr,Myanmar (Burma),Asia
+mng,Mongolia,Asia
+ncl,New Caledonia,Asia
+niu,Niue,Islands
+npl,Nepal,Asia
+plw,Palau,Asia
+png,Papua New Guinea,Asia
+prk,Democratic Peoples Republic of Korea,Asia
+pyf,French Polynesia,Islands
+slb,Soloman Islands,Asia
+tkl,Tokelau,Islands
+tls,Timor-Leste,Asia
+ton,Tongo,Asia
+vut,Vanuatu,Asia
+wlf,Wallis and Futuna Islands,Islands
+wsm,Samoa,Asia
+abw,Aruba,Latin America
+ant,Netherlands Antilles,Latin America
+asm,American Samoa,Islands
+atg,Antigua and Barbuda,Latin America
+bhs,Bahamas,Latin America
+blz,Belize,Latin America
+bmu,Bermuda,Latin America
+brb,Barbados,Latin America
+cri,Costa Rica,Latin America
+cub,Cuba,Latin America
+cuw,Curacao,Latin America
+cym,Cayman Islands,Latin America
+dma,Dominica,Latin America
+dom,Dominican Republic,Latin America
+glp,Guadeloupe,Latin America
+grd,Grenada,Latin America
+gtm,Guatemala,Latin America
+hnd,Honduras,Latin America
+hti,Haiti,Latin America
+jam,Jamaica,Latin America
+kna,Saint Kitts and Nevis,Latin America
+lca,Saint Lucia,Latin America
+msr,Montserrat,Latin America
+mtq,Martinique,Islands
+nic,Nicaragua,Latin America
+pan,Panama,Latin America
+pri,Puerto Rico,OtherOECD90
+slv,El Salvador,Latin America
+spm,Saint Pierre and Miquelon,Islands
+sur,Suriname,Latin America
+sxm,Sint Maarten,Latin America
+tca,Turks and Caicos Islands,Latin America
+vct,Saint Vincent And Grenadines,Latin America
+vgb,British Virgin Islands,Latin America
+vir,United States Virgin Islands,Islands
+arm,Armenia,FSU
+geo,Georgia,FSU
+kgz,Kyrgyzstan,FSU
+mda,Moldova,FSU
+mda,Moldova,FSU
+tjk,Tajikistan,FSU
+alb,Albania,Eastern Europe
+bih,Bosnia and Herzegovina,Eastern Europe
+bih,Bosnia and Herzegovina,Eastern Europe
+cyp,Cyprus,Western Europe
+gib,Gibraltar,Western Europe
+hrv,Croatia,Eastern Europe
+hrv,Croatia,Eastern Europe
+lux,Luxembourg,Western Europe
+mkd,Macedonia,Eastern Europe
+mkd,Macedonia,Eastern Europe
+mlt,Malta,Western Europe
+mne,Montenegro,Western Europe
+mne,Montenegro,Western Europe
+scg,Serbia and Montenegro,Eastern Europe
+srb,Serbia,Eastern Europe
+srb,Serbia,Eastern Europe
+srb (kosovo),Kosovo,Eastern Europe
+srb (kosovo),Kosovo,Eastern Europe
+svn,Slovenia,Eastern Europe
+svn,Slovenia,Eastern Europe
+bhr,Bahrain,Middle East
+irq,Iraq,Middle East
+jor,Jordan,Middle East
+lbn,Lebanon,Middle East
+omn,Oman,Middle East
+syr,Syria,Middle East
+yem,Yemen,Middle East
+esh,Western Sahara,Africa
+lby,Libya,Africa
+mar,Morocco,Africa
+tun,Tunisia,Africa
+bol,Bolivia,Latin America
+flk,Falkland Islands,Latin America
+guf,French Guiana,Latin America
+guy,Guyana,Latin America
+pry,Paraguay,Latin America
+ury,Uruguay,Latin America
+pak,Pakistan,Asia
+per,Peru,Latin America
+phl,Philippines,Asia
+pol,Poland,Eastern Europe
+prt,Portugal,Western Europe
+qat,Qatar,Middle East
+rou,Romania,Eastern Europe
+rus,Russia,FSU
+sau,Saudi Arabia,Middle East
+sgp,Singapore,Asia
+svk,Slovakia,Eastern Europe
+zaf,South Africa,Africa
+kor,Republic of Korea,Asia
+esp,Spain,Western Europe
+swe,Sweden,Western Europe
+che,Switzerland,Western Europe
+twn,Chinese Taipei,Asia
+tha,Thailand,Asia
+tto,Trinidad and Tobago,Latin America
+tur,Turkey,Western Europe
+tkm,Turkmenistan,FSU
+ukr,Ukraine,FSU
+are,United Arab Emirates,Middle East
+gbr,United Kingdom,Western Europe
+usa,United States,OtherOECD90
+uzb,Uzbekistan,FSU
+ven,Venezuela,Latin America
+vnm,Vietnam,Asia
+vnm,Vietnam,Asia
+ago,Angola,Africa
+ben,Benin,Africa
+civ,Cote dIvoire,Africa
+cmr,Cameroon,Africa
+cod,Democratic Republic of Congo,Africa
+cod,Democratic Republic of Congo,Africa
+cog,Congo,Africa
+gab,Gabon,Africa
+gha,Ghana,Africa
+gin,Guinea,Africa
+gmb,Gambia,Africa
+gnb,Guinea-Bissau,Africa
+gnq,Equatorial Guinea,Africa
+lbr,Liberia,Africa
+mrt,Mauritania,Africa
+sen,Senegal,Africa
+sle,Sierra Leone,Africa
+cpv,Cape Verde,Africa
+tcd,Chad,Africa
+arm,Armenia,FSU
+aze,Azerbaijan,FSU
+blr,Belarus,FSU
+blx,Belgium-Luxembourg ,Western Europe
+csk,Czechoslovakia,Eastern Europe
+est,Estonia,FSU
+fro,Faeroe Islands,Islands
+geo,Georgia,FSU
+grl,Greenland,Western Europe
+gum,Guam,Islands
+irl,Ireland,Western Europe
+kaz,Kazakhstan,FSU
+kgz,Kyrgyzstan,FSU
+lie,Liechtenstein,Western Europe
+ltu,Lithuania,FSU
+lva,Latvia,FSU
+pse,Palestine,Middle East
+rus,Russia,FSU
+tjk,Tajikistan,FSU
+tkm,Turkmenistan,FSU
+ukr,Ukraine,FSU
+uzb,Uzbekistan,FSU
+yug,Yugoslavia,Other Asia
