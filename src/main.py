@@ -14,7 +14,7 @@ import log_config
 import ceds_io
 import config
 import efsubset
-import stats
+import z_stats
 import emission_factor_file
 
 def init_parser():
@@ -99,10 +99,6 @@ def freeze_emissions():
         # ef_df = ceds_io.read_ef_file(f_path)
         ef_obj = emission_factor_file.EmissionFactorFile(species, f_path)
         
-        # ISO filtering now handled by EmissionFactorFile instantiation
-
-        max_yr = ef_obj.get_max_year()
-        
         # Get combustion sectors
         sectors = ef_obj.get_sectors()
         fuels = ef_obj.get_fuels()
@@ -114,48 +110,48 @@ def freeze_emissions():
                 main_log.info("--- Processing {}...{}...{}---".format(species, sector, fuel))
                 
                 print("Processing {}...{}...{}...".format(species, sector, fuel))
-        
-                # Read the EF data into an EFSubset object
-                main_log.info("Subsetting EF DF for year {}".format(config.CONFIG.freeze_year))
-                efsubset_obj = efsubset.EFSubset(ef_df, sector, fuel, species,
-                                                 config.CONFIG.freeze_year)
                 
-                if (efsubset_obj.ef_data.size != 0):
-        
+                if (ef_obj.get_comb_shape()[0] != 0):
                     # Calculate the median of the EF values
-                    ef_median = stats.get_ef_median(efsubset_obj)
+                    ef_median = z_stats.get_ef_median(ef_obj)
                     main_log.debug("EF data array median: {}".format(ef_median))
-                    
                     main_log.debug("Identifying outliers")
-                    outliers = stats.get_outliers_zscore(efsubset_obj)
                     
+                    outliers = z_stats.get_outliers_zscore(ef_obj, sector, fuel)
                     if (len(outliers) != 0):
                         main_log.debug("Setting outlier values to median EF value")
-                        
                         # Set the EF value of each idenfitied outlier to the median of the EF values
                         for olr in outliers:
-                            efsubset_obj.ef_data[olr[2]] = ef_median
+                            # Set outlier values to the calculated median val
+                            ef_obj.combustion_factors.loc[
+                                    (ef_obj.combustion_factors['iso'] == olr[0]) &
+                                    (ef_obj.combustion_factors['sector'] == sector) &
+                                    (ef_obj.combustion_factors['fuel'] == fuel) &
+                                    (ef_obj.combustion_factors[ef_obj.freeze_year] == olr[1])
+                                    ] = ef_median
                     else:
                         main_log.debug("No outliers were identified")
-                    
                     # Overwrite the current EFs for years >= 1970
                     main_log.debug("Overwriting original EF DataFrame with new EF values")
-                    ef_df = ceds_io.reconstruct_ef_df(ef_df, efsubset_obj, year_strs)
                 else:
                     main_log.warning("Subsetted EF dataframe is empty")
-                
             # --- End fuel loop ---
         # --- End sector loop ---
+        
+        # Freeze the combustion emissions
+        ef_obj.freeze_emissions(year_strs)
+        
+        # Overwrite the corresponding values from the original EF DataFrame
+        ef_obj.reconstruct_emissions()
         
         f_out = os.path.join(out_path, f_name)
         
         main_log.info("Writing resulting {} DataFrame to file".format(species))
-        
         print('Writing final {} DataFrame to: {}\n'.format(species, f_out))
-        ef_df.to_csv(f_out, sep=',', header=True, index=False)
+        ef_obj.all_factors.to_csv(f_out, sep=',', header=True, index=False)
         main_log.info("DataFrame written to {}\n".format(f_out))
         
-    # End EF file for-loop
+    # --- End EF file for-loop ---
     main_log.info("Finished processing all species")
     main_log.info("Leaving main::freeze_emissions()\n")
     

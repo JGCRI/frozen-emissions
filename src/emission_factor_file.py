@@ -38,10 +38,11 @@ class EmissionFactorFile:
             corresponding value is an ISO object for that ISO
         """
         logger.debug('Creating EmissionFactorFile instance {} from {}'.format(species, f_path))
-        self.shape = None
         self.species = species
         self.path = f_path
-        self.isos = self._parse_isos(f_path)
+        self.all_factors = self._parse_file(f_path)
+        self.combustion_factors = self._get_comb_factors()
+        self.freeze_year = 'X{}'.format(config.CONFIG.freeze_year)
     
     def get_species(self):
         return self.species
@@ -50,56 +51,100 @@ class EmissionFactorFile:
         return self.path
     
     def get_shape(self):
-        return self.shape
-    
-    def get_sectors(self):
-        """
-        Get the sectors from an arbitraty ISO object using the object's own
-        get_sectors() method
+        return self.all_factors.shape
         
-        Return
-        -------
-        List of str
-        """
-        vals = list(self.isos.values())
-        return vals[0].get_sectors()
+    def get_comb_shape(self):
+        return self.combustion_factors.shape
     
-    def get_fuels(self):
+    def get_sectors(self, ef='comb'):
         """
-        Get the fuels from an arbitraty ISO object using the object's own
-        get_fuels() method
-        
-        Return
-        -------
-        List of str
-        """
-        vals = list(self.isos.values())
-        return vals[0].get_fuels()
-    
-    def _filter_isos(self, iso_dict):
-        """
-        Remove any ISOs from the 'isos' dictionary that do not appear in the given
-        'iso_list'
+        Get the sectors in the EF file
         
         Parameters
         -----------
-        iso_list : list of str
-            List of ISOs to keep
+        ef : string
+            If 'all', all sectors will be returned. If 'comb', only combustion-related
+            sectors will be returned. Default is 'comb'
         
         Return
         -------
-        Dict of {str : ISO obj}
+        List of str
+        """
+        if (ef != 'comb'):
+            ret_val = self.all_factors['sector'].unique().tolist()
+        else:
+            ret_val = self.combustion_factors['sector'].unique().tolist()
+        return ret_val
+    
+    def get_fuels(self, ef='comb'):
+        """
+        Get the fuels 
+        
+        Parameters
+        -----------
+        ef : string
+            If 'all', all fuels will be returned. If 'comb', only combustion-related
+            fuels will be returned. Default is 'comb'
+        
+        Return
+        -------
+        List of str
+        """
+        if (ef != 'comb'):
+            ret_val = self.all_factors['fuel'].unique().tolist()
+        else:
+            ret_val = self.combustion_factors['fuel'].unique().tolist()
+        return ret_val
+    
+    def get_factors_all(self):
+        return self.all_factors
+        
+    def get_factors_combustion(self):
+        return self.combustion_factors
+    
+    def get_isos(self, ef='comb', unique=True):
+        if (ef != 'comb'):
+            if (unique):
+                ret_val = self.all_factors['iso'].unique().tolist()
+            else:
+                ret_val = self.all_factors['iso'].tolist()
+        else:
+            if (unique):
+                ret_val = self.combustion_factors['iso'].unique().tolist()
+            else:
+                ret_val = self.combustion_factors['iso'].tolist()
+        return ret_val
+        
+    def freeze_emissions(self, year_strs):
+        year_0 = year_strs[0]
+        for year in year_strs[1:]:
+            self.combustion_factors[year] = self.combustion_factors[year_0]
+            
+    def reconstruct_emissions(self):
+        self.all_factors.update(self.combustion_factors)
+    
+    def _filter_isos(self, ef_df):
+        """
+        Remove any ISOs from the combustion EF DataFrame that are not meant to be frozen
+        
+        Parameters
+        -----------
+        ef_df : Pandas DataFrame
+            DataFrame or combuistion-related emissions factors to filter 
+        
+        Return
+        -------
+        Pandas DataFrame
         """
         iso_list = config.CONFIG.freeze_isos
         if (not isinstance(iso_list, list)):
             iso_list = [iso_list]
-        ret_dict = {key: val for key, val in iso_dict.items() if key in iso_list}
-        return ret_dict
-    
-    def _parse_isos(self, ef_path):
+        ret_val = self.combustion_factors.loc[elf.combustion_factors['iso'].isin(iso_list)]
+        return ret_val
+        
+    def _parse_file(self, f_path):
         """
-        Parse a CMIP6 EF file and create a new ISO object for each
-        ISO in the file
+        Parse a CMIP6 EF file
         
         Parameters
         -----------
@@ -108,18 +153,41 @@ class EmissionFactorFile:
             
         Return
         -------
-        dict of {str : ISO obj}
-            Dict where a key is the name of an iso and the value is the 
-            ISO object corresponding to that ISO
+        Pandas DataFrame
         """
-        ef_df = pd.read_csv(ef_path, sep=',', header=0)
-        iso_dict = dict.fromkeys(ef_df['iso'].unique().tolist())
-        self.shape = ef_df.shape
-        for iso_name in iso_dict.keys():
-            iso_dict[iso_name] = isos.ISO(iso_name, self.species, ef_df.loc[ef_df['iso'] == iso_name])
+        ef_df = pd.read_csv(f_path, sep=',', header=0)
+        return ef_df
+    
+    def _get_comb_factors(self):
+        """
+        Get a subset of the emissions factors that are from combustion-related
+        sectors. Filter if applicable
+        
+        Parameters
+        -----------
+        None
+        
+        Return
+        -------
+        Pandas DataFrame
+        """
+        combustion_sectors = ['1A1a_Electricity-public', '1A1a_Electricity-autoproducer',
+                              '1A1a_Heat-production', '1A2a_Ind-Comb-Iron-steel',
+                              '1A2b_Ind-Comb-Non-ferrous-metals', '1A2c_Ind-Comb-Chemicals',
+                              '1A2d_Ind-Comb-Pulp-paper', '1A2e_Ind-Comb-Food-tobacco',
+                              '1A2f_Ind-Comb-Non-metalic-minerals', '1A2g_Ind-Comb-Construction',
+                              '1A2g_Ind-Comb-transpequip', '1A2g_Ind-Comb-machinery',
+                              '1A2g_Ind-Comb-mining-quarying', '1A2g_Ind-Comb-wood-products',
+                              '1A2g_Ind-Comb-textile-leather', '1A2g_Ind-Comb-other',
+                              '1A3ai_International-aviation', '1A3aii_Domestic-aviation',
+                              '1A3b_Road', '1A3c_Rail', '1A3di_International-shipping',
+                              '1A3dii_Domestic-navigation', '1A3eii_Other-transp',
+                              '1A4a_Commercial-institutional', '1A4b_Residential',
+                              '1A4c_Agriculture-forestry-fishing', '1A5_Other-unspecified']
+        combustion_df = self.all_factors.loc[self.all_factors['sector'].isin(combustion_sectors)].copy()
         if (config.CONFIG.freeze_isos != 'all' and config.CONFIG.freeze_isos != ['all']):
-            iso_dict = self._filter_isos(iso_dict)
-        return iso_dict
+            combustion_df = self._filter_isos(combustion_df)
+        return combustion_df
     
     def __repr__(self):
         return "<EmissionFactorFile object - {} {}>".format(self.species, self.shape)

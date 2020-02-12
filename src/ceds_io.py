@@ -449,41 +449,72 @@ def filter_data_sector(df):
     df_filtered = df.loc[df['sector'].isin(combust_sectors)]
     
     return df_filtered
-
-
-def reconstruct_ef_df(ef_df_actual, efsubset_obj, year_strs):
-    logger.debug("Constructing final EF DataFrame")
     
-    sector = efsubset_obj.sector
-    fuel   = efsubset_obj.fuel
     
-    logger.debug("Sector = {}; Fuel = {}".format(sector, fuel))
+def freeze_ef_df(ef_obj, year_strs):
+    year_0 = year_strs[0]
+    for year in year_strs[1:]:
+        ef_obj.combustion_factors[year] = ef_obj.combustion_factors[year_0]
+        
+        
+def reconstruct_ef_df(ef_obj, sector, fuel, year_strs):
+    logger.debug("Constructing final EF DataFrame for {} {}".format(sector, fuel))
     
     for idx, iso in enumerate(efsubset_obj.isos):
         # df.loc[df[<some_column_name>] == <condition>, [<another_column_name>]] = <value_to_add>
         
         # For the CMIP6 EF DataFrame row corresponding to the given iso, sector,
         # and fuel, overwrite the values for years >= 1970 with the frozen EF 
-        ef_df_actual.loc[(ef_df_actual['iso'] == iso) &
-                         (ef_df_actual['sector'] == sector) &
-                         (ef_df_actual['fuel'] == fuel),
-                         year_strs] = efsubset_obj.ef_data[idx]
+        ef_obj.combustion_factors.loc[
+                (ef_obj.combustion_factors['iso'] == iso) &
+                (ef_obj.combustion_factors['sector'] == sector) &
+                (ef_obj.combustion_factors['fuel'] == fuel),
+                year_strs] = efsubset_obj.ef_data[idx]
         
     return ef_df_actual
+    
+    
+def reconstruct_ef_df_final(ef_obj):
+    """
+    Reconstruct the emissions factor file by replacing the original EFs that
+    are to be frozen with their respective frozen values
+    
+    Parameters
+    ----------
+    ef_obj : EmissionFactorFile obj
+    year_strs : list of str
+    
+    Return
+    -------
+    """
+    logger.debug("Overwriting EF DataFrame values for years >= 1970\n")
+    ef_obj.all_factors.update(ef_obj.combustion_factors)
         
     
-def reconstruct_ef_df_final(ef_df_actual, efsubset_obj, year_strs):
-    logger.debug("Overwriting EF DataFrame values for years >= 1970\n")
+# def reconstruct_ef_df_final(ef_obj, year_strs):
+    # """
+    # Reconstruct the emissions factor file by replacing the original EFs that
+    # are to be frozen with their respective frozen values
+    
+    # Parameters
+    # ----------
+    # ef_obj : EmissionFactorFile obj
+    # year_strs : list of str
+    
+    # Return
+    # -------
+    # """
+    # logger.debug("Overwriting EF DataFrame values for years >= 1970\n")
     
     # X1970
-    year_str_0 = year_strs[0]
+    # year_str_0 = year_strs[0]
     
     # Copy the 1970 column to the columns of years > 1970
     # MASSIVELY faster than repeating the above loop for every year
-    for yr in year_strs[1:]:
-        ef_df_actual[yr] = ef_df_actual[year_str_0]
+    # for yr in year_strs[1:]:
+        # ef_df_actual[yr] = ef_df_actual[year_str_0]
         
-    return ef_df_actual
+    # return ef_df_actual
        
     
 def arr_to_csv(arr, out_path):

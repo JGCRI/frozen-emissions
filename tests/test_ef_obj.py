@@ -13,7 +13,7 @@ sys.path.insert(1, '../src')
 
 import config
 import emission_factor_file
-import test_vars
+import test_utils
 
 class TestInit(unittest.TestCase):
     
@@ -32,7 +32,7 @@ class TestInit(unittest.TestCase):
         """Test basic initialization of an instance
         Test Case 1
         """
-        self.assertEqual(self.ef_obj.shape, (54772, 269))
+        self.assertEqual(self.ef_obj.get_shape(), (54772, 269))
         self.assertEqual(self.ef_obj.species, 'BC')
         self.assertEqual(config.CONFIG.freeze_isos, 'all')
     
@@ -52,19 +52,20 @@ class TestInit(unittest.TestCase):
         """Test the get_sectors() function
         Test Case 4
         """
-        self.assertEqual(sorted(self.ef_obj.get_sectors()), test_vars.expected_sectors)
+        self.assertEqual(sorted(self.ef_obj.get_sectors()), test_utils.expected_sectors)
     
     def test_get_fuels(self):
         """Test the get_fuels() function
         Test Case 5
         """
-        self.assertEqual(sorted(self.ef_obj.get_fuels()), test_vars.expected_fuels)
+        self.assertEqual(sorted(self.ef_obj.get_fuels()), test_utils.expected_fuels)
         
     def test_isos(self):
         """Test that all the ISOs are present
         Test Case 6
         """
-        self.assertEqual(sorted(self.ef_obj.isos.keys()), test_vars.expected_isos)
+        self.assertEqual(sorted(self.ef_obj.get_isos()), test_utils.expected_isos)
+        self.assertEqual(sorted(self.ef_obj.get_isos(ef='all')), test_utils.expected_isos)
         
 # ------------------------------------ Main ------------------------------------
 
