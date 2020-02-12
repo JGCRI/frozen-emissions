@@ -137,23 +137,23 @@ def freeze_emissions():
                     main_log.warning("Subsetted EF dataframe is empty")
             # --- End fuel loop ---
         # --- End sector loop ---
-        
         # Freeze the combustion emissions
+        main_log.debug("Freezing emissions...")
         ef_obj.freeze_emissions(year_strs)
         
         # Overwrite the corresponding values from the original EF DataFrame
+        main_log.debug("Reconstructing total emissions factors DataFrame...")
         ef_obj.reconstruct_emissions()
         
         f_out = os.path.join(out_path, f_name)
         
-        main_log.info("Writing resulting {} DataFrame to file".format(species))
+        main_log.debug("Writing resulting {} DataFrame to file".format(species))
         print('Writing final {} DataFrame to: {}\n'.format(species, f_out))
         ef_obj.all_factors.to_csv(f_out, sep=',', header=True, index=False)
         main_log.info("DataFrame written to {}\n".format(f_out))
         
     # --- End EF file for-loop ---
-    main_log.info("Finished processing all species")
-    main_log.info("Leaving main::freeze_emissions()\n")
+    main_log.info("Finished processing all species\nLeaving main::freeze_emissions()\n")
     
     
 def calc_emissions():
