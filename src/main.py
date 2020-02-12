@@ -13,7 +13,6 @@ import pandas as pd
 import log_config
 import ceds_io
 import config
-import efsubset
 import z_stats
 import emission_factor_file
 

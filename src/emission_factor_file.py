@@ -8,7 +8,6 @@ import logging
 import pandas as pd
 
 import config
-import isos
 
 logger = logging.getLogger('main')
 
