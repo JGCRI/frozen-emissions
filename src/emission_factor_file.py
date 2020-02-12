@@ -137,6 +137,7 @@ class EmissionFactorFile:
         Pandas DataFrame
         """
         iso_list = config.CONFIG.freeze_isos
+        logger.debug("Filtering ISOs for {}".format(iso_list))
         if (not isinstance(iso_list, list)):
             iso_list = [iso_list]
         ret_val = self.combustion_factors.loc[elf.combustion_factors['iso'].isin(iso_list)]
@@ -155,6 +156,7 @@ class EmissionFactorFile:
         -------
         Pandas DataFrame
         """
+        logger.debug("Reading EF file {}".format(f_path))
         ef_df = pd.read_csv(f_path, sep=',', header=0)
         return ef_df
     
