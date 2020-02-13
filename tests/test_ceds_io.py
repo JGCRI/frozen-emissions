@@ -41,15 +41,6 @@ class TestInit(unittest.TestCase):
         config.CONFIG.freeze_species = ['BC', 'SO2']
         expected = [self.f_ef, 'H.SO2_total_EFs_extended.csv' ]
         self.assertEqual(ceds_io.fetch_ef_files(config.CONFIG.dirs['cmip6']), expected)
-        # Reset CONFIG
-        config.CONFIG = config.ConfigObj(self.f_init)
-        self.assertEqual(config.CONFIG.freeze_species, ['BC'])
-        
-        
-        
-        
-        
-        
         
 # ------------------------------------ Main ------------------------------------
 
