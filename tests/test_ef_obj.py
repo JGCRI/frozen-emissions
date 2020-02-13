@@ -19,7 +19,7 @@ class TestInit(unittest.TestCase):
     
     def setUp(self):
         # Vars needed for initialization
-        self.f_init = '../input/test-config.yml'
+        self.f_init = 'input/test-config.yml'
         self.f_ef = 'H.BC_total_EFs_extended.csv'
         self.species = 'BC'
         # Set up global CONFIG constant

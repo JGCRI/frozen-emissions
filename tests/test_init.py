@@ -19,7 +19,7 @@ class TestInit(unittest.TestCase):
         """Initialize TestInit attributes for use in test cases.
         Not a test case
         """
-        self.f_init = '../input/test-config.yml'
+        self.f_init = 'input/test-config.yml'
         self.config = config.ConfigObj(self.f_init)
     
     def test_parse_basic(self):
