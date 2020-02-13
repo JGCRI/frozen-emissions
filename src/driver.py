@@ -71,12 +71,12 @@ def freeze_emissions():
     None
     """
      # Unpack config directory paths for better readability
-    data_path = config.CONFIG.dirs['cmip6']
-    out_path = config.CONFIG.dirs['inter_out']
+    dir_cmip6 = config.CONFIG.dirs['cmip6']
+    dir_inter_out = config.CONFIG.dirs['inter_out']
     
     main_log = logging.getLogger("main")
     main_log.info("In main::freeze_emissions()")
-    main_log.info("data_path = {}".format(data_path))
+    main_log.info("dir_cmip6 = {}".format(dir_cmip6))
     main_log.info("year = {}\n".format(config.CONFIG.freeze_year))
         
     # Construct the column header strings for years >= 'year' param
@@ -89,7 +89,7 @@ def freeze_emissions():
         
         # Get the species' EF file
         try:
-            f_path = ceds_io.get_file_for_species(data_path, species, "ef")
+            f_path = ceds_io.get_file_for_species(dir_cmip6, species, "ef")
         except FileNotFoundError as err:
             # If a FileNotFoundError is returned, log it and move on to the next species
             err_str = "Error encountered while fetching EF file: {}".format(err)
@@ -145,7 +145,7 @@ def freeze_emissions():
         ef_obj.reconstruct_emissions()
         
         f_name = os.path.basename(f_path)
-        f_out = os.path.join(out_path, f_name)
+        f_out = os.path.join(dir_inter_out, f_name)
         
         info_str = "Writing frozen emissions factors DataFrame to {}".format(f_out)
         main_log.debug(info_str)
