@@ -51,6 +51,21 @@ expected_isos = sorted(
      'wsm', 'yem', 'zaf', 'zmb', 'zwe']
     )
     
+# Non-combustion sectors
+non_combustion_sectors = sorted(
+    ['1A1bc_Other-transformation', '1A1bc_Other-feedstocks', '1B1_Fugitive-solid-fuels',
+     '1B2_Fugitive-petr-and-gas', '1B2d_Fugitive-other-energy', '2A1_Cement-production',
+     '2A2_Lime-production', '2A6_Other-minerals', '2B_Chemical-industry', '2C_Metal-production',
+     '2D_Degreasing-Cleaning', '2D3_Other-product-use', '2D_Paint-application',
+     '2D3_Chemical-products-manufacture-processing', '2H_Pulp-and-paper-food-beverage-wood',
+     '2L_Other-process-emissions', '3B_Manure-management', '3D_Soil-emissions',
+     '3I_Agriculture-other', '3D_Rice-Cultivation', '3E_Enteric-fermentation',
+     '3F_Agricultural-residue-burning-on-fields', '5A_Solid-waste-disposal',
+     '5E_Other-waste-handling', '5C_Waste-incineration', '6A_Other-in-total',
+     '5D_Wastewater-handling', '6B_Other-not-in-total', '7A_Fossil-fuel-fires',
+     '11A_Volcanoes', '11B_Forest-fires', '11C_Other-natural']
+    )
+    
 def subset_df(ef_df, iso):
     df = ef_df.loc[(ef_df['iso'] == iso) &
                    (ef_df['sector'].isin(expected_sectors))]
