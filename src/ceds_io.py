@@ -50,9 +50,10 @@ def fetch_ef_files(dir_path):
     f_names : list of str
         Names of the emission factor files found within the specified directory
     """
-    patterns = {"base" : r'(^H\.\w{1,7}_total_EFs_extended.csv$)'}   
+    patterns = {"base" : r'(^H\.(\w{1,7})_total_EFs_extended.csv$)'}   
     re_pat = patterns["base"]
-    f_names = [f for f in listdir(dir_path) if (isfile(join(dir_path, f)) and re.match(re_pat, f))]
+    f_names = [f for f in listdir(dir_path) if (isfile(join(dir_path, f)) and re.match(re_pat, f))
+               and re.match(re_pat, f).group(2) in config.CONFIG.freeze_species]
     return f_names
 
 
