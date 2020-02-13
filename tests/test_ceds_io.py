@@ -14,7 +14,7 @@ sys.path.insert(1, '../src')
 import config
 import ceds_io
 
-class TestInit(unittest.TestCase):
+class TestCedsIO(unittest.TestCase):
     
     def setUp(self):
         # Vars needed for initialization

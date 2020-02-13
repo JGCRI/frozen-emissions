@@ -17,7 +17,7 @@ import emission_factor_file
 import test_utils
 import driver
 
-class TestInit(unittest.TestCase):
+class TestFrozenSectors(unittest.TestCase):
     
     def setUp(self):
         # Vars needed for initialization

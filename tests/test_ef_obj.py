@@ -15,7 +15,7 @@ import config
 import emission_factor_file
 import test_utils
 
-class TestInit(unittest.TestCase):
+class TestEmissionFactorFile(unittest.TestCase):
     
     def setUp(self):
         # Vars needed for initialization

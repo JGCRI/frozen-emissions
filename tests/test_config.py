@@ -13,7 +13,7 @@ sys.path.insert(1, '../src')
 import config
 import init_config
 
-class TestInit(unittest.TestCase):
+class TestConfig(unittest.TestCase):
     
     def setUp(self):
         pass
