@@ -1,0 +1,26 @@
+# Configuration YAML file for test_frozen_sectors.py
+#
+# Matt Nicholson
+# 13 Feb 2020
+---
+dirs:
+  win:
+    cmip6_inter: C:\Users\nich980\data\e-freeze\test\CMIP6-emissions\intermediate-output
+    root_inter: C:\Users\nich980\data\e-freeze\test\intermediate-output
+    root_proj : C:\Users\nich980\code\frozen-emissions
+    ceds: C:\Users\nich980\code\CEDS-dev
+  linux: 
+    cmip6_inter: /mnt/c/Users/nich980/data/e-freeze/test/CMIP6-emissions/intermediate-output
+    root_inter: /mnt/c/Users/nich980/data/e-freeze/test/intermediate-output
+    root_proj: /mnt/c/Users/nich980/code/frozen-emissions
+    ceds: /mnt/c/Users/nich980/code/CEDS-dev
+  input: ../../input
+  output: ../../output
+  logs: ../../src/logs
+freeze:
+  year: 1970
+  isos: all
+  species: [BC, CH4, CO, CO2, NH3, NMVOC, NOx, OC, SO2]
+ceds:
+  year_first: 1750
+  year_last: 2014
