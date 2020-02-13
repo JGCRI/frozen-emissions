@@ -109,7 +109,7 @@ def get_file_for_species(dir_path, species, f_type):
     if (not isfile(f_abs)):
         raise FileNotFoundError("No such file or directory: {}".format(f_abs))
     else:
-        return f_name
+        return f_abs
     
 
 def get_avail_species(dir_path):

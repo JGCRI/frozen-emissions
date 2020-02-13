@@ -95,7 +95,7 @@ def freeze_emissions():
             err_str = "Error encountered while fetching EF file: {}".format(err)
             main_log.error(err_str)
             continue
-            
+
         main_log.info("Loading EF DataFrame from {}".format(f_path))
         # ef_df = ceds_io.read_ef_file(f_path)
         ef_obj = emission_factor_file.EmissionFactorFile(species, f_path)
@@ -106,9 +106,9 @@ def freeze_emissions():
         
         for sector in sectors:
             for fuel in fuels:
-                info_str = "--- Processing {}...{}...{} ---".format(species, sector, fuel)
-                main_log.info(info_str)
-                print(info_str)
+                info_str = "Processing {}...{}...{}".format(species, sector, fuel)
+                main_log.info("--- {} ---".format(info_str))
+                print("{}...".format(info_str))
                 
                 if (ef_obj.get_comb_shape()[0] != 0):
                     # Calculate the median of the EF values
@@ -144,12 +144,15 @@ def freeze_emissions():
         main_log.debug("Reconstructing total emissions factors DataFrame...")
         ef_obj.reconstruct_emissions()
         
+        f_name = os.path.basename(f_path)
         f_out = os.path.join(out_path, f_name)
         
-        main_log.debug("Writing resulting {} DataFrame to file".format(species))
-        print('Writing final {} DataFrame to: {}\n'.format(species, f_out))
+        info_str = "Writing frozen emissions factors DataFrame to {}".format(f_out)
+        main_log.debug(info_str)
+        print(info_str + '\n')
+        
         ef_obj.all_factors.to_csv(f_out, sep=',', header=True, index=False)
-        main_log.info("DataFrame written to {}\n".format(f_out))
+        main_log.info("--- Finished processing {} ---\n".format(species))
         
     # --- End EF file for-loop ---
     main_log.info("Finished processing all species\nLeaving main::freeze_emissions()\n")
@@ -176,12 +179,6 @@ def calc_emissions():
     # Unpack for better readability
     dir_inter_out = config.CONFIG.dirs['inter_out']
     dir_cmip6 = config.CONFIG.dirs['cmip6']
-    
-    logger.debug('Searing for available species in {}'.format(dir_inter_out))
-    
-    # em_species = ceds_io.get_avail_species(dir_inter_out)
-    
-    logger.debug('Emission species found: {}\n'.format(len(em_species)))
     
     # Create list of strings representing year column headers
     data_col_headers = ['X{}'.format(i) for i in range(config.CONFIG.ceds_meta['year_first'],
@@ -211,15 +208,12 @@ def calc_emissions():
             print(err_msg)
             continue
         
-        ef_path = os.path.join(dir_inter_out, frozen_ef_file)
-        act_path = os.path.join(dir_cmip6, activity_file)
-        
         # Read emission factor & activity files into DataFrames
-        logger.debug('Reading emission factor file from {}'.format(ef_path))
-        ef_df = pd.read_csv(ef_path, sep=',', header=0)
+        logger.debug('Reading emission factor file from {}'.format(frozen_ef_file))
+        ef_df = pd.read_csv(frozen_ef_file, sep=',', header=0)
         
-        logger.debug('Reading activity file from {}'.format(act_path))
-        act_df = pd.read_csv(act_path, sep=',', header=0)
+        logger.debug('Reading activity file from {}'.format(activity_file))
+        act_df = pd.read_csv(activity_file, sep=',', header=0)
         
         # Get the 'iso', 'sector', 'fuel', & 'units' columns
         meta_cols = ef_df.iloc[:, 0:4]
@@ -284,13 +278,23 @@ def main():
     logger = log_config.init_logger(config.CONFIG.dirs['logs'], "main", level='debug')
     logger.info('Input file {}'.format(args.input_file))
     
+    info_str = "Function(s) to execute: {}"
     # Execute the specified function(s)
     if (args.function == 'all'):
+        func_str = "freeze_emissions() & calc_emissions()"
+        logger.info(info_str.format(func_str))
+        # --- Func Calls ---
         freeze_emissions()
         calc_emissions()
     elif (args.function == 'freeze_emissions'):
+        func_str = "freeze_emissions()"
+        logger.info(info_str.format(func_str))
+        # --- Func Calls ---
         freeze_emissions()
     elif (args.function == 'calc_emissions'):
+        func_str = "calc_emissions()"
+        logger.info(info_str.format(func_str))
+        # --- Func Calls ---
         calc_emissions()
     else:
         raise ValueError('Invalid function argument. Valid args are "freeze_emissions" and "calc_emissions"')
