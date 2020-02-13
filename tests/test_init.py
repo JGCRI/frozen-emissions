@@ -19,7 +19,7 @@ class TestInit(unittest.TestCase):
         """Initialize TestInit attributes for use in test cases.
         Not a test case
         """
-        self.f_init = '../init/test-config.yml'
+        self.f_init = '../input/test-config.yml'
         self.config = config.ConfigObj(self.f_init)
     
     def test_parse_basic(self):
@@ -53,7 +53,6 @@ class TestInit(unittest.TestCase):
         self.assertIsInstance(self.config.dirs['input'], str)
         self.assertIsInstance(self.config.dirs['output'], str)
         self.assertIsInstance(self.config.dirs['logs'], str)
-        self.assertIsInstance(self.config.dirs['init'], str)
         self.assertIsInstance(self.config.freeze_year, int)
         self.assertIsInstance(self.config.freeze_isos, str)
         self.assertIsInstance(self.config.freeze_species, list)
