@@ -27,10 +27,6 @@ class TestInit(unittest.TestCase):
         config.CONFIG = config.ConfigObj(self.f_init)
         # Use an un-edited CMIP6 EF file as a control
         self.f_control = r"C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output"
-        # Set up an EF file object that we'll freeze
-        # self.f_ef = 'H.BC_total_EFs_extended.csv'
-        # self.f_frozen = os.path.join(config.CONFIG.dirs['cmip6'], self.f_ef)
-        # self.ef_obj = emission_factor_file.EmissionFactorFile(self.species, self.ef_path)
         # Freeze and calculate emissions
         driver.freeze_emissions()
         driver.calc_emissions()

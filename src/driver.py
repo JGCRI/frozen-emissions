@@ -186,7 +186,7 @@ def calc_emissions():
     
     for species in config.CONFIG.freeze_species:
         info_str = '\nCalculating frozen total emissions for {}...'.format(species)
-        logger.debug(info_str)
+        logger.info(info_str)
         print(info_str)
         
         # Get emission factor file for species
@@ -232,7 +232,7 @@ def calc_emissions():
         ef_subs = ef_df[data_col_headers]
         act_subs = act_df[data_col_headers]
         
-        logger.info('Calculating total emissions')
+        logger.debug('Calculating total emissions')
         
         if (ef_subs.shape != act_subs.shape):
             # Error is arising where ef_subs.shape = (55212, 265) &
@@ -256,15 +256,14 @@ def calc_emissions():
         
         info_str = 'Writing emissions DataFrame to {}'.format(f_out)
         logger.debug(info_str)
-        print(info_str)
+        print(info_str + '\n')
         
         emissions_df.to_csv(f_out, sep=',', header=True, index=False)
         logger.info('Finished calculating total emissions for {}'.format(species))
         
     # End species loop
-    logger.info("Finished processing all species")
-    logger.info('Leaving validate::calc_emissions()\n')
-    
+    logger.info("Finished processing all species! Leaving validate::calc_emissions()\n")
+
 
 def main():
     # Create a new argument parser & parse the command line args 
