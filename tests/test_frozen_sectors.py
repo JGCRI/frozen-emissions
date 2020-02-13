@@ -21,7 +21,7 @@ class TestInit(unittest.TestCase):
     
     def setUp(self):
         # Vars needed for initialization
-        self.f_init = 'input/test-config.yml'
+        self.f_init = 'input/config-test_frozen_sectors.yml'
         self.species = 'BC'
         # Initialize global CONFIG object
         config.CONFIG = config.ConfigObj(self.f_init)
@@ -45,7 +45,10 @@ class TestInit(unittest.TestCase):
         # Read the un-edited control CMIP6 EF file
         control_path = os.path.join(self.f_control, self.f_frozen)
         control_df = pd.read_csv(control_path, sep=',', header=0)
-        
+        # Get a subset of the control & frozen DF containing only non-combustion sectors
+        control_non_combust = control_df.loc[control_df['sector'].isin(test_utils.non_combustion_sectors)].copy()
+        frozen_non_combust = self.frozen_df.loc[self.frozen_df['sector'].isin(test_utils.non_combustion_sectors)].copy()
+        self.assertTrue(control_non_combust.equals(frozen_non_combust))
         
         
         
