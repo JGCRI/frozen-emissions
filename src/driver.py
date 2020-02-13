@@ -78,22 +78,24 @@ def freeze_emissions():
     main_log.info("In main::freeze_emissions()")
     main_log.info("data_path = {}".format(data_path))
     main_log.info("year = {}\n".format(config.CONFIG.freeze_year))
-    
-    # Get all Emission Factor filenames in the directory
-    ef_files = ceds_io.fetch_ef_files(data_path)
         
     # Construct the column header strings for years >= 'year' param
     year_strs = ['X{}'.format(yr) for yr in range(config.CONFIG.freeze_year,
                                                   config.CONFIG.ceds_meta['year_last'] + 1)]
     
-    # Begin for-loop over each species EF file
-    for f_name in ef_files:
-        
-        species = ceds_io.get_species_from_fname(f_name)
+    # Begin for-loop over each species we want to freeze
+    for species in config.CONFIG.freeze_species:
         main_log.info("Processing species: {}".format(species))
         
-        f_path = os.path.join(data_path, f_name)
-        
+        # Get the species' EF file
+        try:
+            f_path = ceds_io.get_file_for_species(data_path, species, "ef")
+        except FileNotFoundError as err:
+            # If a FileNotFoundError is returned, log it and move on to the next species
+            err_str = "Error encountered while fetching EF file: {}".format(err)
+            main_log.error(err_str)
+            continue
+            
         main_log.info("Loading EF DataFrame from {}".format(f_path))
         # ef_df = ceds_io.read_ef_file(f_path)
         ef_obj = emission_factor_file.EmissionFactorFile(species, f_path)
@@ -103,12 +105,10 @@ def freeze_emissions():
         fuels = ef_obj.get_fuels()
         
         for sector in sectors:
-            
             for fuel in fuels:
-                
-                main_log.info("--- Processing {}...{}...{}---".format(species, sector, fuel))
-                
-                print("Processing {}...{}...{}...".format(species, sector, fuel))
+                info_str = "--- Processing {}...{}...{} ---".format(species, sector, fuel)
+                main_log.info(info_str)
+                print(info_str)
                 
                 if (ef_obj.get_comb_shape()[0] != 0):
                     # Calculate the median of the EF values
@@ -179,7 +179,7 @@ def calc_emissions():
     
     logger.debug('Searing for available species in {}'.format(dir_inter_out))
     
-    em_species = ceds_io.get_avail_species(dir_inter_out)
+    # em_species = ceds_io.get_avail_species(dir_inter_out)
     
     logger.debug('Emission species found: {}\n'.format(len(em_species)))
     
@@ -187,20 +187,25 @@ def calc_emissions():
     data_col_headers = ['X{}'.format(i) for i in range(config.CONFIG.ceds_meta['year_first'],
                                                        config.CONFIG.ceds_meta['year_last'])]
     
-    for species in em_species:
+    for species in config.CONFIG.freeze_species:
         info_str = '\nCalculating frozen total emissions for {}...'.format(species)
         logger.debug(info_str)
         print(info_str)
         
         # Get emission factor file for species
-        logger.debug('Fetching emission factor file from {}'.format(dir_inter_out))
-        frozen_ef_file = ceds_io.get_file_for_species(dir_inter_out, species, "ef")
+        try:
+            frozen_ef_file = ceds_io.get_file_for_species(dir_inter_out, species, "ef")
+        except FileNotFoundError as err:
+            # If a FileNotFoundError is returned, log it and move on to the next species
+            err_str = "Error encountered while fetching EF file: {}".format(err)
+            main_log.error(err_str)
+            continue
         
         # Get activity file for species
-        logger.debug('Fetching activity file from {}'.format(dir_cmip6))
         try:
             activity_file = ceds_io.get_file_for_species(dir_cmip6, species, "activity")
         except:
+            # If a FileNotFoundError is returned, log it and move on to the next species
             err_msg = 'No activity file found for {}'.format(species)
             logger.error(err_msg)
             print(err_msg)

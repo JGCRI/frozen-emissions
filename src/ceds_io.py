@@ -104,7 +104,7 @@ def get_file_for_species(dir_path, species, f_type):
     f_name = bases[f_type].format(species)
     f_abs = join(dir_path, f_name)
     
-    logger.debug("Searching for file '{}'".format(f_name))
+    logger.debug("Searching for file '{}'".format(f_abs))
     
     if (not isfile(f_abs)):
         raise FileNotFoundError("No such file or directory: {}".format(f_abs))
