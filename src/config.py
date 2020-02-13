@@ -58,7 +58,6 @@ class ConfigObj:
                 'input'    : None,
                 'output'   : None,
                 'logs'     : None,
-                'init'     : None,
                 'ceds'     : None}
         self.dirs = dirs
         
@@ -94,7 +93,6 @@ class ConfigObj:
         self.dirs['input']     = info['dirs']['input']
         self.dirs['output']    = info['dirs']['output']
         self.dirs['logs']      = info['dirs']['logs']
-        self.dirs['init']      = info['dirs']['init']
         self.freeze_year       = int(info['freeze']['year'])
         try:     # Is freeze_isos a string?
             self.freeze_isos = info['freeze']['isos'].lower()

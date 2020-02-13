@@ -38,7 +38,6 @@ dirs:
     ceds: /mnt/c/Users/nich980/code/CEDS-dev
   input: ../input
   output: ../output
-  init: ../init
   logs: logs
 freeze:
   year: 1970
