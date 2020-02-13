@@ -296,7 +296,7 @@ def main():
         # --- Func Calls ---
         calc_emissions()
     else:
-        raise ValueError('Invalid function argument. Valid args are "freeze_emissions" and "calc_emissions"')
+        raise ValueError('Invalid function argument. Valid args are "all", "freeze_emissions", or "calc_emissions"')
         
 
 
