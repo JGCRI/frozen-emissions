@@ -20,7 +20,7 @@ dirs:
 freeze:
   year: 1970
   isos: all
-  species: [BC, CH4, CO, CO2, NH3, NMVOC, NOx, OC, SO2]
+  species: [BC]
 ceds:
   year_first: 1750
   year_last: 2014
