@@ -31,6 +31,12 @@ class ConfigObj:
                 year_last  : Last (most current) year of CEDS output
         dirs : dict of {str : str}
             Dictionary containing various input and output directory paths
+            Keys:
+                'root'  : Path to root project directory
+                'input' : Path to main input directory
+                'output': Path to main output directory
+                'cmip6' : Path to CMIP6/intermediate-output directory
+                'ceds'  : Path to local CEDS project direcotyr
         freeze_year : int
             Freeze emission factors for years >= this year.
         freeze_isos : str or list of str
