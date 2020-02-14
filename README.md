@@ -4,7 +4,7 @@ This repository contains scripts to freeze emissions factors (EFs) for combustio
 # Usage
 The scripts are written in Python 3.6 and can be run from the command line:
 ```sh
-python main.py /path/to/config.yml    # Freeze emissions factors & calculate final frozen emissions
+python main.py /path/to/config.yml                         # Freeze EFs & calculate final frozen emissions
 python main.py /path/to/config.yml -f "freeze_emissions"   # Only freeze emissions factors
 python main.py /path/to/config.yml -f "calc_emissions"     # Only calculate final frozen emissions
 ```
