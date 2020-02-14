@@ -1,11 +1,7 @@
-# A test configuration YAML file
-#
-# !!! DO NOT CHANGE ANY MEMBERS OR VALUES IN THIS FILE WITHOUT UPDATING TESTS !!!
-#
-# Changing members/values in this file will cause tests in test_init.py to fail.
+# A basic configuration YAML file
 #
 # Matt Nicholson
-# 7 Feb 2020
+# 12 Feb 2020
 #
 # Members
 # --------
@@ -38,7 +34,6 @@ dirs:
     ceds: /mnt/c/Users/nich980/code/CEDS-dev
   input: ../input
   output: ../output
-  init: ../init
   logs: logs
 freeze:
   year: 1970
@@ -47,5 +42,3 @@ freeze:
 ceds:
   year_first: 1750
   year_last: 2014
-
-  

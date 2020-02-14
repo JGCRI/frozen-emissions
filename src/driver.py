@@ -13,8 +13,8 @@ import pandas as pd
 import log_config
 import ceds_io
 import config
-import efsubset
-import stats
+import z_stats
+import emission_factor_file
 
 def init_parser():
     """
@@ -71,93 +71,91 @@ def freeze_emissions():
     None
     """
      # Unpack config directory paths for better readability
-    data_path = config.CONFIG.dirs['cmip6']
-    out_path = config.CONFIG.dirs['inter_out']
+    dir_cmip6 = config.CONFIG.dirs['cmip6']
+    dir_inter_out = config.CONFIG.dirs['inter_out']
     
     main_log = logging.getLogger("main")
     main_log.info("In main::freeze_emissions()")
-    main_log.info("data_path = {}".format(data_path))
+    main_log.info("dir_cmip6 = {}".format(dir_cmip6))
     main_log.info("year = {}\n".format(config.CONFIG.freeze_year))
-    
-    # Get all Emission Factor filenames in the directory
-    ef_files = ceds_io.fetch_ef_files(data_path)
         
     # Construct the column header strings for years >= 'year' param
     year_strs = ['X{}'.format(yr) for yr in range(config.CONFIG.freeze_year,
                                                   config.CONFIG.ceds_meta['year_last'] + 1)]
     
-    # Begin for-loop over each species EF file
-    for f_name in ef_files:
-        
-        species = ceds_io.get_species_from_fname(f_name)
+    # Begin for-loop over each species we want to freeze
+    for species in config.CONFIG.freeze_species:
         main_log.info("Processing species: {}".format(species))
         
-        f_path = os.path.join(data_path, f_name)
-        
+        # Get the species' EF file
+        try:
+            f_path = ceds_io.get_file_for_species(dir_cmip6, species, "ef")
+        except FileNotFoundError as err:
+            # If a FileNotFoundError is returned, log it and move on to the next species
+            err_str = "Error encountered while fetching EF file: {}".format(err)
+            main_log.error(err_str)
+            continue
+
         main_log.info("Loading EF DataFrame from {}".format(f_path))
-        ef_df = ceds_io.read_ef_file(f_path)
+        # ef_df = ceds_io.read_ef_file(f_path)
+        ef_obj = emission_factor_file.EmissionFactorFile(species, f_path)
         
-        # If applicable, filter out any ISOs that are not designated to be frozen
-        # in the global CONFIG object
-        if (config.CONFIG.freeze_isos != 'all'):
-            ef_df = ceds_io.filter_isos(ef_df)
-        
-        max_yr = ef_df.columns.values.tolist()[-1]
-        
-        # Get all non-combustion sectors
-        sectors, fuels = ceds_io.get_sectors(ef_df)
+        # Get combustion sectors
+        sectors = ef_obj.get_sectors()
+        fuels = ef_obj.get_fuels()
         
         for sector in sectors:
-            
             for fuel in fuels:
+                info_str = "Processing {}...{}...{}".format(species, sector, fuel)
+                main_log.info("--- {} ---".format(info_str))
+                print("{}...".format(info_str))
                 
-                main_log.info("--- Processing {}...{}...{}---".format(species, sector, fuel))
-                
-                print("Processing {}...{}...{}...".format(species, sector, fuel))
-        
-                # Read the EF data into an EFSubset object
-                main_log.info("Subsetting EF DF for year {}".format(config.CONFIG.freeze_year))
-                efsubset_obj = efsubset.EFSubset(ef_df, sector, fuel, species,
-                                                 config.CONFIG.freeze_year)
-                
-                if (efsubset_obj.ef_data.size != 0):
-        
+                if (ef_obj.get_comb_shape()[0] != 0):
                     # Calculate the median of the EF values
-                    ef_median = stats.get_ef_median(efsubset_obj)
+                    ef_median = z_stats.get_ef_median(ef_obj)
                     main_log.debug("EF data array median: {}".format(ef_median))
-                    
                     main_log.debug("Identifying outliers")
-                    outliers = stats.get_outliers_zscore(efsubset_obj)
                     
+                    outliers = z_stats.get_outliers_zscore(ef_obj, sector, fuel)
                     if (len(outliers) != 0):
                         main_log.debug("Setting outlier values to median EF value")
-                        
                         # Set the EF value of each idenfitied outlier to the median of the EF values
                         for olr in outliers:
-                            efsubset_obj.ef_data[olr[2]] = ef_median
+                            # Set outlier values to the calculated median val
+                            ef_obj.combustion_factors.loc[
+                                    (ef_obj.combustion_factors['iso'] == olr[0]) &
+                                    (ef_obj.combustion_factors['sector'] == sector) &
+                                    (ef_obj.combustion_factors['fuel'] == fuel) &
+                                    (ef_obj.combustion_factors[ef_obj.freeze_year] == olr[1])
+                                    ] = ef_median
                     else:
                         main_log.debug("No outliers were identified")
-                    
                     # Overwrite the current EFs for years >= 1970
                     main_log.debug("Overwriting original EF DataFrame with new EF values")
-                    ef_df = ceds_io.reconstruct_ef_df(ef_df, efsubset_obj, year_strs)
                 else:
                     main_log.warning("Subsetted EF dataframe is empty")
-                
             # --- End fuel loop ---
         # --- End sector loop ---
+        # Freeze the combustion emissions
+        main_log.debug("Freezing emissions...")
+        ef_obj.freeze_emissions(year_strs)
         
-        f_out = os.path.join(out_path, f_name)
+        # Overwrite the corresponding values from the original EF DataFrame
+        main_log.debug("Reconstructing total emissions factors DataFrame...")
+        ef_obj.reconstruct_emissions()
         
-        main_log.info("Writing resulting {} DataFrame to file".format(species))
+        f_name = os.path.basename(f_path)
+        f_out = os.path.join(dir_inter_out, f_name)
         
-        print('Writing final {} DataFrame to: {}\n'.format(species, f_out))
-        ef_df.to_csv(f_out, sep=',', header=True, index=False)
-        main_log.info("DataFrame written to {}\n".format(f_out))
+        info_str = "Writing frozen emissions factors DataFrame to {}".format(f_out)
+        main_log.debug(info_str)
+        print(info_str + '\n')
         
-    # End EF file for-loop
-    main_log.info("Finished processing all species")
-    main_log.info("Leaving main::freeze_emissions()\n")
+        ef_obj.all_factors.to_csv(f_out, sep=',', header=True, index=False)
+        main_log.info("--- Finished processing {} ---\n".format(species))
+        
+    # --- End EF file for-loop ---
+    main_log.info("Finished processing all species\nLeaving main::freeze_emissions()\n")
     
     
 def calc_emissions():
@@ -182,44 +180,40 @@ def calc_emissions():
     dir_inter_out = config.CONFIG.dirs['inter_out']
     dir_cmip6 = config.CONFIG.dirs['cmip6']
     
-    logger.debug('Searing for available species in {}'.format(dir_inter_out))
-    
-    em_species = ceds_io.get_avail_species(dir_inter_out)
-    
-    logger.debug('Emission species found: {}\n'.format(len(em_species)))
-    
     # Create list of strings representing year column headers
     data_col_headers = ['X{}'.format(i) for i in range(config.CONFIG.ceds_meta['year_first'],
-                                                       config.CONFIG.ceds_meta['year_first'])]
+                                                       config.CONFIG.ceds_meta['year_last'])]
     
-    for species in em_species:
+    for species in config.CONFIG.freeze_species:
         info_str = '\nCalculating frozen total emissions for {}...'.format(species)
-        logger.debug(info_str)
+        logger.info(info_str)
         print(info_str)
         
         # Get emission factor file for species
-        logger.debug('Fetching emission factor file from {}'.format(dir_inter_out))
-        frozen_ef_file = ceds_io.get_file_for_species(dir_inter_out, species, "ef")
+        try:
+            frozen_ef_file = ceds_io.get_file_for_species(dir_inter_out, species, "ef")
+        except FileNotFoundError as err:
+            # If a FileNotFoundError is returned, log it and move on to the next species
+            err_str = "Error encountered while fetching EF file: {}".format(err)
+            main_log.error(err_str)
+            continue
         
         # Get activity file for species
-        logger.debug('Fetching activity file from {}'.format(dir_cmip6))
         try:
             activity_file = ceds_io.get_file_for_species(dir_cmip6, species, "activity")
         except:
+            # If a FileNotFoundError is returned, log it and move on to the next species
             err_msg = 'No activity file found for {}'.format(species)
             logger.error(err_msg)
             print(err_msg)
             continue
         
-        ef_path = os.path.join(dir_inter_out, frozen_ef_file)
-        act_path = os.path.join(dir_cmip6, activity_file)
-        
         # Read emission factor & activity files into DataFrames
-        logger.debug('Reading emission factor file from {}'.format(ef_path))
-        ef_df = pd.read_csv(ef_path, sep=',', header=0)
+        logger.debug('Reading emission factor file from {}'.format(frozen_ef_file))
+        ef_df = pd.read_csv(frozen_ef_file, sep=',', header=0)
         
-        logger.debug('Reading activity file from {}'.format(act_path))
-        act_df = pd.read_csv(act_path, sep=',', header=0)
+        logger.debug('Reading activity file from {}'.format(activity_file))
+        act_df = pd.read_csv(activity_file, sep=',', header=0)
         
         # Get the 'iso', 'sector', 'fuel', & 'units' columns
         meta_cols = ef_df.iloc[:, 0:4]
@@ -238,7 +232,7 @@ def calc_emissions():
         ef_subs = ef_df[data_col_headers]
         act_subs = act_df[data_col_headers]
         
-        logger.info('Calculating total emissions')
+        logger.debug('Calculating total emissions')
         
         if (ef_subs.shape != act_subs.shape):
             # Error is arising where ef_subs.shape = (55212, 265) &
@@ -262,15 +256,14 @@ def calc_emissions():
         
         info_str = 'Writing emissions DataFrame to {}'.format(f_out)
         logger.debug(info_str)
-        print(info_str)
+        print(info_str + '\n')
         
         emissions_df.to_csv(f_out, sep=',', header=True, index=False)
         logger.info('Finished calculating total emissions for {}'.format(species))
         
     # End species loop
-    logger.info("Finished processing all species")
-    logger.info('Leaving validate::calc_emissions()\n')
-    
+    logger.info("Finished processing all species! Leaving validate::calc_emissions()\n")
+
 
 def main():
     # Create a new argument parser & parse the command line args 
@@ -284,16 +277,26 @@ def main():
     logger = log_config.init_logger(config.CONFIG.dirs['logs'], "main", level='debug')
     logger.info('Input file {}'.format(args.input_file))
     
+    info_str = "Function(s) to execute: {}"
     # Execute the specified function(s)
     if (args.function == 'all'):
+        func_str = "freeze_emissions() & calc_emissions()"
+        logger.info(info_str.format(func_str))
+        # --- Func Calls ---
         freeze_emissions()
         calc_emissions()
     elif (args.function == 'freeze_emissions'):
+        func_str = "freeze_emissions()"
+        logger.info(info_str.format(func_str))
+        # --- Func Calls ---
         freeze_emissions()
     elif (args.function == 'calc_emissions'):
+        func_str = "calc_emissions()"
+        logger.info(info_str.format(func_str))
+        # --- Func Calls ---
         calc_emissions()
     else:
-        raise ValueError('Invalid function argument. Valid args are "freeze_emissions" and "calc_emissions"')
+        raise ValueError('Invalid function argument. Valid args are "all", "freeze_emissions", or "calc_emissions"')
         
 
 

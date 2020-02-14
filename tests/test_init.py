@@ -19,7 +19,7 @@ class TestInit(unittest.TestCase):
         """Initialize TestInit attributes for use in test cases.
         Not a test case
         """
-        self.f_init = '../init/test-config.yml'
+        self.f_init = 'input/test-config.yml'
         self.config = config.ConfigObj(self.f_init)
     
     def test_parse_basic(self):
@@ -53,7 +53,6 @@ class TestInit(unittest.TestCase):
         self.assertIsInstance(self.config.dirs['input'], str)
         self.assertIsInstance(self.config.dirs['output'], str)
         self.assertIsInstance(self.config.dirs['logs'], str)
-        self.assertIsInstance(self.config.dirs['init'], str)
         self.assertIsInstance(self.config.freeze_year, int)
         self.assertIsInstance(self.config.freeze_isos, str)
         self.assertIsInstance(self.config.freeze_species, list)
@@ -73,7 +72,7 @@ class TestInit(unittest.TestCase):
         self.assertEqual(1970, self.config.freeze_year)    # Freeze year
         self.assertEqual('all', self.config.freeze_isos)   # Freeze ISOs
         self.assertEqual(1750, self.config.ceds_meta['year_first']) # CEDS first year
-        self.assertEqual(2015, self.config.ceds_meta['year_last'])  # CEDS last year
+        self.assertEqual(2014, self.config.ceds_meta['year_last'])  # CEDS last year
         
         
 

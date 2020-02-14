@@ -1,0 +1,46 @@
+# Frozen emissions configuration file
+#
+# This file specifies that only combustion sectors from the USA ISO are to be frozen
+#
+# Matt Nicholson
+# 11 Feb 2020
+#
+# Members
+# --------
+# dirs:
+#   cmip6_inter : Path to the CMIP6 emissions 'intermediate-output' directory.
+#   root_inter  : Path of the root intermediate output directory.
+#   rot_proj    : Root project directory
+#   input       : Project input directory
+#   output      : Project output directory
+#   logs        : Project log directory
+#   init        : Project initialization/configuration directory
+# freeze:
+#   year    : Freeze emission factors for years >= freeze_year.
+#   isos    : ISOs to freeze.
+#   species : Emission species to freeze
+# ceds:
+#   year_first : First year of CEDS output. Default is 1750
+#   year_last  : Last year of CEDS output. Default is 2015
+---
+dirs:
+  win:
+    cmip6_inter: C:\Users\nich980\data\e-freeze\test\CMIP6-emissions\intermediate-output
+    root_inter: C:\Users\nich980\data\e-freeze\test\intermediate-output
+    root_proj : C:\Users\nich980\code\frozen-emissions
+    ceds: C:\Users\nich980\code\CEDS-dev
+  linux: 
+    cmip6_inter: /mnt/c/Users/nich980/data/e-freeze/test/CMIP6-emissions/intermediate-output
+    root_inter: /mnt/c/Users/nich980/data/e-freeze/test/intermediate-output
+    root_proj: /mnt/c/Users/nich980/code/frozen-emissions
+    ceds: /mnt/c/Users/nich980/code/CEDS-dev
+  input: ../input
+  output: ../output
+  logs: logs
+freeze:
+  year: 1970
+  isos: [usa]
+  species: [BC, CH4, CO, CO2, NH3, NMVOC, NOx, OC, SO2]
+ceds:
+  year_first: 1750
+  year_last: 2014
