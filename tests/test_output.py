@@ -36,6 +36,7 @@ class TestFreezeAll(unittest.TestCase):
         isos:    all
         species: [BC]
     """
+    test_log.info('===== In TestCase TestFreezeAll =====')
     
     @classmethod
     def setUpClass(cls):
@@ -55,10 +56,10 @@ class TestFreezeAll(unittest.TestCase):
         cls.f_em_factors = 'H.BC_total_EFs_extended.csv'
         cls.config_file  = 'input/config-test_frozen_sectors.yml'
         cls.f_control    = r'C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output\H.BC_total_EFs_extended.csv'
-        test_log.debug('Test species {}'.format(cls.species))
-        test_log.debug('Test EF file {}'.format(cls.f_em_factors))
-        test_log.debug('Test CONFIG file {}'.format(cls.config_file))
-        test_log.debug('Test cnotrol EF file {}'.format(cls.f_control))
+        test_log.debug('Test species...........{}'.format(cls.species))
+        test_log.debug('Test EF file...........{}'.format(cls.f_em_factors))
+        test_log.debug('Test CONFIG file.......{}'.format(cls.config_file))
+        test_log.debug('Test cnotrol EF file...{}'.format(cls.f_control))
         
         # Point the CONFIG intermediate output directory to tests/input/
         config.CONFIG = config.ConfigObj(cls.config_file)
@@ -81,8 +82,22 @@ class TestFreezeAll(unittest.TestCase):
     # --------------------------------------------------------------------------
     
     def setUp(self):
+        """
+        Prior to each test method, create a fresh copy of the setUpClass frozen
+        EF & control EF DataFrames
+        """
         self.frozen_df = self._frozen_df.copy()
         self.control_df = self._control_df.copy()
+    # --------------------------------------------------------------------------
+    
+    def test_output_shapes(self):
+        """
+        Test that the control DF and frozen DF have identical shapes. Should
+        always pass since calc_emissions() will fail if they have mismatched
+        shapes, but ya never know what be going on
+        """
+        test_log.debug('--- In TestFreezeAll::test_output_shapes ---')
+        self.assertEqual(self.frozen_df.shape, self.control_df.shape)
     # --------------------------------------------------------------------------
     
     def test_frozen_factors_1(self):
@@ -158,7 +173,7 @@ class TestFreezeAll(unittest.TestCase):
             print(oserr)
             
 # ==============================================================================
-# ==============================================================================
+# ========================== TestCase TestFreezeUSA ============================
 # ==============================================================================
  
 class TestFreezeUSA(unittest.TestCase):
@@ -174,6 +189,7 @@ class TestFreezeUSA(unittest.TestCase):
         isos:    [usa]
         species: [BC]
     """
+    test_log.info('===== In TestCase TestFreezeUSA =====')
     
     @classmethod
     def setUpClass(cls):
@@ -193,10 +209,10 @@ class TestFreezeUSA(unittest.TestCase):
         cls.f_em_factors = 'H.BC_total_EFs_extended.csv'
         cls.config_file  = 'input/config-test_frozen_sectors_usa.yml'
         cls.f_control    = r'C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output\H.BC_total_EFs_extended.csv'
-        test_log.debug('Test species {}'.format(cls.species))
-        test_log.debug('Test EF file {}'.format(cls.f_em_factors))
-        test_log.debug('Test CONFIG file {}'.format(cls.config_file))
-        test_log.debug('Test cnotrol EF file {}'.format(cls.f_control))
+        test_log.debug('Test species...........{}'.format(cls.species))
+        test_log.debug('Test EF file...........{}'.format(cls.f_em_factors))
+        test_log.debug('Test CONFIG file.......{}'.format(cls.config_file))
+        test_log.debug('Test cnotrol EF file...{}'.format(cls.f_control))
         
         # Point the CONFIG intermediate output directory to tests/input/
         config.CONFIG = config.ConfigObj(cls.config_file)
@@ -219,8 +235,22 @@ class TestFreezeUSA(unittest.TestCase):
     # --------------------------------------------------------------------------
     
     def setUp(self):
+        """
+        Prior to each test method, create a fresh copy of the setUpClass frozen
+        EF & control EF DataFrames
+        """
         self.frozen_df = self._frozen_df.copy()
         self.control_df = self._control_df.copy()
+    # --------------------------------------------------------------------------
+    
+    def test_output_shapes(self):
+        """
+        Test that the control DF and frozen DF have identical shapes. Should
+        always pass since calc_emissions() will fail if they have mismatched
+        shapes, but ya never know what be going on
+        """
+        test_log.debug('--- In TestFreezeUSA::test_output_shapes ---')
+        self.assertEqual(self.frozen_df.shape, self.control_df.shape)
     # --------------------------------------------------------------------------
     
     def test_frozen_factors_1(self):
