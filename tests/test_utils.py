@@ -4,6 +4,7 @@ This file holds variables and whatnot for use in tests
 Matt Nicholson
 12 Feb 2020
 """
+
 # CMIP6/CEDS combustion-related sectors 
 expected_sectors = sorted(
     ['1A1a_Electricity-public', '1A1a_Electricity-autoproducer',
@@ -70,3 +71,73 @@ def subset_df(ef_df, iso):
     df = ef_df.loc[(ef_df['iso'] == iso) &
                    (ef_df['sector'].isin(expected_sectors))]
     return df
+
+def subset_combust_sectors(df):
+        """
+        Return a subset of an EF dataframe that contains only non-combustion
+        sectors
+        
+        Parameters
+        -----------
+        df : Pandas DataFrame
+        
+        Return
+        -------
+        Pandas DataFrame
+        """
+        subset_df = df.loc[df['sector'].isin(non_combustion_sectors)].copy()
+        return subset_df
+    
+def subset_iso(df, isos):
+    """
+    Return a subset of an EF dataframe that contains only EFs for a given ISO
+    or list of ISOs
+    
+    Parameters
+    -----------
+    df : Pandas DataFrame
+    isos : str or list of str
+        ISO or ISOs to subset
+    
+    Return
+    -------
+    Pandas DataFrame
+    """
+    if (not isinstance(iso, list)):
+        isos = [iso]
+    subset_df = df.loc[df['iso'].isin(isos)].copy()
+    return subset_df
+    
+def get_year_headers(year_start, year_end, mode='incl'):
+    """
+    Generate a list of CMIP6/CEDS emissions factors file year columns headers
+    Ex: 'X1970'
+    
+    Parameters
+    ----------
+    year_start : int
+        First year in the sequence
+    year_end : int
+        Last year in the sequence
+    mode : str, optional
+        Determines whether or not to include the ending year in the header list.
+        mode == 'incl', which means year_end *will* be included in the list.
+        mode == 'excl' means year_end *will not* be included in the list.
+        Default is 'incl'.
+        
+    Return
+    -------
+    list of str
+    """
+    # Upper bound is year_end + 1 due to how range() handles upper bounds
+    try:
+        if (mode == 'incl'):
+            year_end += 1
+        headers = ['X{}'.format(yr) for year in range(year_start, year_end)]
+    except TypeError as err:
+        # year_start and/or year_end has been given as a str instead of int.
+        # Cast them as ints and make a recusrive call
+        year_start = int(year_start)
+        year_end   = int(year_end)
+        headers = get_year_headers(year_start, year_end, mode=mode)
+    return headers
