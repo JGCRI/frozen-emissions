@@ -5,8 +5,8 @@ Matt Nicholson
 7 Feb 2020
 """
 import yaml
+import os
 from sys import platform
-from os.path import basename
 
 # Global config 'constant'
 CONFIG = None
@@ -31,6 +31,12 @@ class ConfigObj:
                 year_last  : Last (most current) year of CEDS output
         dirs : dict of {str : str}
             Dictionary containing various input and output directory paths
+            Keys:
+                'root'  : Path to root project directory
+                'input' : Path to main input directory
+                'output': Path to main output directory
+                'cmip6' : Path to CMIP6/intermediate-output directory
+                'ceds'  : Path to local CEDS project direcotyr
         freeze_year : int
             Freeze emission factors for years >= this year.
         freeze_isos : str or list of str
@@ -52,12 +58,12 @@ class ConfigObj:
         """
         Initialize the 'dirs' instance attr
         """
-        dirs = {'cmip6'    : None,
-                'inter_out': None,
-                'proj_root': None,
+        # Get the project root, which will be one level up
+        project_root, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
+        dirs = {'root': project_root,
+                'cmip6'    : None,
                 'input'    : None,
                 'output'   : None,
-                'logs'     : None,
                 'ceds'     : None}
         self.dirs = dirs
         
@@ -86,20 +92,17 @@ class ConfigObj:
             raise ValueError('Only Windows and Linux systems are currently supported')
             
         self._init_dirs()      # Initialize the instance's directory dictionary
-        self.dirs['cmip6']     = info['dirs'][op_sys]['cmip6_inter']
-        self.dirs['inter_out'] = info['dirs'][op_sys]['root_inter']
-        self.dirs['proj_root'] = info['dirs'][op_sys]['root_proj']
+        self.dirs['cmip6']     = info['dirs'][op_sys]['cmip6']
         self.dirs['ceds']      = info['dirs'][op_sys]['ceds']
-        self.dirs['input']     = info['dirs']['input']
-        self.dirs['output']    = info['dirs']['output']
-        self.dirs['logs']      = info['dirs']['logs']
+        self.dirs['input']     = os.path.join(self.dirs['root'], 'input')
+        self.dirs['output']    = os.path.join(self.dirs['root'], 'output')
         self.freeze_year       = int(info['freeze']['year'])
         try:     # Is freeze_isos a string?
             self.freeze_isos = info['freeze']['isos'].lower()
         except:  # We have determined that freeze_isos is not a string
             self.freeze_isos = [x.lower() for x in info['freeze']['isos']]
         self.freeze_species    = info['freeze']['species']
-        self.init_file         = basename(yaml_path)
+        self.init_file         = os.path.basename(yaml_path)
         self.ceds_meta['year_first'] = info['ceds']['year_first']
         self.ceds_meta['year_last'] = info['ceds']['year_last']
         
