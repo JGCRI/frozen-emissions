@@ -20,6 +20,9 @@ import emission_factor_file
 import test_utils
 import driver
 
+test_log = test_utils.init_test_log('test_output')
+test_log.info('Hello from test_output.py!')
+
 class TestFreezeAll(unittest.TestCase):
     """
     Unittest TestCase class to test output of the freeze_emissions() & calc_emissions()
@@ -46,25 +49,40 @@ class TestFreezeAll(unittest.TestCase):
         beginning of execution (versus a setUp method, which executes before
         every test method call).
         """
+        super(TestFreezeAll, cls).setUpClass()
+        test_log.info('--- In TestFreezeAll::setUpClass ---')
         cls.species      = 'BC'
         cls.f_em_factors = 'H.BC_total_EFs_extended.csv'
         cls.config_file  = 'input/config-test_frozen_sectors.yml'
         cls.f_control    = r'C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output\H.BC_total_EFs_extended.csv'
+        test_log.debug('Test species {}'.format(cls.species))
+        test_log.debug('Test EF file {}'.format(cls.f_em_factors))
+        test_log.debug('Test CONFIG file {}'.format(cls.config_file))
+        test_log.debug('Test cnotrol EF file {}'.format(cls.f_control))
         
         # Point the CONFIG intermediate output directory to tests/input/
-        config.CONFIG = config.ConfigObj(config_file)
+        config.CONFIG = config.ConfigObj(cls.config_file)
         config.CONFIG.dirs['inter_out'] = 'input'
         
         # Freeze the emissions factors and calculate the final frozen emissions
+        test_log.debug('Executing driver.freeze_emissions()')
         driver.freeze_emissions()
+        test_log.debug('Executing driver.calc_emissions()')
         driver.calc_emissions()
         
         # Read the frozen emissions in to a dataframe
+        test_log.debug('Reading frozen EF file into DataFrame')
         cls.f_frozen = os.path.join(config.CONFIG.dirs['inter_out'], cls.f_em_factors)
-        cls.frozen_df = pd.read_csv(f_frozen, sep=',', header=0)
+        cls._frozen_df = pd.read_csv(cls.f_frozen, sep=',', header=0)
         
         # Read the un-edited control CMIP6 EF file
-        cls.control_df = pd.read_csv(cls.f_control, sep=',', header=0)
+        test_log.debug('Reading control EF file into DataFrame')
+        cls._control_df = pd.read_csv(cls.f_control, sep=',', header=0)
+    # --------------------------------------------------------------------------
+    
+    def setUp(self):
+        self.frozen_df = self._frozen_df.copy()
+        self.control_df = self._control_df.copy()
     # --------------------------------------------------------------------------
     
     def test_frozen_factors_1(self):
@@ -72,8 +90,10 @@ class TestFreezeAll(unittest.TestCase):
         Basic test to check that the control EF file and the frozen EF file 
         are not identical
         """
+        result = True
+        test_log.debug('--- In TestFreezeAll::test_frozen_factors_1 ---')
         try:
-            result = pd.testing.assert_frame_equal(cls.control_df, cls.frozen_df, check_dtype=False)
+            pd.testing.assert_frame_equal(self.control_df, self.frozen_df, check_dtype=False)
         except AssertionError as err:
             result = False
         self.assertFalse(result)
@@ -84,13 +104,15 @@ class TestFreezeAll(unittest.TestCase):
         Check that EFs prior to the specified freeze year have not been changed,
         no matter what ISO, sector, or fuel they belong to
         """
+        result = True
+        test_log.debug('--- In TestFreezeAll::test_frozen_factors_2 ---')
         year_first   = config.CONFIG.ceds_meta['year_first']
         year_freeze  = config.CONFIG.freeze_year
         year_headers = test_utils.get_year_headers(year_first, year_freeze, mode='excl')
-        control_df = cls.control_df[[year_headers]].copy()
-        frozen_df  = cls.frozen_df[[year_headers]].copy()
+        control_df = self.control_df[year_headers].copy()
+        frozen_df  = self.frozen_df[year_headers].copy()
         try:
-            result = pd.testing.assert_frame_equal(control_df, frozen_df, check_dtype=False)
+            pd.testing.assert_frame_equal(control_df, frozen_df, check_dtype=False)
         except AssertionError as err:
             result = False
         self.assertTrue(result)
@@ -101,12 +123,14 @@ class TestFreezeAll(unittest.TestCase):
         Insure that non-combustion sectors were not changed during the 
         freezing process
         """
+        result = True
+        test_log.debug('--- In TestFreezeAll::test_frozen_sectors ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        control_non_combust = test_utils.subset_combust_sectors(cls.control_df)
-        frozen_non_combust  = test_utils.subset_combust_sectors(cls.frozen_df)
+        control_non_combust = test_utils.subset_combust_sectors(self.control_df)
+        frozen_non_combust  = test_utils.subset_combust_sectors(self.frozen_df)
         try:
-            result = pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
+            pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
         except AssertionError as err:
             result = False
         self.assertTrue(result)
@@ -121,16 +145,23 @@ class TestFreezeAll(unittest.TestCase):
         Similar to the setUpClass, this tearDownClass only executes once after
         all test methods have executed
         """
+        super(TestFreezeAll, cls).tearDownClass()
+        test_log.debug('--- In TestFreezeAll::tearDownClass ---')
         config.CONFIG = None
         try:
             os.remove('input/H.BC_total_EFs_extended.csv')
+            test_log.debug('Successfully deleted input/H.BC_total_EFs_extended.csv')
             os.remove('input/BC_total_CEDS_emissions.csv')
+            test_log.debug('Successfully deleted input/BC_total_CEDS_emissions')
         except OSError as oserr:
+            test_log.error(oserr)
             print(oserr)
             
- # =============================================================================
+# ==============================================================================
+# ==============================================================================
+# ==============================================================================
  
- class TestFreezeUSA(unittest.TestCase):
+class TestFreezeUSA(unittest.TestCase):
     """
     Unittest TestCase class to test output of the freeze_emissions() & calc_emissions()
     functions produced using the global configuration file config-test_frozen_sectors_usa.yml
@@ -156,25 +187,40 @@ class TestFreezeAll(unittest.TestCase):
         beginning of execution (versus a setUp method, which executes before
         every test method call).
         """
+        super(TestFreezeUSA, cls).setUpClass()
+        test_log.info('--- In TestFreezeUSA::setUpClass ---')
         cls.species      = 'BC'
         cls.f_em_factors = 'H.BC_total_EFs_extended.csv'
         cls.config_file  = 'input/config-test_frozen_sectors_usa.yml'
         cls.f_control    = r'C:\Users\nich980\data\e-freeze\CMIP6-emissions\intermediate-output\H.BC_total_EFs_extended.csv'
+        test_log.debug('Test species {}'.format(cls.species))
+        test_log.debug('Test EF file {}'.format(cls.f_em_factors))
+        test_log.debug('Test CONFIG file {}'.format(cls.config_file))
+        test_log.debug('Test cnotrol EF file {}'.format(cls.f_control))
         
         # Point the CONFIG intermediate output directory to tests/input/
-        config.CONFIG = config.ConfigObj(config_file)
+        config.CONFIG = config.ConfigObj(cls.config_file)
         config.CONFIG.dirs['inter_out'] = 'input'
         
         # Freeze the emissions factors and calculate the final frozen emissions
+        test_log.debug('Executing driver.freeze_emissions()')
         driver.freeze_emissions()
+        test_log.debug('Executing driver.calc_emissions()')
         driver.calc_emissions()
         
         # Read the frozen emissions in to a dataframe
+        test_log.debug('Reading frozen EF file into DataFrame')
         cls.f_frozen = os.path.join(config.CONFIG.dirs['inter_out'], cls.f_em_factors)
-        cls.frozen_df = pd.read_csv(f_frozen, sep=',', header=0)
+        cls._frozen_df = pd.read_csv(cls.f_frozen, sep=',', header=0)
         
         # Read the un-edited control CMIP6 EF file
-        cls.control_df = pd.read_csv(cls.f_control, sep=',', header=0)
+        test_log.debug('Reading control EF file into DataFrame')
+        cls._control_df = pd.read_csv(cls.f_control, sep=',', header=0)
+    # --------------------------------------------------------------------------
+    
+    def setUp(self):
+        self.frozen_df = self._frozen_df.copy()
+        self.control_df = self._control_df.copy()
     # --------------------------------------------------------------------------
     
     def test_frozen_factors_1(self):
@@ -182,8 +228,10 @@ class TestFreezeAll(unittest.TestCase):
         Basic test to check that the control EF file and the frozen EF file 
         are not identical
         """
+        result = True
+        test_log.debug('--- In TestFreezeUSA::test_frozen_factors_1 ---')
         try:
-            result = pd.testing.assert_frame_equal(cls.control_df, cls.frozen_df, check_dtype=False)
+            pd.testing.assert_frame_equal(self.control_df, self.frozen_df, check_dtype=False)
         except AssertionError as err:
             result = False
         self.assertFalse(result)
@@ -194,13 +242,15 @@ class TestFreezeAll(unittest.TestCase):
         Check that EFs prior to the specified freeze year have not been changed,
         no matter what ISO, sector, or fuel they belong to
         """
+        result = True
+        test_log.debug('--- In TestFreezeUSA::test_frozen_factors_2 ---')
         year_first   = config.CONFIG.ceds_meta['year_first']
         year_freeze  = config.CONFIG.freeze_year
         year_headers = test_utils.get_year_headers(year_first, year_freeze, mode='excl')
-        control_df = cls.control_df[[year_headers]].copy()
-        frozen_df  = cls.frozen_df[[year_headers]].copy()
+        control_df = self.control_df[year_headers].copy()
+        frozen_df  = self.frozen_df[year_headers].copy()
         try:
-            result = pd.testing.assert_frame_equal(control_df, frozen_df, check_dtype=False)
+            pd.testing.assert_frame_equal(control_df, frozen_df, check_dtype=False)
         except AssertionError as err:
             result = False
         self.assertTrue(result)
@@ -211,13 +261,15 @@ class TestFreezeAll(unittest.TestCase):
         Insure that non-combustion sectors were not changed during the 
         freezing process
         """
+        result = True
+        test_log.debug('--- In TestFreezeUSA::test_frozen_sectors_1 ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        control_non_combust = test_utils.subset_combust_sectors(cls.control_df)
-        frozen_non_combust  = test_utils.subset_combust_sectors(cls.frozen_df)
+        control_non_combust = test_utils.subset_combust_sectors(self.control_df)
+        frozen_non_combust  = test_utils.subset_combust_sectors(self.frozen_df)
         
         try:
-            result = pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
+            pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
         except AssertionError as err:
             result = False
         self.assertTrue(result)
@@ -227,17 +279,41 @@ class TestFreezeAll(unittest.TestCase):
         """
         Check that the EFs for the frozen USA ISO are not equal to the control USA EFs
         """
+        result = True
+        test_log.debug('--- In TestFreezeUSA::test_frozen_isos_1 ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        control_non_combust = test_utils.subset_combust_sectors(cls.control_df)
-        frozen_non_combust  = test_utils.subset_combust_sectors(cls.frozen_df
+        control_non_combust = test_utils.subset_combust_sectors(self.control_df)
+        frozen_non_combust  = test_utils.subset_combust_sectors(self.frozen_df)
         
         # Subset USA ISO EFs
         control_non_combust = test_utils.subset_iso(control_non_combust, config.CONFIG.freeze_isos)
         frozen_non_combust  = test_utils.subset_iso(frozen_non_combust, config.CONFIG.freeze_isos)
         
         try:
-            result = pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
+            pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
+        except AssertionError as err:
+            result = False
+        self.assertFalse(result)
+    # --------------------------------------------------------------------------
+    
+    def test_frozen_isos_2(self):
+        """
+        Check that the frozen EFs for ISOs != USA do not differ from the control EFs
+        """
+        result = True
+        test_log.debug('--- In TestFreezeUSA::test_frozen_isos_2 ---')
+        # Get subsets of the frozen & control dataframes that only contain EFs 
+        # from non-combustion sectors
+        control_non_combust = test_utils.subset_combust_sectors(self.control_df)
+        frozen_non_combust  = test_utils.subset_combust_sectors(self.frozen_df)
+        
+        # Subset USA ISO EFs
+        control_non_combust = test_utils.subset_iso(control_non_combust, config.CONFIG.freeze_isos)
+        frozen_non_combust  = test_utils.subset_iso(frozen_non_combust, config.CONFIG.freeze_isos)
+        
+        try:
+            pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
         except AssertionError as err:
             result = False
         self.assertFalse(result)
@@ -252,14 +328,21 @@ class TestFreezeAll(unittest.TestCase):
         Similar to the setUpClass, this tearDownClass only executes once after
         all test methods have executed
         """
+        super(TestFreezeUSA, cls).tearDownClass()
+        test_log.debug('--- In TestFreezeUSA::tearDownClass ---')
         config.CONFIG = None
         try:
             os.remove('input/H.BC_total_EFs_extended.csv')
+            test_log.debug('Successfully deleted input/H.BC_total_EFs_extended.csv')
             os.remove('input/BC_total_CEDS_emissions.csv')
+            test_log.debug('Successfully deleted input/BC_total_CEDS_emissions.csv')
         except OSError as oserr:
+            test_log.error(oserr)
             print(oserr)
 
+# ==============================================================================
 # ==================================== Main ====================================
+# ==============================================================================
 
 if __name__ == '__main__':
     unittest.main()
