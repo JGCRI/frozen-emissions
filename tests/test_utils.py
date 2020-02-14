@@ -77,7 +77,7 @@ def subset_df(ef_df, iso):
     return df
 # ------------------------------------------------------------------------------
 
-def subset_combust_sectors(df):
+def subset_noncombust_sectors(df):
         """
         Return a subset of an EF dataframe that contains only non-combustion
         sectors
@@ -91,6 +91,22 @@ def subset_combust_sectors(df):
         Pandas DataFrame
         """
         subset_df = df.loc[df['sector'].isin(non_combustion_sectors)].copy()
+        return subset_df
+# ------------------------------------------------------------------------------
+
+def subset_combust_sectors(df):
+        """
+        Return a subset of an EF dataframe that contains only combustion sectors
+        
+        Parameters
+        -----------
+        df : Pandas DataFrame
+        
+        Return
+        -------
+        Pandas DataFrame
+        """
+        subset_df = df.loc[df['sector'].isin(expected_sectors)].copy()
         return subset_df
 # ------------------------------------------------------------------------------
     
@@ -112,6 +128,28 @@ def subset_iso(df, isos):
     if (not isinstance(isos, list)):
         isos = [iso]
     subset_df = df.loc[df['iso'].isin(isos)].copy()
+    return subset_df
+# ------------------------------------------------------------------------------
+
+def subset_iso_inverse(df, isos):
+    """
+    Return a subset of an EF dataframe that contains only EFs for ISO(s) that
+    are not present in 'isos'
+    
+    Parameters
+    -----------
+    df : Pandas DataFrame
+    isos : str or list of str
+        ISO or ISOs to subset
+    
+    Return
+    -------
+    Pandas DataFrame
+    """
+    if (not isinstance(isos, list)):
+        isos = [iso]
+    inv_isos = [x for x in expected_isos if x not in isos]
+    subset_df = df.loc[df['iso'].isin(inv_isos)].copy()
     return subset_df
 # ------------------------------------------------------------------------------
     

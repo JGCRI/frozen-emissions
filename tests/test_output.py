@@ -118,7 +118,7 @@ class TestFreezeAll(unittest.TestCase):
         self.assertTrue(result)
     # --------------------------------------------------------------------------
     
-    def test_frozen_sectors(self):
+    def test_frozen_sectors_1(self):
         """
         Insure that non-combustion sectors were not changed during the 
         freezing process
@@ -127,8 +127,8 @@ class TestFreezeAll(unittest.TestCase):
         test_log.debug('--- In TestFreezeAll::test_frozen_sectors ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        control_non_combust = test_utils.subset_combust_sectors(self.control_df)
-        frozen_non_combust  = test_utils.subset_combust_sectors(self.frozen_df)
+        control_non_combust = test_utils.subset_noncombust_sectors(self.control_df)
+        frozen_non_combust  = test_utils.subset_noncombust_sectors(self.frozen_df)
         try:
             pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
         except AssertionError as err:
@@ -258,15 +258,38 @@ class TestFreezeUSA(unittest.TestCase):
     
     def test_frozen_sectors_1(self):
         """
-        Insure that non-combustion sectors were not changed during the 
+        Insure that non-combustion sectors for all ISOs were not changed during the 
         freezing process
         """
         result = True
         test_log.debug('--- In TestFreezeUSA::test_frozen_sectors_1 ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        control_non_combust = test_utils.subset_combust_sectors(self.control_df)
-        frozen_non_combust  = test_utils.subset_combust_sectors(self.frozen_df)
+        control_non_combust = test_utils.subset_noncombust_sectors(self.control_df)
+        frozen_non_combust  = test_utils.subset_noncombust_sectors(self.frozen_df)
+        
+        try:
+            pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
+        except AssertionError as err:
+            result = False
+        self.assertTrue(result)
+    # --------------------------------------------------------------------------
+    
+    def test_frozen_sectors_2(self):
+        """
+        Insure that non-combustion sectors for USA ISO were not changed during the 
+        freezing process
+        """
+        result = True
+        test_log.debug('--- In TestFreezeUSA::test_frozen_sectors_1 ---')
+        # Get subsets of the frozen & control dataframes that only contain EFs 
+        # from non-combustion sectors
+        control_non_combust = test_utils.subset_noncombust_sectors(self.control_df)
+        frozen_non_combust  = test_utils.subset_noncombust_sectors(self.frozen_df)
+        
+        # Subset USA ISO EFs
+        control_non_combust = test_utils.subset_iso(control_non_combust, config.CONFIG.freeze_isos)
+        frozen_non_combust  = test_utils.subset_iso(frozen_non_combust, config.CONFIG.freeze_isos)
         
         try:
             pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
@@ -294,29 +317,25 @@ class TestFreezeUSA(unittest.TestCase):
             pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
         except AssertionError as err:
             result = False
-        self.assertFalse(result)
+        self.assertFalse(result) # assertFalse since we *don't* want the DFs to be equal
     # --------------------------------------------------------------------------
     
     def test_frozen_isos_2(self):
         """
-        Check that the frozen EFs for ISOs != USA do not differ from the control EFs
+        Check that the frozen EFs for ISOs != USA are identical to the control EFs
         """
         result = True
         test_log.debug('--- In TestFreezeUSA::test_frozen_isos_2 ---')
-        # Get subsets of the frozen & control dataframes that only contain EFs 
-        # from non-combustion sectors
-        control_non_combust = test_utils.subset_combust_sectors(self.control_df)
-        frozen_non_combust  = test_utils.subset_combust_sectors(self.frozen_df)
         
-        # Subset USA ISO EFs
-        control_non_combust = test_utils.subset_iso(control_non_combust, config.CONFIG.freeze_isos)
-        frozen_non_combust  = test_utils.subset_iso(frozen_non_combust, config.CONFIG.freeze_isos)
+        # Inverse subset USA ISO EFs
+        control_df = test_utils.subset_iso_inverse(self.control_df, config.CONFIG.freeze_isos)
+        frozen_df  = test_utils.subset_iso_inverse(self.frozen_df, config.CONFIG.freeze_isos)
         
         try:
-            pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
+            pd.testing.assert_frame_equal(control_df, frozen_df, check_dtype=False)
         except AssertionError as err:
             result = False
-        self.assertFalse(result)
+        self.assertTrue(result) # assertTrue since we *do* want the DFs to be equal
     # --------------------------------------------------------------------------
        
     @classmethod
