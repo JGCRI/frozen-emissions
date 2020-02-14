@@ -63,7 +63,7 @@ class TestFreezeAll(unittest.TestCase):
         
         # Point the CONFIG intermediate output directory to tests/input/
         config.CONFIG = config.ConfigObj(cls.config_file)
-        config.CONFIG.dirs['inter_out'] = 'input'
+        config.CONFIG.dirs['output'] = 'input'
         
         # Freeze the emissions factors and calculate the final frozen emissions
         test_log.debug('Executing driver.freeze_emissions()')
@@ -73,7 +73,7 @@ class TestFreezeAll(unittest.TestCase):
         
         # Read the frozen emissions in to a dataframe
         test_log.debug('Reading frozen EF file into DataFrame')
-        cls.f_frozen = os.path.join(config.CONFIG.dirs['inter_out'], cls.f_em_factors)
+        cls.f_frozen = os.path.join(config.CONFIG.dirs['output'], cls.f_em_factors)
         cls._frozen_df = pd.read_csv(cls.f_frozen, sep=',', header=0)
         
         # Read the un-edited control CMIP6 EF file
@@ -216,7 +216,7 @@ class TestFreezeUSA(unittest.TestCase):
         
         # Point the CONFIG intermediate output directory to tests/input/
         config.CONFIG = config.ConfigObj(cls.config_file)
-        config.CONFIG.dirs['inter_out'] = 'input'
+        config.CONFIG.dirs['output'] = 'input'
         
         # Freeze the emissions factors and calculate the final frozen emissions
         test_log.debug('Executing driver.freeze_emissions()')
@@ -226,7 +226,7 @@ class TestFreezeUSA(unittest.TestCase):
         
         # Read the frozen emissions in to a dataframe
         test_log.debug('Reading frozen EF file into DataFrame')
-        cls.f_frozen = os.path.join(config.CONFIG.dirs['inter_out'], cls.f_em_factors)
+        cls.f_frozen = os.path.join(config.CONFIG.dirs['output'], cls.f_em_factors)
         cls._frozen_df = pd.read_csv(cls.f_frozen, sep=',', header=0)
         
         # Read the un-edited control CMIP6 EF file

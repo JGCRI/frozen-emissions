@@ -75,7 +75,7 @@ def freeze_emissions():
     
     # Unpack config directory paths for better readability
     dir_cmip6 = config.CONFIG.dirs['cmip6']
-    dir_inter_out = config.CONFIG.dirs['inter_out']
+    dir_output = config.CONFIG.dirs['output']
     
     logger = logging.getLogger("main")
     logger.info("In main::freeze_emissions()")
@@ -150,7 +150,7 @@ def freeze_emissions():
         ef_obj.reconstruct_emissions()
         
         f_name = os.path.basename(f_path)
-        f_out = os.path.join(dir_inter_out, f_name)
+        f_out = os.path.join(dir_output, f_name)
         
         info_str = "Writing frozen emissions factors DataFrame to {}".format(f_out)
         logger.debug(info_str)
@@ -187,7 +187,7 @@ def calc_emissions():
     logger.info('In main::calc_emissions()')
     
     # Unpack for better readability
-    dir_inter_out = config.CONFIG.dirs['inter_out']
+    dir_output = config.CONFIG.dirs['output']
     dir_cmip6 = config.CONFIG.dirs['cmip6']
     
     # Create list of strings representing year column headers
@@ -201,7 +201,7 @@ def calc_emissions():
         
         # Get emission factor file for species
         try:
-            frozen_ef_file = ceds_io.get_file_for_species(dir_inter_out, species, "ef")
+            frozen_ef_file = ceds_io.get_file_for_species(dir_output, species, "ef")
         except FileNotFoundError as err:
             # If a FileNotFoundError is returned, log it and move on to the next species
             err_str = "Error encountered while fetching EF file: {}".format(err)
@@ -267,7 +267,7 @@ def calc_emissions():
        
         f_name = '{}_total_CEDS_emissions.csv'.format(species)
         
-        f_out = os.path.join(dir_inter_out, f_name)
+        f_out = os.path.join(dir_output, f_name)
         
         info_str = 'Writing emissions DataFrame to {}'.format(f_out)
         logger.debug(info_str)
@@ -291,7 +291,7 @@ def main():
     config.CONFIG = config.ConfigObj(args.input_file)
     
     # Initialize a new main log
-    logger = log_config.init_logger(config.CONFIG.dirs['logs'], "main", level='debug')
+    logger = log_config.init_logger('logs', 'main', level='debug')
     logger.info('Input file {}'.format(args.input_file))
     
     info_str = "Function(s) to execute: {}"
