@@ -1,5 +1,5 @@
 """
-Class to represent a CMIP6 Emission Factor (EF) File
+Class to represent a CMIP6 Emissions Factors (EF) File
 
 Matt Nicholson
 12 Feb 2020
@@ -27,15 +27,17 @@ class EmissionFactorFile:
             
         Attributes
         -----------
-        size : tuple of (int, int)
-            Overall shape of the EF file
         species : str
-            Name of the species represented in the EF file
+            Name of the emission species represented in the EF file
         path : str  
-            Path of the EF file corresponding to the instance
-        isos : dict of {str : iso obj}
-            Dict where a key is a str representation of an ISO name and the 
-            corresponding value is an ISO object for that ISO
+            Path of the EF file being processed
+        all_factors : Pandas DataFrame
+            DataFrame containing the entirety of the EF file
+        combustion_factors : Pandas DataFrame
+            DataFrame containing only emissions factors from combustion-related sectors
+        freeze_year : str
+            Year at which to freeze the EFs, formatted to match the format of 
+            the EF dataframe year column headers (ex: 'X1970')
         """
         logger.debug('Creating EmissionFactorFile instance {} from {}'.format(species, f_path))
         self.species = species
@@ -47,15 +49,35 @@ class EmissionFactorFile:
             self._filter_isos()
     
     def get_species(self):
+        """
+        Return
+        -------
+        str : the instance's species
+        """
         return self.species
     
     def get_path(self):
+        """
+        Return
+        -------
+        str : the instance's path
+        """
         return self.path
     
     def get_shape(self):
+        """
+        Return
+        -------
+        tuple of int : The shape of the instance's 'all_factors' dataframe
+        """
         return self.all_factors.shape
         
     def get_comb_shape(self):
+        """
+        Return
+        -------
+        tuple of int : The shape of the instance's 'combustion_factors' dataframe
+        """
         return self.combustion_factors.shape
     
     def get_sectors(self, ef='comb'):
@@ -99,12 +121,45 @@ class EmissionFactorFile:
         return ret_val
     
     def get_factors_all(self):
+        """
+        Return
+        -------
+        Pandas DataFrame : The instance's dataframe containing all emissions factors
+        """
         return self.all_factors
         
     def get_factors_combustion(self):
+        """
+        Return
+        -------
+        Pandas DataFrame : The instance's dataframe containing only emissions factors
+        from combustion-related sectors
+        """
         return self.combustion_factors
     
     def get_isos(self, ef='comb', unique=True):
+        """
+        Return a list of ISOs present in an instance's EF dataframe
+        
+        Parameters
+        -----------
+        ef : str, optional
+            Emissions factors to retrieve ISOs from. Options are:
+                * 'comb': Only ISOs present in the combustion sector dataframe
+                          will be returned
+                * 'all' : All ISOs will be returned, regardless of what sector
+                          they're associated with.
+            Default is 'comb'.
+        unique : bool, optional
+            Specifies whether to return only unique ISOs or the entire list of 
+            ISOs including duplicates. Default is True, meaning only unique ISOs
+            will be returned. unique = False is useful when preserving the index
+            of the ISOs is desired.
+            
+        Return
+        -------
+        list of str           
+        """
         if (ef != 'comb'):
             if (unique):
                 ret_val = self.all_factors['iso'].unique().tolist()
@@ -118,16 +173,52 @@ class EmissionFactorFile:
         return ret_val
         
     def freeze_emissions(self, year_strs):
+        """
+        Set all combustion-related emissions factors for years greater than the
+        freeze year equal to their value at the freeze year.
+        
+        Parameters
+        -----------
+        year_strs : list of str
+            List of strings representing years >= the freeze year, in column header
+            format (ex: 'X1970').
+            
+        Return
+        -------
+        None
+        """
         year_0 = year_strs[0]
         for year in year_strs[1:]:
             self.combustion_factors[year] = self.combustion_factors[year_0]
             
     def reconstruct_emissions(self):
+        """
+        Update the EF values in the original, unedited EF dataframe with their
+        corresponding frozen EF values. 
+        
+        Updates the values of the instance's 'all_factors' dataframe in-place.
+        
+        Parameters
+        -----------
+        None
+        
+        Return
+        -------
+        None
+        """
         self.all_factors.update(self.combustion_factors)
     
     def _filter_isos(self):
         """
         Remove any ISOs from the combustion EF DataFrame that are not meant to be frozen
+        
+        Parameters
+        -----------
+        None
+        
+        Return
+        -------
+        None
         """
         iso_list = config.CONFIG.freeze_isos
         logger.debug("Filtering ISOs for {}".format(iso_list))
