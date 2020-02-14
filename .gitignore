@@ -6,3 +6,5 @@ logs/
 **/__pycache__
 *.pyc
 
+# .csv files in the tests/ directory
+tests/**/*.csv
