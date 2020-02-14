@@ -59,7 +59,7 @@ class TestFreezeAll(unittest.TestCase):
         test_log.debug('Test species...........{}'.format(cls.species))
         test_log.debug('Test EF file...........{}'.format(cls.f_em_factors))
         test_log.debug('Test CONFIG file.......{}'.format(cls.config_file))
-        test_log.debug('Test cnotrol EF file...{}'.format(cls.f_control))
+        test_log.debug('Test control EF file...{}'.format(cls.f_control))
         
         # Point the CONFIG intermediate output directory to tests/input/
         config.CONFIG = config.ConfigObj(cls.config_file)
@@ -212,7 +212,7 @@ class TestFreezeUSA(unittest.TestCase):
         test_log.debug('Test species...........{}'.format(cls.species))
         test_log.debug('Test EF file...........{}'.format(cls.f_em_factors))
         test_log.debug('Test CONFIG file.......{}'.format(cls.config_file))
-        test_log.debug('Test cnotrol EF file...{}'.format(cls.f_control))
+        test_log.debug('Test control EF file...{}'.format(cls.f_control))
         
         # Point the CONFIG intermediate output directory to tests/input/
         config.CONFIG = config.ConfigObj(cls.config_file)
