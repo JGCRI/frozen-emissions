@@ -36,7 +36,7 @@ dirs:
     root_inter: /mnt/c/Users/nich980/data/e-freeze/test/intermediate-output
     root_proj: /mnt/c/Users/nich980/code/frozen-emissions
     ceds: /mnt/c/Users/nich980/code/CEDS-dev
-  input: ../../input
+  input: input
   output: ../../output
   logs: ../../src/logs
 freeze:

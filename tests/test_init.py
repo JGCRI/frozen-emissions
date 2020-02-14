@@ -72,7 +72,7 @@ class TestInit(unittest.TestCase):
         self.assertEqual(1970, self.config.freeze_year)    # Freeze year
         self.assertEqual('all', self.config.freeze_isos)   # Freeze ISOs
         self.assertEqual(1750, self.config.ceds_meta['year_first']) # CEDS first year
-        self.assertEqual(2015, self.config.ceds_meta['year_last'])  # CEDS last year
+        self.assertEqual(2014, self.config.ceds_meta['year_last'])  # CEDS last year
         
         
 

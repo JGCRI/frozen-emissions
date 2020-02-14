@@ -35,7 +35,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(1970, config.CONFIG.freeze_year)    # Freeze year
         self.assertEqual('all', config.CONFIG.freeze_isos)   # Freeze ISOs
         self.assertEqual(1750, config.CONFIG.ceds_meta['year_first']) # CEDS first year
-        self.assertEqual(2015, config.CONFIG.ceds_meta['year_last'])  # CEDS last year
+        self.assertEqual(2014, config.CONFIG.ceds_meta['year_last'])  # CEDS last year
     
     def test_update_config(self):
         """Test if updates to CONFIG in another file will be reflected here

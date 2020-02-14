@@ -11,7 +11,7 @@ sys.path.insert(1, '../src')
 
 import config
 
-f_init = '../input/test-config.yml'
+f_init = 'input/test-config.yml'
 
 config.CONFIG = config.ConfigObj(f_init)
 
