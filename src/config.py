@@ -61,10 +61,10 @@ class ConfigObj:
         # Get the project root, which will be one level up
         project_root, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
         dirs = {'root': project_root,
-                'cmip6'    : None,
-                'input'    : None,
-                'output'   : None,
-                'ceds'     : None}
+                'cmip6'  : None,
+                'input'  : None,
+                'output' : None,
+                'ceds'   : None}
         self.dirs = dirs
         
     def _parse_yaml(self, yaml_path):
