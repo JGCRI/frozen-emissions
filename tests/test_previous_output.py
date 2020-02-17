@@ -21,7 +21,7 @@ import emission_factor_file
 import test_utils
 import driver
 
-test_log = test_utils.init_test_log('test_output')
+test_log = test_utils.init_test_log('test_previous_output')
 test_log.info('Hello from test_output.py!')
 
 class TestFreezeAll(unittest.TestCase):
@@ -56,7 +56,7 @@ class TestFreezeAll(unittest.TestCase):
         cls.species      = 'BC'
         cls.f_em_factors = 'H.BC_total_EFs_extended.csv'
         cls.config_file  = 'input/config-test_frozen_sectors.yml'
-        cls.f_previous   = r'C:\Users\nich980\data\e-freeze\frozen-emissions\2020-1-2\intermediate-output\H.BC_total_EFs_extended.csv'
+        cls.f_previous   = r'C:\Users\nich980\data\e-freeze\frozen-emissions\2020-01-02\intermediate-output\H.BC_total_EFs_extended.csv'
         test_log.debug('Test species...........{}'.format(cls.species))
         test_log.debug('Test EF file...........{}'.format(cls.f_em_factors))
         test_log.debug('Test CONFIG file.......{}'.format(cls.config_file))
@@ -108,11 +108,13 @@ class TestFreezeAll(unittest.TestCase):
         """
         result = True
         test_log.debug('--- In TestFreezeAll::test_frozen_factors_1 ---')
-        try:
+        # try:
+            # pd.testing.assert_frame_equal(self.previous_df, self.current_df, check_dtype=False)
+        # except AssertionError as err:
+            # result = False
+        # self.assertFalse(result)
+        with self.assertRaises(AssertionError):
             pd.testing.assert_frame_equal(self.previous_df, self.current_df, check_dtype=False)
-        except AssertionError as err:
-            result = False
-        self.assertFalse(result)
     # --------------------------------------------------------------------------
     
     def test_frozen_factors_2(self):
@@ -131,6 +133,28 @@ class TestFreezeAll(unittest.TestCase):
             pd.testing.assert_frame_equal(previous_df, current_df, check_dtype=False)
         except AssertionError as err:
             result = False
+            test_log.error("Assertion Error in TestFreezeAll::test_frozen_factors_2\n{}".format(err))
+        self.assertTrue(result)
+    # --------------------------------------------------------------------------
+    
+    def test_frozen_factors_3(self):
+        """
+        Check that frozen EFs from the previous version are equal to those from 
+        the current version
+        """
+        result = True
+        test_log.debug('--- In TestFreezeAll::test_frozen_factors_2 ---')
+        year_first   = config.CONFIG.ceds_meta['year_first']
+        year_freeze  = config.CONFIG.freeze_year
+        year_headers = test_utils.get_year_headers(year_first, year_freeze, mode='excl')
+        # Get combustion sectors only
+        previous_df = test_utils.subset_combust_sectors(self.previous_df)
+        current_df  = test_utils.subset_combust_sectors(self.current_df)
+        try:
+            pd.testing.assert_frame_equal(previous_df, current_df, check_dtype=False)
+        except AssertionError as err:
+            result = False
+            test_log.error("Assertion Error in TestFreezeAll::test_frozen_factors_3\n{}".format(err))
         self.assertTrue(result)
     # --------------------------------------------------------------------------
     
@@ -143,12 +167,13 @@ class TestFreezeAll(unittest.TestCase):
         test_log.debug('--- In TestFreezeAll::test_frozen_sectors ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        control_non_combust = test_utils.subset_noncombust_sectors(self.previous_df)
-        frozen_non_combust  = test_utils.subset_noncombust_sectors(self.current_df)
+        previous_non_combust = test_utils.subset_noncombust_sectors(self.previous_df)
+        current_non_combust  = test_utils.subset_noncombust_sectors(self.current_df)
         try:
-            pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
+            pd.testing.assert_frame_equal(previous_non_combust, current_non_combust, check_dtype=False)
         except AssertionError as err:
             result = False
+            test_log.error("Assertion Error in TestFreezeAll::test_frozen_sectors_1\n{}".format(err))
         self.assertTrue(result)
     # --------------------------------------------------------------------------  
     
