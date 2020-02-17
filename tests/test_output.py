@@ -111,6 +111,7 @@ class TestFreezeAll(unittest.TestCase):
             pd.testing.assert_frame_equal(self.control_df, self.frozen_df, check_dtype=False)
         except AssertionError as err:
             result = False
+            test_log.error("Assertion Error in TestFreezeAll::test_frozen_factors_1 {}".format(err))
         self.assertFalse(result)
     # --------------------------------------------------------------------------
     
@@ -130,6 +131,7 @@ class TestFreezeAll(unittest.TestCase):
             pd.testing.assert_frame_equal(control_df, frozen_df, check_dtype=False)
         except AssertionError as err:
             result = False
+            test_log.error("Assertion Error in TestFreezeAll::test_frozen_factors_2 {}".format(err))
         self.assertTrue(result)
     # --------------------------------------------------------------------------
     
@@ -148,6 +150,7 @@ class TestFreezeAll(unittest.TestCase):
             pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
         except AssertionError as err:
             result = False
+            test_log.error("Assertion Error in TestFreezeAll::test_frozen_sectors_1 {}".format(err))
         self.assertTrue(result)
     # --------------------------------------------------------------------------  
     
@@ -264,6 +267,7 @@ class TestFreezeUSA(unittest.TestCase):
             pd.testing.assert_frame_equal(self.control_df, self.frozen_df, check_dtype=False)
         except AssertionError as err:
             result = False
+            test_log.error("Assertion Error in TestFreezeUSA::test_frozen_factors_1 {}".format(err))
         self.assertFalse(result)
     # --------------------------------------------------------------------------
     
@@ -283,6 +287,7 @@ class TestFreezeUSA(unittest.TestCase):
             pd.testing.assert_frame_equal(control_df, frozen_df, check_dtype=False)
         except AssertionError as err:
             result = False
+            test_log.error("Assertion Error in TestFreezeUSA::test_frozen_factors_2 {}".format(err))
         self.assertTrue(result)
     # --------------------------------------------------------------------------
     
@@ -302,6 +307,7 @@ class TestFreezeUSA(unittest.TestCase):
             pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
         except AssertionError as err:
             result = False
+            test_log.error("Assertion Error in TestFreezeUSA::test_frozen_sectors_1 {}".format(err))
         self.assertTrue(result)
     # --------------------------------------------------------------------------
     
@@ -325,6 +331,7 @@ class TestFreezeUSA(unittest.TestCase):
             pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
         except AssertionError as err:
             result = False
+            test_log.error("Assertion Error in TestFreezeUSA::test_frozen_sectors_2 {}".format(err))
         self.assertTrue(result)
     # --------------------------------------------------------------------------
     
@@ -365,6 +372,7 @@ class TestFreezeUSA(unittest.TestCase):
             pd.testing.assert_frame_equal(control_df, frozen_df, check_dtype=False)
         except AssertionError as err:
             result = False
+            test_log.error("Assertion Error in TestFreezeUSA::test_frozen_isos_2 {}".format(err))
         self.assertTrue(result) # assertTrue since we *do* want the DFs to be equal
     # --------------------------------------------------------------------------
        
