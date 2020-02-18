@@ -6,17 +6,15 @@ Matt Nicholson
 """
 import unittest
 import sys
-import os
-import pandas as pd
 import numpy as np
 
 # Insert src directory to Python path for importing
 sys.path.insert(1, '../src/diag')
 
-import test_utils
 import diagnostics
+import utils_for_tests
 
-test_log = test_utils.init_test_log('test_diagnostics')
+test_log = utils_for_tests.init_test_log('test_diagnostics')
 test_log.info('Hello from test_diagnostics.py!')
 
 class TestDiagnosticsHelpers(unittest.TestCase):

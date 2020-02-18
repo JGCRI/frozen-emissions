@@ -13,7 +13,7 @@ sys.path.insert(1, '../src')
 
 import config
 import emission_factor_file
-import test_utils
+import utils_for_tests
 
 class TestEmissionFactorFile(unittest.TestCase):
     
@@ -52,20 +52,20 @@ class TestEmissionFactorFile(unittest.TestCase):
         """Test the get_sectors() function
         Test Case 4
         """
-        self.assertEqual(sorted(self.ef_obj.get_sectors()), test_utils.expected_sectors)
+        self.assertEqual(sorted(self.ef_obj.get_sectors()), utils_for_tests.expected_sectors)
     
     def test_get_fuels(self):
         """Test the get_fuels() function
         Test Case 5
         """
-        self.assertEqual(sorted(self.ef_obj.get_fuels()), test_utils.expected_fuels)
+        self.assertEqual(sorted(self.ef_obj.get_fuels()), utils_for_tests.expected_fuels)
         
     def test_isos(self):
         """Test that all the ISOs are present
         Test Case 6
         """
-        self.assertEqual(sorted(self.ef_obj.get_isos()), test_utils.expected_isos)
-        self.assertEqual(sorted(self.ef_obj.get_isos(ef='all')), test_utils.expected_isos)
+        self.assertEqual(sorted(self.ef_obj.get_isos()), utils_for_tests.expected_isos)
+        self.assertEqual(sorted(self.ef_obj.get_isos(ef='all')), utils_for_tests.expected_isos)
         
 # ------------------------------------ Main ------------------------------------
 

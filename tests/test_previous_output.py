@@ -18,10 +18,10 @@ sys.path.insert(1, '../src')
 
 import config
 import emission_factor_file
-import test_utils
+import utils_for_tests
 import driver
 
-test_log = test_utils.init_test_log('test_previous_output')
+test_log = utils_for_tests.init_test_log('test_previous_output')
 test_log.info('Hello from test_output.py!')
 
 class TestFreezeAll(unittest.TestCase):
@@ -126,7 +126,7 @@ class TestFreezeAll(unittest.TestCase):
         test_log.debug('--- In TestFreezeAll::test_frozen_factors_2 ---')
         year_first   = config.CONFIG.ceds_meta['year_first']
         year_freeze  = config.CONFIG.freeze_year
-        year_headers = test_utils.get_year_headers(year_first, year_freeze, mode='excl')
+        year_headers = utils_for_tests.get_year_headers(year_first, year_freeze, mode='excl')
         previous_df = self.previous_df[year_headers].copy()
         current_df  = self.current_df[year_headers].copy()
         try:
@@ -146,10 +146,10 @@ class TestFreezeAll(unittest.TestCase):
         test_log.debug('--- In TestFreezeAll::test_frozen_factors_2 ---')
         year_first   = config.CONFIG.ceds_meta['year_first']
         year_freeze  = config.CONFIG.freeze_year
-        year_headers = test_utils.get_year_headers(year_first, year_freeze, mode='excl')
+        year_headers = utils_for_tests.get_year_headers(year_first, year_freeze, mode='excl')
         # Get combustion sectors only
-        previous_df = test_utils.subset_combust_sectors(self.previous_df)
-        current_df  = test_utils.subset_combust_sectors(self.current_df)
+        previous_df = utils_for_tests.subset_combust_sectors(self.previous_df)
+        current_df  = utils_for_tests.subset_combust_sectors(self.current_df)
         try:
             pd.testing.assert_frame_equal(previous_df, current_df, check_dtype=False)
         except AssertionError as err:
@@ -167,8 +167,8 @@ class TestFreezeAll(unittest.TestCase):
         test_log.debug('--- In TestFreezeAll::test_frozen_sectors ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        previous_non_combust = test_utils.subset_noncombust_sectors(self.previous_df)
-        current_non_combust  = test_utils.subset_noncombust_sectors(self.current_df)
+        previous_non_combust = utils_for_tests.subset_noncombust_sectors(self.previous_df)
+        current_non_combust  = utils_for_tests.subset_noncombust_sectors(self.current_df)
         try:
             pd.testing.assert_frame_equal(previous_non_combust, current_non_combust, check_dtype=False)
         except AssertionError as err:
