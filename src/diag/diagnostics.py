@@ -48,10 +48,7 @@ def compare_emissions_factors(frozen_ef_path, control_ef_path, year):
     
     # Write the summary dataframe to the output/diagnostics directory
     species = _parse_species_from_path(frozen_ef_path)
-    summary_fname = '{}_frozen_ef_pchange.csv'.format(species)
-    summary_fpath = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', summary_fname)
-    print('Frozen emission percent change data written to {}'.format(summary_fpath))
-    summary_df.to_csv(summary_fpath, sep=',', header=True, index=False)
+    _write_pchange_csv(summary_df, species)
     
     
 # ============================= Helper Functions ===============================
@@ -92,4 +89,26 @@ def _parse_species_from_path(ef_path):
     species = ceds_io.get_species_from_fname(f_name)
     return species
     
+    
+def _write_pchange_csv(pchange_df, species, verbose=True):
+    """
+    Write a dataframe containing EF values percentage change to .csv
+    
+    Parameters
+    -----------
+    pchange_df : Pandas DataFrame
+        DataFrame containing the percentage change values
+    species : str
+        Name of the emission species corresponding to the dataframe
+        
+    Return
+    -------
+    str : path of the output .csv file
+    """
+    f_name = '{}_frozen_ef_pchange.csv'.format(species)
+    f_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
+    if (verbose):
+        print('Frozen EF percent change data written to {}'.format(f_path))
+    pchange_df.to_csv(f_path, sep=',', header=True, index=False)
+    return f_path
     
