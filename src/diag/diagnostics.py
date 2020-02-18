@@ -13,6 +13,8 @@ import numpy as np
 sys.path.insert(1, '../src')
 
 import utils
+import ceds_io
+
 
 def compare_emissions_factors(frozen_ef_path, control_ef_path, year):
     """
@@ -45,11 +47,16 @@ def compare_emissions_factors(frozen_ef_path, control_ef_path, year):
     summary_df[year] = p_change
     
     # Write the summary dataframe to the output/diagnostics directory
-    summary_fname = 'frozen_ef_pchange.csv'
+    species = _parse_species_from_path(frozen_ef_path)
+    summary_fname = '{}_frozen_ef_pchange.csv'.format(species)
     summary_fpath = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', summary_fname)
     print('Frozen emission percent change data written to {}'.format(summary_fpath))
     summary_df.to_csv(summary_fpath, sep=',', header=True, index=False)
     
+    
+# ============================= Helper Functions ===============================
+
+
 def _calc_percent_change(old_val, new_val):
     """
     Calculate the percentage change between an old value and a new value
@@ -66,5 +73,23 @@ def _calc_percent_change(old_val, new_val):
     delta_v = np.subtract(new_val, old_val)
     p_change = np.divide(delta_v, old_val)
     return p_change
+    
+    
+def _parse_species_from_path(ef_path):
+    """
+    Given the path of an EF file, get the corresponding emission species
+    
+    Parameters
+    -----------
+    ef_path : str   
+        Path of an EF file
+        
+    Return
+    -------
+    str : Species corresponding to the EF file whose path was given as a parameter
+    """
+    f_name = os.path.basename(ef_path)
+    species = ceds_io.get_species_from_fname(f_name)
+    return species
     
     
