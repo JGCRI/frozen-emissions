@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 
 # Insert src directory to Python path for importing
-sys.path.insert(1, '..')
+sys.path.insert(1, '../src')
 
 import utils
 
