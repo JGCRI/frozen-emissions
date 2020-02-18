@@ -50,6 +50,30 @@ def compare_emissions_factors(frozen_ef_path, control_ef_path, year):
     species = _parse_species_from_path(frozen_ef_path)
     _write_pchange_csv(summary_df, species)
     
+    # Calculate stats for percentage change by sector
+    sector_df = summary_df.drop(['iso', 'fuel'], axis=1).copy()
+    sector_df = sector_df.groupby(['sector']).min()
+    sector_df = sector_df.rename(columns={year: '{}-min'.format(year)})
+    sector_df['{}-mean'.format(year)] = summary_df.groupby(['sector']).mean()
+    sector_df['{}-max'.format(year)] = summary_df.groupby(['sector']).max()
+    _write_pchange_sector_csv(sector_df, species)
+    
+    # Calculate stats for percentage change by iso
+    iso_df = summary_df.drop(['sector', 'fuel'], axis=1).copy()
+    iso_df = iso_df.groupby(['iso']).min()
+    iso_df = iso_df.rename(columns={year: '{}-min'.format(year)})
+    iso_df['{}-mean'.format(year)] = summary_df.groupby(['iso']).mean()
+    iso_df['{}-max'.format(year)] = summary_df.groupby(['iso']).max()
+    _write_pchange_iso_csv(iso_df, species)
+    
+    # Calculate stats for percentage change by fuel
+    fuel_df = summary_df.drop(['iso', 'sector'], axis=1).copy()
+    fuel_df = fuel_df.groupby(['fuel']).min()
+    fuel_df = fuel_df.rename(columns={year: '{}-min'.format(year)})
+    fuel_df['{}-mean'.format(year)] = summary_df.groupby(['fuel']).mean()
+    fuel_df['{}-max'.format(year)] = summary_df.groupby(['fuel']).max()
+    _write_pchange_fuel_csv(fuel_df, species)
+    
     
 # ============================= Helper Functions ===============================
 
@@ -90,9 +114,25 @@ def _parse_species_from_path(ef_path):
     return species
     
     
-def _write_pchange_csv(pchange_df, species, verbose=True):
+def _write_pchange_csv(df, csv_path, verbose=True):
     """
     Write a dataframe containing EF values percentage change to .csv
+    
+    Parameters
+    -----------
+    df : Pandas DataFrame
+        DataFrame containing the percentage change values
+    csv_path : str
+        Path of the file to write to
+    """
+    if (verbose):
+        print('Frozen EF percent change data written to {}'.format(f_path))
+    pchange_df.to_csv(f_path, sep=',', header=True, index=False)
+
+
+def _write_pchange_master_csv(pchange_df, species, verbose=True):
+    """
+    Write the dataframe containing all EF percentage change values to .csv
     
     Parameters
     -----------
@@ -105,10 +145,73 @@ def _write_pchange_csv(pchange_df, species, verbose=True):
     -------
     str : path of the output .csv file
     """
-    f_name = '{}_frozen_ef_pchange.csv'.format(species)
+    f_name = '{}_frozen_ef_pchange_master.csv'.format(species)
     f_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
-    if (verbose):
-        print('Frozen EF percent change data written to {}'.format(f_path))
-    pchange_df.to_csv(f_path, sep=',', header=True, index=False)
+    _write_pchange_csv(df, csv_path, verbose=verbose)
     return f_path
     
+    
+def _write_pchange_sector_csv(pchange_df, species, verbose=True):
+    """
+    Write the dataframe containing all EF percentage change values grouped by 
+    sector to .csv
+    
+    Parameters
+    -----------
+    pchange_df : Pandas DataFrame
+        DataFrame containing the percentage change values
+    species : str
+        Name of the emission species corresponding to the dataframe
+        
+    Return
+    -------
+    str : path of the output .csv file
+    """
+    f_name = '{}_frozen_ef_pchange_sector.csv'.format(species)
+    f_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
+    _write_pchange_csv(df, csv_path, verbose=verbose)
+    return f_path
+    
+    
+def _write_pchange_iso_csv(pchange_df, species, verbose=True):
+    """
+    Write the dataframe containing all EF percentage change values grouped by 
+    ISO to .csv
+    
+    Parameters
+    -----------
+    pchange_df : Pandas DataFrame
+        DataFrame containing the percentage change values
+    species : str
+        Name of the emission species corresponding to the dataframe
+        
+    Return
+    -------
+    str : path of the output .csv file
+    """
+    f_name = '{}_frozen_ef_pchange_iso.csv'.format(species)
+    f_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
+    _write_pchange_csv(df, csv_path, verbose=verbose)
+    return f_path
+    
+    
+def _write_pchange_fuel_csv(pchange_df, species, verbose=True):
+    """
+    Write the dataframe containing all EF percentage change values grouped by 
+    fuel to .csv
+    
+    Parameters
+    -----------
+    pchange_df : Pandas DataFrame
+        DataFrame containing the percentage change values
+    species : str
+        Name of the emission species corresponding to the dataframe
+        
+    Return
+    -------
+    str : path of the output .csv file
+    """
+    f_name = '{}_frozen_ef_pchange_fuel.csv'.format(species)
+    f_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
+    _write_pchange_csv(df, csv_path, verbose=verbose)
+    return f_path
