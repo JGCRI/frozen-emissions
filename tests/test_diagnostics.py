@@ -11,6 +11,7 @@ import numpy as np
 
 # Insert src directory to Python path for importing
 sys.path.insert(1, '../src/diag')
+sys.path.append('../src')
 
 import diagnostics
 import utils_for_tests
