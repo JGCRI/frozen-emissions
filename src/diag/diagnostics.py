@@ -99,25 +99,31 @@ def compare_emissions_factors(frozen_ef_path, control_ef_path, year='X1970'):
     summary_df = frozen_df.copy()
     p_change = _calc_percent_change(np.asarray(control_df[year]), np.asarray(frozen_df[year]))
     summary_df[year] = p_change
-    summary_df = summary_df.rename(columns={year: '{}-pchange'.format(year)})
-    summary_df['{}-frozen'.format(year)] = frozen_df[year]
-    summary_df['{}-cmip6'.format(year)]  = control_df[year]
+    
+    master_pchange_df = summary_df.copy()
+    master_pchange_df = master_pchange_df.rename(columns={year: '{}-pchange'.format(year)})
+    master_pchange_df['{}-frozen'.format(year)] = frozen_df[year]
+    master_pchange_df['{}-cmip6'.format(year)]  = control_df[year]
     
     # Write the summary dataframe to the output/diagnostics directory
     species = _parse_species_from_path(frozen_ef_path)
-    _write_pchange_master_csv(summary_df, species)
+    _write_pchange_master_csv(master_pchange_df, species)
+    del master_pchange_df
     
     # Calculate stats for percentage change by sector
     sector_summary_df = _group_df(summary_df, 'sector', year)
     _write_pchange_sector_csv(sector_summary_df, species)
+    del sector_summary_df
     
     # Calculate stats for percentage change by iso
     iso_summary_df = _group_df(summary_df, 'iso', year)
     _write_pchange_iso_csv(iso_summary_df, species)
+    del iso_summary_df
     
     # Calculate stats for percentage change by fuel
     fuel_summary_df = _group_df(summary_df, 'fuel', year)
     _write_pchange_fuel_csv(fuel_summary_df, species)
+    del fuel_summary_df
     
 # ============================= Helper Functions ===============================
 
