@@ -99,6 +99,9 @@ def compare_emissions_factors(frozen_ef_path, control_ef_path, year='X1970'):
     summary_df = frozen_df.copy()
     p_change = _calc_percent_change(np.asarray(control_df[year]), np.asarray(frozen_df[year]))
     summary_df[year] = p_change
+    summary_df = summary_df.rename(columns={year: '{}-pchange'.format(year)})
+    summary_df['{}-frozen'.format(year)] = frozen_df[year]
+    summary_df['{}-cmip6'.format(year)]  = control_df[year]
     
     # Write the summary dataframe to the output/diagnostics directory
     species = _parse_species_from_path(frozen_ef_path)
