@@ -86,11 +86,6 @@ def compare_emissions_factors(frozen_ef_path, control_ef_path, year='X1970'):
         year = 'X{}'.format(year)
     subset_cols[3] = year
     
-    # Summary dataframe column names
-    cols = {'min' : '{}-min'.format(year),
-            'mean': '{}-mean'.format(year),
-            'max' : '{}-max'.format(year)}
-    
     control_df = pd.read_csv(control_ef_path, sep=',', header=0)
     frozen_df  = pd.read_csv(frozen_ef_path, sep=',', header=0)
     
@@ -110,41 +105,68 @@ def compare_emissions_factors(frozen_ef_path, control_ef_path, year='X1970'):
     _write_pchange_master_csv(summary_df, species)
     
     # Calculate stats for percentage change by sector
-    # Create a copy of the summary dataframe to manipulate with the 'iso'
-    # and 'fuel' columns removed since we're only interested in sectors here
-    sector_df = summary_df.drop(['iso', 'fuel'], axis=1).copy()
-    sector_summary_df = sector_df.groupby(['sector']).min()
-    sector_summary_df = sector_summary_df.rename(columns={year: cols['min']})
-    kwargs = {cols['mean']: sector_df.groupby(['sector']).mean(),
-              cols['max'] : sector_df.groupby(['sector']).max()}
-    sector_summary_df.assign(**kwargs)
+    sector_summary_df = _group_df(summary_df, 'sector', year)
     _write_pchange_sector_csv(sector_summary_df, species)
     
     # Calculate stats for percentage change by iso
-    # Create a copy of the summary dataframe to manipulate with the 'sector'
-    # and 'fuel' columns removed since we're only interested in isos here
-    iso_df = summary_df.drop(['sector', 'fuel'], axis=1).copy()
-    iso_summary_df = iso_df.groupby(['iso']).min()
-    iso_summary_df = iso_summary_df.rename(columns={year: cols['min']})
-    kwargs = {cols['mean']: iso_df.groupby(['iso']).mean(),
-              cols['max'] : iso_df.groupby(['iso']).max()}
-    iso_summary_df.assign(**kwargs)
+    iso_summary_df = _group_df(summary_df, 'iso', year)
     _write_pchange_iso_csv(iso_summary_df, species)
     
     # Calculate stats for percentage change by fuel
-    # Create a copy of the summary dataframe to manipulate with the 'iso'
-    # and 'sector' columns removed since we're only interested in fuels here
-    fuel_df = summary_df.drop(['iso', 'sector'], axis=1).copy()
-    fuel_summary_df = fuel_df.groupby(['fuel']).min()
-    fuel_summary_df = fuel_summary_df.rename(columns={year: cols['min']})
-    kwargs = {cols['mean']: fuel_df.groupby(['fuel']).mean(),
-              cols['max'] : fuel_df.groupby(['fuel']).max()}
-    fuel_summary_df.assign(**kwargs)
+    fuel_summary_df = _group_df(summary_df, 'fuel', year)
     _write_pchange_fuel_csv(fuel_summary_df, species)
-    
     
 # ============================= Helper Functions ===============================
 
+def _group_df(ef_df, kywrd, year):
+    """
+    Group an emissions factor dataframe and calculate the minimum, mean, and average
+    emissions factors percentage change for frozen emissions factors.
+    
+    Parameters
+    -----------
+    ef_df : Pandas DataFrame
+        Emissions Factors dataFrame containing only the columns ['iso', 'sector', 'fuel', 'X<year>'].
+    kywrd : str
+        Determines how to group the dataframe
+    year : str
+        Year at which the EFs were frozen, in CMIP6 csv column header format
+        Ex: 'X1970'
+    
+    Return
+    -------
+    Pandas DataFrame
+    """
+    cols = {'min' : '{}-min'.format(year),
+            'mean': '{}-mean'.format(year),
+            'max' : '{}-max'.format(year)}
+            
+    drop_cols = {'sector': ['iso', 'fuel'],
+                 'iso'   : ['sector', 'fuel'],
+                 'fuel'  : ['iso', 'sector']}
+                 
+    if (kywrd not in drop_cols.keys()):
+        raise ValueError('Invalid keyword arg. Only "iso", "sector", & "fuel" are valid')
+    # Drop the columns appropriate for the given keyword arg
+    grouped_df = ef_df.drop(drop_cols[kywrd], axis=1).copy()
+    # Group the DataFrame rows by kywrd
+    grouped_df = grouped_df.groupby([kywrd], as_index=False)
+    # Calculate the min EF percentage change
+    min_df  = grouped_df.min()
+    min_df  = min_df.rename(columns={year: cols['min']})
+    # Calculate the mean EF percentage change (p-change)
+    mean_df = grouped_df.mean()
+    mean_df = mean_df.rename(columns={year: cols['mean']})
+    # Add the column of mean EF p-change values to the min EF p-change dataframe
+    merged_df = min_df.merge(mean_df, on=kywrd)
+    # Calculate the max EF percentage change
+    max_df  = grouped_df.max()
+    max_df  = max_df.rename(columns={year: cols['max']})
+    # Add the column of max EF p-change values to the dataframe containing 
+    # min & mean EF p-change values
+    merged_df = merged_df.merge(max_df, on=kywrd)
+    return merged_df
+    
 
 def _calc_percent_change(old_val, new_val):
     """
