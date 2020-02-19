@@ -1,11 +1,14 @@
 """
-Diagnostic functions for frozen Emissions Factors (EFs) and frozen final emissions
+Diagnostic functions for frozen Emissions Factors (EFs) and frozen final emissions.
+The functions from this file can be imported and executed elsewhere or invoked from
+the command line
 
 Matt Nicholson
 17 Feb 2020
 """
 import sys
 import os
+import argparse
 import pandas as pd
 import numpy as np
 
@@ -14,6 +17,39 @@ sys.path.insert(1, '../src')
 
 import utils
 import ceds_io
+
+
+def init_diag_parser():
+    """
+    Initialize a new argparse parser
+    
+    Parameters
+    -----------
+    None
+    
+    Return
+    -------
+    argparse.ArgumentParser object
+    
+    Args
+    -----
+    --frozen : str
+        Path of the frozen CMIP6 Emissions Factors (EF) file
+    --control : str
+        Path of the unmodified control CMIP6 Emissions Factors (EF) file
+    """
+    parse_desc = """Diagnostics to compare frozen EFs to the original CMIP6 EFs"""
+    
+    parser = argparse.ArgumentParser(description=parse_desc)
+    
+    parser.add_argument('--frozen', metavar='frozen_ef', dest='frozen_ef',
+                        required=True, action='store', type=str,
+                        help='Path of the frozen CMIP6 EF file')
+                        
+    parser.add_argument('--control', metavar='control_ef', dest='control_ef',
+                        required=True, action='store', type=str,
+                        help='Path of the control (unmodified) CMIP6 EF file')
+    return parser
 
 
 def compare_emissions_factors(frozen_ef_path, control_ef_path, year):
@@ -132,7 +168,8 @@ def _write_pchange_csv(df, csv_path, verbose=True):
 
 def _write_pchange_master_csv(pchange_df, species, verbose=True):
     """
-    Write the dataframe containing all EF percentage change values to .csv
+    Write the dataframe containing all EF percentage change values to .csv.
+    Calls _write_pchange_csv() to do the actual file I/O.
     
     Parameters
     -----------
@@ -154,7 +191,7 @@ def _write_pchange_master_csv(pchange_df, species, verbose=True):
 def _write_pchange_sector_csv(pchange_df, species, verbose=True):
     """
     Write the dataframe containing all EF percentage change values grouped by 
-    sector to .csv
+    sector to .csv. Calls _write_pchange_csv() to do the actual file I/O.
     
     Parameters
     -----------
@@ -176,7 +213,7 @@ def _write_pchange_sector_csv(pchange_df, species, verbose=True):
 def _write_pchange_iso_csv(pchange_df, species, verbose=True):
     """
     Write the dataframe containing all EF percentage change values grouped by 
-    ISO to .csv
+    ISO to .csv. Calls _write_pchange_csv() to do the actual file I/O.
     
     Parameters
     -----------
@@ -198,7 +235,7 @@ def _write_pchange_iso_csv(pchange_df, species, verbose=True):
 def _write_pchange_fuel_csv(pchange_df, species, verbose=True):
     """
     Write the dataframe containing all EF percentage change values grouped by 
-    fuel to .csv
+    fuel to .csv. Calls _write_pchange_csv() to do the actual file I/O.
     
     Parameters
     -----------
@@ -215,3 +252,9 @@ def _write_pchange_fuel_csv(pchange_df, species, verbose=True):
     f_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
     _write_pchange_csv(df, csv_path, verbose=verbose)
     return f_path
+    
+# ================================== Main ======================================
+
+if (__name__ == '__main__'):
+    parser = init_diag_parser()
+    args = parser.parse_args()
