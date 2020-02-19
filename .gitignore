@@ -1,10 +1,12 @@
-# Output & log directories
-output/
+# Directories
 logs/
 
 # Those pesky pycache dirs
 **/__pycache__
 *.pyc
 
-# .csv files in the tests/ directory
+# .csv files anywhere in the tests/ directory
 tests/**/*.csv
+
+# .csv files anywhere in the output/ directory
+output/**/*.csv
