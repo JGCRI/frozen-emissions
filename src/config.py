@@ -61,10 +61,10 @@ class ConfigObj:
         # Get the project root, which will be one level up
         project_root, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
         dirs = {'root': project_root,
-                'cmip6'    : None,
-                'input'    : None,
-                'output'   : None,
-                'ceds'     : None}
+                'cmip6'  : None,
+                'input'  : None,
+                'output' : None,
+                'ceds'   : None}
         self.dirs = dirs
         
     def _parse_yaml(self, yaml_path):
@@ -92,17 +92,17 @@ class ConfigObj:
             raise ValueError('Only Windows and Linux systems are currently supported')
             
         self._init_dirs()      # Initialize the instance's directory dictionary
-        self.dirs['cmip6']     = info['dirs'][op_sys]['cmip6']
-        self.dirs['ceds']      = info['dirs'][op_sys]['ceds']
-        self.dirs['input']     = os.path.join(self.dirs['root'], 'input')
-        self.dirs['output']    = os.path.join(self.dirs['root'], 'output')
-        self.freeze_year       = int(info['freeze']['year'])
+        self.dirs['cmip6']  = info['dirs'][op_sys]['cmip6']
+        self.dirs['ceds']   = info['dirs'][op_sys]['ceds']
+        self.dirs['input']  = os.path.join(self.dirs['root'], 'input')
+        self.dirs['output'] = os.path.join(self.dirs['root'], 'output')
+        self.freeze_year    = int(info['freeze']['year'])
         try:     # Is freeze_isos a string?
             self.freeze_isos = info['freeze']['isos'].lower()
         except:  # We have determined that freeze_isos is not a string
             self.freeze_isos = [x.lower() for x in info['freeze']['isos']]
-        self.freeze_species    = info['freeze']['species']
-        self.init_file         = os.path.basename(yaml_path)
+        self.freeze_species  = info['freeze']['species']
+        self.init_file       = os.path.basename(yaml_path)
         self.ceds_meta['year_first'] = info['ceds']['year_first']
         self.ceds_meta['year_last'] = info['ceds']['year_last']
         

@@ -17,10 +17,10 @@ sys.path.insert(1, '../src')
 
 import config
 import emission_factor_file
-import test_utils
+import utils_for_tests
 import driver
 
-test_log = test_utils.init_test_log('test_output')
+test_log = utils_for_tests.init_test_log('test_output')
 test_log.info('Hello from test_output.py!')
 
 class TestFreezeAll(unittest.TestCase):
@@ -124,7 +124,7 @@ class TestFreezeAll(unittest.TestCase):
         test_log.debug('--- In TestFreezeAll::test_frozen_factors_2 ---')
         year_first   = config.CONFIG.ceds_meta['year_first']
         year_freeze  = config.CONFIG.freeze_year
-        year_headers = test_utils.get_year_headers(year_first, year_freeze, mode='excl')
+        year_headers = utils_for_tests.get_year_headers(year_first, year_freeze, mode='excl')
         control_df = self.control_df[year_headers].copy()
         frozen_df  = self.frozen_df[year_headers].copy()
         try:
@@ -144,8 +144,8 @@ class TestFreezeAll(unittest.TestCase):
         test_log.debug('--- In TestFreezeAll::test_frozen_sectors ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        control_non_combust = test_utils.subset_noncombust_sectors(self.control_df)
-        frozen_non_combust  = test_utils.subset_noncombust_sectors(self.frozen_df)
+        control_non_combust = utils_for_tests.subset_noncombust_sectors(self.control_df)
+        frozen_non_combust  = utils_for_tests.subset_noncombust_sectors(self.frozen_df)
         try:
             pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
         except AssertionError as err:
@@ -280,7 +280,7 @@ class TestFreezeUSA(unittest.TestCase):
         test_log.debug('--- In TestFreezeUSA::test_frozen_factors_2 ---')
         year_first   = config.CONFIG.ceds_meta['year_first']
         year_freeze  = config.CONFIG.freeze_year
-        year_headers = test_utils.get_year_headers(year_first, year_freeze, mode='excl')
+        year_headers = utils_for_tests.get_year_headers(year_first, year_freeze, mode='excl')
         control_df = self.control_df[year_headers].copy()
         frozen_df  = self.frozen_df[year_headers].copy()
         try:
@@ -300,8 +300,8 @@ class TestFreezeUSA(unittest.TestCase):
         test_log.debug('--- In TestFreezeUSA::test_frozen_sectors_1 ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        control_non_combust = test_utils.subset_noncombust_sectors(self.control_df)
-        frozen_non_combust  = test_utils.subset_noncombust_sectors(self.frozen_df)
+        control_non_combust = utils_for_tests.subset_noncombust_sectors(self.control_df)
+        frozen_non_combust  = utils_for_tests.subset_noncombust_sectors(self.frozen_df)
         
         try:
             pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
@@ -320,12 +320,12 @@ class TestFreezeUSA(unittest.TestCase):
         test_log.debug('--- In TestFreezeUSA::test_frozen_sectors_1 ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        control_non_combust = test_utils.subset_noncombust_sectors(self.control_df)
-        frozen_non_combust  = test_utils.subset_noncombust_sectors(self.frozen_df)
+        control_non_combust = utils_for_tests.subset_noncombust_sectors(self.control_df)
+        frozen_non_combust  = utils_for_tests.subset_noncombust_sectors(self.frozen_df)
         
         # Subset USA ISO EFs
-        control_non_combust = test_utils.subset_iso(control_non_combust, config.CONFIG.freeze_isos)
-        frozen_non_combust  = test_utils.subset_iso(frozen_non_combust, config.CONFIG.freeze_isos)
+        control_non_combust = utils_for_tests.subset_iso(control_non_combust, config.CONFIG.freeze_isos)
+        frozen_non_combust  = utils_for_tests.subset_iso(frozen_non_combust, config.CONFIG.freeze_isos)
         
         try:
             pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
@@ -343,12 +343,12 @@ class TestFreezeUSA(unittest.TestCase):
         test_log.debug('--- In TestFreezeUSA::test_frozen_isos_1 ---')
         # Get subsets of the frozen & control dataframes that only contain EFs 
         # from non-combustion sectors
-        control_non_combust = test_utils.subset_combust_sectors(self.control_df)
-        frozen_non_combust  = test_utils.subset_combust_sectors(self.frozen_df)
+        control_non_combust = utils_for_tests.subset_combust_sectors(self.control_df)
+        frozen_non_combust  = utils_for_tests.subset_combust_sectors(self.frozen_df)
         
         # Subset USA ISO EFs
-        control_non_combust = test_utils.subset_iso(control_non_combust, config.CONFIG.freeze_isos)
-        frozen_non_combust  = test_utils.subset_iso(frozen_non_combust, config.CONFIG.freeze_isos)
+        control_non_combust = utils_for_tests.subset_iso(control_non_combust, config.CONFIG.freeze_isos)
+        frozen_non_combust  = utils_for_tests.subset_iso(frozen_non_combust, config.CONFIG.freeze_isos)
         
         try:
             pd.testing.assert_frame_equal(control_non_combust, frozen_non_combust, check_dtype=False)
@@ -365,8 +365,8 @@ class TestFreezeUSA(unittest.TestCase):
         test_log.debug('--- In TestFreezeUSA::test_frozen_isos_2 ---')
         
         # Inverse subset USA ISO EFs
-        control_df = test_utils.subset_iso_inverse(self.control_df, config.CONFIG.freeze_isos)
-        frozen_df  = test_utils.subset_iso_inverse(self.frozen_df, config.CONFIG.freeze_isos)
+        control_df = utils_for_tests.subset_iso_inverse(self.control_df, config.CONFIG.freeze_isos)
+        frozen_df  = utils_for_tests.subset_iso_inverse(self.frozen_df, config.CONFIG.freeze_isos)
         
         try:
             pd.testing.assert_frame_equal(control_df, frozen_df, check_dtype=False)
