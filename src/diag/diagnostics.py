@@ -13,7 +13,8 @@ import pandas as pd
 import numpy as np
 
 # Insert src directory to Python path for importing
-sys.path.insert(1, '../src')
+# sys.path.insert(1, '../src')
+sys.path.append('..')
 
 import utils
 import ceds_io
@@ -37,6 +38,12 @@ def init_diag_parser():
         Path of the frozen CMIP6 Emissions Factors (EF) file
     --control : str
         Path of the unmodified control CMIP6 Emissions Factors (EF) file
+        
+    Example usage
+    --------------
+    $ python diagnostics.py --frozen /path/to/frozen_ef.csv --control /path/to/control_ef.csv
+    $ python diagnostics.py --frozen /path/to/frozen_ef.csv --control /path/to/control_ef.csv --year 1950
+    $ python diagnostics.py --frozen /path/to/frozen_ef.csv --control /path/to/control_ef.csv --year 'X1950'
     """
     parse_desc = """Diagnostics to compare frozen EFs to the original CMIP6 EFs"""
     
@@ -49,10 +56,15 @@ def init_diag_parser():
     parser.add_argument('--control', metavar='control_ef', dest='control_ef',
                         required=True, action='store', type=str,
                         help='Path of the control (unmodified) CMIP6 EF file')
+    
+    parser.add_argument('--year', metavar='freeze_year', dest='freeze_year',
+                        required=False, action='store', type=str, default='X1970',
+                        help='Year at which the CMIP6 emissions factors were frozen')
+                        
     return parser
 
 
-def compare_emissions_factors(frozen_ef_path, control_ef_path, year):
+def compare_emissions_factors(frozen_ef_path, control_ef_path, year='X1970'):
     """
     Compare the values of frozen emissions factors with those from a control
     emissions factor file. Quantifies how much the outlier removal as part of 
@@ -61,21 +73,32 @@ def compare_emissions_factors(frozen_ef_path, control_ef_path, year):
     Parameters
     -----------
     frozen_ef_path : str
-        Path of the frozen emissions factors file to read
+        Path of the frozen emissions factors file to read.
     control_ef_path : str
-        Path of the control emissions factors file to read
+        Path of the control emissions factors file to read.
+    year : int or str, optional
+        Year at which the emissions factors were frozen. Default is 'X1970',
+        the string representation of the CMIP6 emissions factors column name 
+        representing the year 1970.
     """
-    col_names = ['iso', 'sector', 'fuel', '']
+    subset_cols = ['iso', 'sector', 'fuel', '']
     if (not isinstance(year, str) or year[0] != 'X'):
         year = 'X{}'.format(year)
-    col_names[3] = year
+    subset_cols[3] = year
+    
+    # Summary dataframe column names
+    cols = {'min' : '{}-min'.format(year),
+            'mean': '{}-mean'.format(year),
+            'max' : '{}-max'.format(year)}
     
     control_df = pd.read_csv(control_ef_path, sep=',', header=0)
     frozen_df  = pd.read_csv(frozen_ef_path, sep=',', header=0)
     
-    # Subset for the given year
-    control_df = control_df[col_names]
-    frozen_df  = frozen_df[col_names]
+    # Extract a subset of the control & frozen EF dataframes containing only 
+    # the columns 'iso', 'sector', 'fuel', and 'X<year>' since we only want to
+    # compare the frozen and control EFs for <year> 
+    control_df = control_df[subset_cols]
+    frozen_df  = frozen_df[subset_cols]
     
     # Create a copy of the frozen dataframe that we can write diagnostic values to
     summary_df = frozen_df.copy()
@@ -84,31 +107,40 @@ def compare_emissions_factors(frozen_ef_path, control_ef_path, year):
     
     # Write the summary dataframe to the output/diagnostics directory
     species = _parse_species_from_path(frozen_ef_path)
-    _write_pchange_csv(summary_df, species)
+    _write_pchange_master_csv(summary_df, species)
     
     # Calculate stats for percentage change by sector
+    # Create a copy of the summary dataframe to manipulate with the 'iso'
+    # and 'fuel' columns removed since we're only interested in sectors here
     sector_df = summary_df.drop(['iso', 'fuel'], axis=1).copy()
-    sector_df = sector_df.groupby(['sector']).min()
-    sector_df = sector_df.rename(columns={year: '{}-min'.format(year)})
-    sector_df['{}-mean'.format(year)] = summary_df.groupby(['sector']).mean()
-    sector_df['{}-max'.format(year)] = summary_df.groupby(['sector']).max()
-    _write_pchange_sector_csv(sector_df, species)
+    sector_summary_df = sector_df.groupby(['sector']).min()
+    sector_summary_df = sector_summary_df.rename(columns={year: cols['min']})
+    kwargs = {cols['mean']: sector_df.groupby(['sector']).mean(),
+              cols['max'] : sector_df.groupby(['sector']).max()}
+    sector_summary_df.assign(**kwargs)
+    _write_pchange_sector_csv(sector_summary_df, species)
     
     # Calculate stats for percentage change by iso
+    # Create a copy of the summary dataframe to manipulate with the 'sector'
+    # and 'fuel' columns removed since we're only interested in isos here
     iso_df = summary_df.drop(['sector', 'fuel'], axis=1).copy()
-    iso_df = iso_df.groupby(['iso']).min()
-    iso_df = iso_df.rename(columns={year: '{}-min'.format(year)})
-    iso_df['{}-mean'.format(year)] = summary_df.groupby(['iso']).mean()
-    iso_df['{}-max'.format(year)] = summary_df.groupby(['iso']).max()
-    _write_pchange_iso_csv(iso_df, species)
+    iso_summary_df = iso_df.groupby(['iso']).min()
+    iso_summary_df = iso_summary_df.rename(columns={year: cols['min']})
+    kwargs = {cols['mean']: iso_df.groupby(['iso']).mean(),
+              cols['max'] : iso_df.groupby(['iso']).max()}
+    iso_summary_df.assign(**kwargs)
+    _write_pchange_iso_csv(iso_summary_df, species)
     
     # Calculate stats for percentage change by fuel
+    # Create a copy of the summary dataframe to manipulate with the 'iso'
+    # and 'sector' columns removed since we're only interested in fuels here
     fuel_df = summary_df.drop(['iso', 'sector'], axis=1).copy()
-    fuel_df = fuel_df.groupby(['fuel']).min()
-    fuel_df = fuel_df.rename(columns={year: '{}-min'.format(year)})
-    fuel_df['{}-mean'.format(year)] = summary_df.groupby(['fuel']).mean()
-    fuel_df['{}-max'.format(year)] = summary_df.groupby(['fuel']).max()
-    _write_pchange_fuel_csv(fuel_df, species)
+    fuel_summary_df = fuel_df.groupby(['fuel']).min()
+    fuel_summary_df = fuel_summary_df.rename(columns={year: cols['min']})
+    kwargs = {cols['mean']: fuel_df.groupby(['fuel']).mean(),
+              cols['max'] : fuel_df.groupby(['fuel']).max()}
+    fuel_summary_df.assign(**kwargs)
+    _write_pchange_fuel_csv(fuel_summary_df, species)
     
     
 # ============================= Helper Functions ===============================
@@ -150,7 +182,7 @@ def _parse_species_from_path(ef_path):
     return species
     
     
-def _write_pchange_csv(df, csv_path, verbose=True):
+def _write_pchange_csv(pchange_df, csv_path, verbose=True):
     """
     Write a dataframe containing EF values percentage change to .csv
     
@@ -162,8 +194,8 @@ def _write_pchange_csv(df, csv_path, verbose=True):
         Path of the file to write to
     """
     if (verbose):
-        print('Frozen EF percent change data written to {}'.format(f_path))
-    pchange_df.to_csv(f_path, sep=',', header=True, index=False)
+        print('Frozen EF percent change data written to {}'.format(csv_path))
+    pchange_df.to_csv(csv_path, sep=',', header=True, index=False)
 
 
 def _write_pchange_master_csv(pchange_df, species, verbose=True):
@@ -183,9 +215,9 @@ def _write_pchange_master_csv(pchange_df, species, verbose=True):
     str : path of the output .csv file
     """
     f_name = '{}_frozen_ef_pchange_master.csv'.format(species)
-    f_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
-    _write_pchange_csv(df, csv_path, verbose=verbose)
-    return f_path
+    csv_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
+    _write_pchange_csv(pchange_df, csv_path, verbose=verbose)
+    return csv_path
     
     
 def _write_pchange_sector_csv(pchange_df, species, verbose=True):
@@ -205,9 +237,9 @@ def _write_pchange_sector_csv(pchange_df, species, verbose=True):
     str : path of the output .csv file
     """
     f_name = '{}_frozen_ef_pchange_sector.csv'.format(species)
-    f_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
-    _write_pchange_csv(df, csv_path, verbose=verbose)
-    return f_path
+    csv_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
+    _write_pchange_csv(pchange_df, csv_path, verbose=verbose)
+    return csv_path
     
     
 def _write_pchange_iso_csv(pchange_df, species, verbose=True):
@@ -227,9 +259,9 @@ def _write_pchange_iso_csv(pchange_df, species, verbose=True):
     str : path of the output .csv file
     """
     f_name = '{}_frozen_ef_pchange_iso.csv'.format(species)
-    f_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
-    _write_pchange_csv(df, csv_path, verbose=verbose)
-    return f_path
+    csv_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
+    _write_pchange_csv(pchange_df, csv_path, verbose=verbose)
+    return csv_path
     
     
 def _write_pchange_fuel_csv(pchange_df, species, verbose=True):
@@ -249,9 +281,9 @@ def _write_pchange_fuel_csv(pchange_df, species, verbose=True):
     str : path of the output .csv file
     """
     f_name = '{}_frozen_ef_pchange_fuel.csv'.format(species)
-    f_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
-    _write_pchange_csv(df, csv_path, verbose=verbose)
-    return f_path
+    csv_path = os.path.join(utils.get_root_dir(), 'output', 'diagnostic', f_name)
+    _write_pchange_csv(pchange_df, csv_path, verbose=verbose)
+    return csv_path
     
 # ================================== Main ======================================
 
