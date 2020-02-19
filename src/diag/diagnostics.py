@@ -1,7 +1,7 @@
 """
 Diagnostic functions for frozen Emissions Factors (EFs) and frozen final emissions.
 The functions from this file can be imported and executed elsewhere or invoked from
-the command line
+the command line.
 
 Matt Nicholson
 17 Feb 2020
@@ -258,3 +258,4 @@ def _write_pchange_fuel_csv(pchange_df, species, verbose=True):
 if (__name__ == '__main__'):
     parser = init_diag_parser()
     args = parser.parse_args()
+    compare_emissions_factors(args.frozen_ef, args.control_ef)
