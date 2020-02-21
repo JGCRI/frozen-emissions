@@ -80,7 +80,7 @@ def freeze_emissions():
     logger = logging.getLogger("main")
     logger.info("In main::freeze_emissions()")
     logger.info("dir_cmip6 = {}".format(dir_cmip6))
-    logger.info("year = {}\n".format(config.CONFIG.freeze_year))
+    logger.info("freeze year = {}\n".format(config.CONFIG.freeze_year))
         
     # Construct the column header strings for years >= 'year' param
     year_strs = ['X{}'.format(yr) for yr in range(config.CONFIG.freeze_year,
@@ -192,7 +192,7 @@ def calc_emissions():
     
     # Create list of strings representing year column headers
     data_col_headers = ['X{}'.format(i) for i in range(config.CONFIG.ceds_meta['year_first'],
-                                                       config.CONFIG.ceds_meta['year_last'])]
+                                                       config.CONFIG.ceds_meta['year_last'] + 1)]
     
     for species in config.CONFIG.freeze_species:
         info_str = '\nCalculating frozen total emissions for {}...'.format(species)
