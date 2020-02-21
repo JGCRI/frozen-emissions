@@ -4,11 +4,12 @@
 # Author: Matt Nicholson
 # 12 Dec 19
 
-em_list <- c( "BC", "CH4", "CO", "CO2", "NH3", "NMVOC", "NOx", "OC", "SO2" )
+# em_list <- c( "BC", "CH4", "CO", "CO2", "NH3", "NMVOC", "NOx", "OC", "SO2" )
+em_list <- c( "BC", "CO", "NH3", "NMVOC", "NOx", "OC", "SO2" )
 # em_list <- c( "NMVOC" )
 
 # Set the working directory to the main CEDS directory to make life easier
-setwd("C:/Users/nich980/code/CEDS")
+setwd("C:/Users/nich980/code/CEDS-fork/CEDS-frozen-em")
 
 # Path of the CEDS script we're going to call, relative to the main CEDS directory
 F_PATH <- "code/module-S/S1.1.write_summary_data.R"
