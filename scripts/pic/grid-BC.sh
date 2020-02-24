@@ -1,9 +1,8 @@
 #!/bin/bash
 #SBATCH -A ceds
-#SBATCH -t 2:00:00
+#SBATCH -t 4:00:00
 #SBATCH -N 1
 #SBATCH -p shared
-
 #SBATCH --mail-user matthew.nicholson@pnnl.gov
 #SBATCH --mail-type END
 
