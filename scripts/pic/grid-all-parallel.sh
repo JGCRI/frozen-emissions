@@ -9,8 +9,8 @@ NH3id=$(sbatch --parsable grid-NH3.sh)
 COid=$(sbatch --parsable grid-CO.sh)
 BCid=$(sbatch --parsable grid-BC.sh)
 OCid=$(sbatch --parsable grid-OC.sh)
-CH4id=$(sbatch --parsable grid-CH4.sh)
-CO2id=$(sbatch --parsable grid-CO2.sh)
+# CH4id=$(sbatch --parsable grid-CH4.sh)
+# CO2id=$(sbatch --parsable grid-CO2.sh)
 
 # show dependencies in squeue output:
 squeue -u $USER -a -o "%.5a %.10l %.6D %.6t %N %.40E"
