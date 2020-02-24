@@ -15,7 +15,7 @@ module load R/3.3.3
 now=$(date)
 echo "Current time : $now"
 
-cd /pic/projects/GCAM/mnichol/ceds/CEDS
+cd /pic/projects/GCAM/mnichol/ceds/worktrees/CEDS-frozen-em
 make NH3-gridded
 
 now=$(date)
