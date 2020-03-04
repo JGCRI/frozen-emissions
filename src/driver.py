@@ -109,7 +109,7 @@ def freeze_emissions():
         sectors = ef_obj.get_sectors()
         fuels = ef_obj.get_fuels()
         
-        # TODO: Refactor these nested for loops
+        # Not going to python-ize these nested loops as it decreases readability
         for sector in sectors:
             for fuel in fuels:
                 info_str = "Processing {}...{}...{}".format(species, sector, fuel)
