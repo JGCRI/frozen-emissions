@@ -109,6 +109,7 @@ def freeze_emissions():
         sectors = ef_obj.get_sectors()
         fuels = ef_obj.get_fuels()
         
+        # Not going to python-ize these nested loops as it decreases readability
         for sector in sectors:
             for fuel in fuels:
                 info_str = "Processing {}...{}...{}".format(species, sector, fuel)
@@ -139,8 +140,8 @@ def freeze_emissions():
                     logger.debug("Overwriting original EF DataFrame with new EF values")
                 else:
                     logger.warning("Subsetted EF dataframe is empty")
-            # --- End fuel loop ---
-        # --- End sector loop ---
+            # END fuel loop -----
+        # END sector loop -----
         # Freeze the combustion emissions
         logger.debug("Freezing emissions...")
         ef_obj.freeze_emissions(year_strs)
@@ -159,7 +160,7 @@ def freeze_emissions():
         ef_obj.all_factors.to_csv(f_out, sep=',', header=True, index=False)
         logger.info("--- Finished processing {} ---\n".format(species))
         
-    # --- End EF file for-loop ---
+    # END EF file loop -----
     [logger.warning('Emissions calculation failed for {}'.format(failure))
             for failure in failed_species if failure != '']
     logger.info("Finished processing all species\nLeaving main::freeze_emissions()\n")

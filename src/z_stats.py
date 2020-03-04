@@ -57,7 +57,7 @@ def write_stats(ef_df, species, year, f_paths):
 
 def get_ef_median(ef_obj):
     """
-    Get the median of an array of EF values
+    Get the median of an array of EF values for the specified EF freeze year
     
     Parameters
     -----------
