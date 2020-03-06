@@ -1,5 +1,5 @@
 """
-Plot emissions factors
+Plot emissions factors for a given species, sector, fuel, & iso
 
 Matt Nicholson
 6 Mar 2020
