@@ -7,6 +7,7 @@ Matt Nicholson
 from __future__ import print_function
 import os
 import sys
+import re
 
 ROOT_DIR = sys.argv[1]
 print('Changing working directory to {}'.format(ROOT_DIR))
@@ -16,10 +17,18 @@ print("*************************************************************************
 print("*    Post-Processing Frozen Emissions Gridded NetCDF Metadata - Biofuel     *")
 print("*****************************************************************************")
 
+species_pattern = re.compile(r'^(\w{2,5})-em')
+
 grid_files = [f for f in os.listdir(os.getcwd()) if os.path.isfile(f)
               and f[-3:] == '.nc' and 'BIOMASS' in f]
               
-for fname in grid_files:                                           
+for fname in grid_files:
+    match = species_pattern.search(fname)
+    if match:
+        species = match.group(1)
+    else:
+        print('Unable to parse species from filename: {}'.format(fname)
+        continue
     # --- Global comment ---------------------------------------------------
     cmd_str = '"Frozen EF USA. Based on CEDS CMIP6 ver 2017-05-18 data with combustion sector emissions factors for years after 1970 frozen at their 1970 value for the USA region."'
     cmd = 'ncatted -O -a comment,global,o,c,{} -h {}'.format(cmd_str, fname)
@@ -45,10 +54,10 @@ for fname in grid_files:
     cmd = 'ncatted -O -a source_id,global,o,c,{} -h {}'.format(cmd_str, fname)
     os.system(cmd)
     # --- Global Title -----------------------------------------------------
-    cmd_str = '"Annual SOLID BIOFUEL Anthropogenic Emissions of {} - Frozen EF-USA"'.format(s)
+    cmd_str = '"Annual SOLID BIOFUEL Anthropogenic Emissions of {} - Frozen EF-USA"'.format(species)
     cmd = 'ncatted -O -a title,global,o,c,{} -h {}'.format(cmd_str, fname)
     os.system(cmd)
     # ----------------------------------------------------------------------
-
+print('Success!')
     
     
