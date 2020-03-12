@@ -9,6 +9,8 @@
 ROOT_DIR="/pic/projects/GCAM/mnichol/ceds/worktrees/CEDS-frozen-em/final-emissions/gridded-emissions"
 
 module purge
+module load gcc
+module load netcdf
 module load python
 
 now=$(date)
