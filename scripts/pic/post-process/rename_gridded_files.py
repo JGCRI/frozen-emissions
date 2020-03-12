@@ -15,6 +15,7 @@ Matt Nicholson
 import os
 import sys
 import re
+from __future__ import print_function
 
 print("*****************************************************************************")
 print("*            Updating Frozen Emissions Gridded NetCDF Filenames             *")
