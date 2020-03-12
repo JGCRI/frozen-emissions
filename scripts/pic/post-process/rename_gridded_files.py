@@ -21,6 +21,10 @@ print("*************************************************************************
 print("*            Updating Frozen Emissions Gridded NetCDF Filenames             *")
 print("*****************************************************************************")
 
+ROOT_DIR = sys.argv[1]
+print('Changing working directory to {}'.format(ROOT_DIR))
+os.chdir(ROOT_DIR)
+
 species_pattern = re.compile(r'^(\w{2,5})-em')
 fnames = {'anthro' : '{}-em-anthro_input4MIPs_emissions_CEDS-2017-05-18-frozen-US-EF_gn_201001-201412.nc',
           'biofuel': '{}-em-SOLID-BIOFUEL-anthro_input4MIPs_emissions_CEDS-2017-05-18-frozen-US-EF-supplemental-data_gn_196001-200912.nc'

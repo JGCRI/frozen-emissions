@@ -6,7 +6,8 @@
 #SBATCH --mail-user matthew.nicholson@pnnl.gov
 #SBATCH --mail-type END
 
-ROOT_DIR="/pic/projects/GCAM/mnichol/ceds/worktrees/CEDS-frozen-em/final-emissions/gridded-emissions"
+#ROOT_DIR="/pic/projects/GCAM/mnichol/ceds/worktrees/CEDS-frozen-em/final-emissions/gridded-emissions"
+ROOT_DIR="/pic/dtn/data/gcam/frozen-emissions"
 
 module purge
 module load gcc
@@ -16,12 +17,9 @@ module load python
 now=$(date)
 echo "Current time : $now"
 
-echo "Changing working directory to $ROOT_DIR"
-cd $ROOT_DIR
-
-python update_gridded_meta_anthro.py
-python update_gridded_meta_biomass.py
-python rename_gridded_files.py
+python update_gridded_meta_anthro.py $ROOT_DIR
+python update_gridded_meta_biomass.py $ROOT_DIR
+python rename_gridded_files.py $ROOT_DIR
 
 now=$(date)
 echo "Current time : $now"
