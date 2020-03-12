@@ -19,6 +19,7 @@ cd $ROOT_DIR
 
 python update_gridded_meta_anthro.py
 python update_gridded_meta_biomass.py
+python rename_gridded_files.py
 
 now=$(date)
 echo "Current time : $now"
