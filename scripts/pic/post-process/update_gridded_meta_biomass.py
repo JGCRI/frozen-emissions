@@ -3,7 +3,7 @@ import sys
 
 ROOT_DIR = '/mnt/c/Users/nich980/data/e-freeze/frozen-emissions/2020-02-21/iso-usa/gridded-emissions'
 
-SPECIES = ['BC', 'CO', 'CO2', 'NH3', 'NOx', 'OC', 'SO2']
+SPECIES = ['BC', 'CO', 'CO2', 'NH3', 'NOx', 'NMVOC', 'OC', 'SO2']
 
 YEARS = ['196001-200912', '201001-201412']
 BAD_FILES = []
