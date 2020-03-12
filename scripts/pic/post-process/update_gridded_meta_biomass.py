@@ -1,12 +1,16 @@
 import os
 import sys
 
-ROOT_DIR = '/mnt/c/Users/nich980/data/e-freeze/frozen-emissions/2020-02-21/iso-usa/gridded-emissions'
+ROOT_DIR = '/pic/projects/GCAM/mnichol/ceds/worktrees/CEDS-frozen-em/final-emissions/gridded-emissions'
 
 SPECIES = ['BC', 'CO', 'CO2', 'NH3', 'NOx', 'NMVOC', 'OC', 'SO2']
 
 YEARS = ['196001-200912', '201001-201412']
 BAD_FILES = []
+
+print("*****************************************************************************\n")
+print("*    Post-Processing Frozen Emissions Gridded NetCDF Metadata - Biofuel     *\n")
+print("*****************************************************************************\n")
 
 print('Changing working directory to {}'.format(ROOT_DIR))
 os.chdir(ROOT_DIR)
