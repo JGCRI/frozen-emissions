@@ -4,9 +4,9 @@ Modify the metadata of frozen biofuel emissions gridded files
 Matt Nicholson
 12 Mar 2020
 """
+from __future__ import print_function
 import os
 import sys
-from __future__ import print_function
 
 ROOT_DIR = sys.argv[1]
 print('Changing working directory to {}'.format(ROOT_DIR))
@@ -30,7 +30,7 @@ for year in YEARS:
             if not os.path.isfile(fname):
                 fname = '{}-em-SOLID-BIOFUEL-anthro_input4MIPs_emissions_CMIP_CEDS-2020-02-27-supplemental-data_gn_{}.nc'.format(s, year)
                 if not os.path.isfile(fname):
-                    BAD_FILES.append('{}_{}'.format(s, year)
+                    BAD_FILES.append('{}_{}'.format(s, year))
         # --- Global comment ---------------------------------------------------
         cmd_str = '"Frozen EF USA. Based on CEDS CMIP6 ver 2017-05-18 data with combustion sector emissions factors for years after 1970 frozen at their 1970 value for the USA region."'
         cmd = 'ncatted -O -a comment,global,o,c,{} -h {}'.format(cmd_str, fname)

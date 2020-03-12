@@ -12,10 +12,10 @@ Updated filename:
 Matt Nicholson
 12 Mar 2020
 """
+from __future__ import print_function
 import os
 import sys
 import re
-from __future__ import print_function
 
 print("*****************************************************************************")
 print("*            Updating Frozen Emissions Gridded NetCDF Filenames             *")
@@ -31,7 +31,7 @@ fnames = {'anthro' : '{}-em-anthro_input4MIPs_emissions_CEDS-2017-05-18-frozen-U
           }
 
 # Get the names of every file in the current directory with the '.nc' extension
-grid_files = [f for f in os.listdir() if os.path.isfile(f) and f[-3:] == '.nc']
+grid_files = [f for f in os.listdir(os.getcwd()) if os.path.isfile(f) and f[-3:] == '.nc']
 
 for grid_file in grid_files:
     match = species_pattern.search(grd_file)
