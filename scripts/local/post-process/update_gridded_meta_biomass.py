@@ -1,3 +1,9 @@
+"""
+Modify the metadata of frozen biofuel emissions gridded files
+
+Matt Nicholson
+12 Mar 2020
+"""
 import os
 import sys
 
