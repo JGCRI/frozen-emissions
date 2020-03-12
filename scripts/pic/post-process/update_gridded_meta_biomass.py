@@ -27,7 +27,7 @@ for fname in grid_files:
     if match:
         species = match.group(1)
     else:
-        print('Unable to parse species from filename: {}'.format(fname)
+        print('Unable to parse species from filename: {}'.format(fname))
         continue
     # --- Global comment ---------------------------------------------------
     cmd_str = '"Frozen EF USA. Based on CEDS CMIP6 ver 2017-05-18 data with combustion sector emissions factors for years after 1970 frozen at their 1970 value for the USA region."'
