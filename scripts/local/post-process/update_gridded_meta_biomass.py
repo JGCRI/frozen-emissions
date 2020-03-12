@@ -12,7 +12,7 @@ os.chdir(ROOT_DIR)
 
 for year in YEARS:
     for s in SPECIES:
-        print('Processing {}...'.format(s, year))
+        print('Processing {} {}...'.format(s, year))
         fname = '{}-em-SOLID-BIOFUEL-anthro_input4MIPs_emissions_CMIP_CEDS-2020-02-26-supplemental-data_gn_{}.nc'.format(s, year)
         if not os.path.isfile(fname):
             fname = '{}-em-SOLID-BIOFUEL-anthro_input4MIPs_emissions_CMIP_CEDS-2020-02-27-supplemental-data_gn_{}.nc'.format(s, year)
