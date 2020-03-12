@@ -34,13 +34,13 @@ fnames = {'anthro' : '{}-em-anthro_input4MIPs_emissions_CEDS-2017-05-18-frozen-U
 grid_files = [f for f in os.listdir(os.getcwd()) if os.path.isfile(f) and f[-3:] == '.nc']
 
 for grid_file in grid_files:
-    match = species_pattern.search(grd_file)
+    match = species_pattern.search(grid_file)
     if match:
         species = match.group(1)
-        if 'BIOFUEL' in grd_file:
+        if 'BIOFUEL' in grid_file:
             new_fname = fnames['biofuel']
         else:
             new_fname = fnames['anthro']
         new_fname = new_fname.format(species)
-        print('{} --> {}'.format(grd_file, new_fname))
-        os.rename(grd_file, new_fname)
+        print('{} --> {}'.format(grid_file, new_fname))
+        os.rename(grid_file, new_fname)
