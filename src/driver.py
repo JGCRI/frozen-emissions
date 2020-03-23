@@ -271,7 +271,21 @@ def calc_emissions():
         # beginning of the DataFrame
         logger.debug('Concatinating meta_cols and emissions_df DataFrames along axis 1')
         emissions_df = pd.concat([meta_cols, emissions_df], axis=1)
-       
+        
+        if (species == 'SO2'):
+            # Correct for mass-balance correction by copying pre-1970 emissions
+            # directly from the CMIP6 total emissions file
+            cols = ['X{}'.format(yr) for yr in config.CONFIG.ceds_meta['year_first'], 1971]
+            cmip_file = os.path.join(dir_cmip6, 'final-emissions', 'SO2_total_CEDS_emissions.csv')
+            logger.debug('Reading SO2 CMIP6 total emissions file from {}'.format(cmip_file))
+            cmip_df = pd.read_csv(cmip_file, sep=',', header=0)
+            cmip_so2 = cmip_df.loc[cmip_df['sector'] == '1A1bc_Other-transformation'].copy()
+            # Extract 1750-1970 emissions
+            cmip_so2 = cmip_so2[cols]
+            # Update the values of 1750-1970 emissions for the 1A1bc_Other-transformation
+            # sector in the master final emissions dataframe
+            emissions_df.update(cmip_so2)
+            
         f_name = '{}_total_CEDS_emissions.csv'.format(species)
         
         f_out = os.path.join(dir_output, f_name)
