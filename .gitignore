@@ -12,4 +12,8 @@ tests/**/*.csv
 output/**/*.csv
 
 # CMIP6 input files
-input/cmip6/*.csv
+input/cmip6/**/*.csv
+
+# Script logs
+scripts/**/*.log
+scripts/**/*.out
