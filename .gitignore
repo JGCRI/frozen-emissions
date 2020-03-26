@@ -10,3 +10,10 @@ tests/**/*.csv
 
 # .csv files anywhere in the output/ directory
 output/**/*.csv
+
+# CMIP6 input files
+input/cmip6/**/*.csv
+
+# Script logs
+scripts/**/*.log
+scripts/**/*.out

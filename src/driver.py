@@ -80,11 +80,14 @@ def freeze_emissions():
     logger = logging.getLogger("main")
     logger.info("In main::freeze_emissions()")
     logger.info("dir_cmip6 = {}".format(dir_cmip6))
-    logger.info("freeze year = {}\n".format(config.CONFIG.freeze_year))
+    logger.info("freeze year = {}".format(config.CONFIG.freeze_year))
         
     # Construct the column header strings for years >= 'year' param
     year_strs = ['X{}'.format(yr) for yr in range(config.CONFIG.freeze_year,
                                                   config.CONFIG.ceds_meta['year_last'] + 1)]
+                                                  
+    logger.debug("year_strs[0] = {}".format(year_strs[0]))
+    logger.debug("year_strs[-1] = {}".format(year_strs[-1]))
     
     # Begin for-loop over each species we want to freeze
     for species in config.CONFIG.freeze_species:
@@ -194,6 +197,8 @@ def calc_emissions():
     # Create list of strings representing year column headers
     data_col_headers = ['X{}'.format(i) for i in range(config.CONFIG.ceds_meta['year_first'],
                                                        config.CONFIG.ceds_meta['year_last'] + 1)]
+    logger.debug('data_col_headers[0] = '.format(data_col_headers[0]))
+    logger.debug('data_col_headers[-1] = '.format(data_col_headers[-1]))
     
     for species in config.CONFIG.freeze_species:
         info_str = '\nCalculating frozen total emissions for {}...'.format(species)
@@ -231,11 +236,11 @@ def calc_emissions():
         logger.debug('Reading activity file from {}'.format(activity_file))
         act_df = pd.read_csv(activity_file, sep=',', header=0)
         
-        # Get the 'iso', 'sector', 'fuel', & 'units' columns
+        # Get the 'iso', 'sector', & 'fuel' columns
         meta_cols = ef_df.iloc[:, 0:4]
         
         # Sanity check
-        if (meta_cols.equals(act_df.iloc[:, 0:4])):
+        if (not ef_df.iloc[:, 0:3].equals(act_df.iloc[:, 0:3])):
             err_str = 'Emission Factor & Activity DataFrames have mis-matched meta columns'
             logger.error(err_str)
             raise ValueError(err_str)
@@ -248,6 +253,9 @@ def calc_emissions():
         ef_subs = ef_df[data_col_headers]
         act_subs = act_df[data_col_headers]
         
+        logger.debug('ef_subs.shape {}'.format(ef_subs.shape))
+        logger.debug('act_subs.shape {}'.format(act_subs.shape))
+        
         logger.debug('Calculating total emissions')
         
         if (ef_subs.shape != act_subs.shape):
@@ -255,8 +263,6 @@ def calc_emissions():
             # act_subs.shape = (54772, 265).
             # ValueError will be raised by pandas
             logger.error('ValueError: ef_subs & act_subs could not be broadcast together')
-            logger.debug('ef_subs.shape {}'.format(ef_subs.shape))
-            logger.debug('act_subs.shape {}'.format(act_subs.shape))
         
         emissions_df = pd.DataFrame(ef_subs.values * act_subs.values,
                                     columns=ef_subs.columns, index=ef_subs.index)
@@ -265,7 +271,21 @@ def calc_emissions():
         # beginning of the DataFrame
         logger.debug('Concatinating meta_cols and emissions_df DataFrames along axis 1')
         emissions_df = pd.concat([meta_cols, emissions_df], axis=1)
-       
+        
+        if (species == 'SO2'):
+            # Correct for mass-balance correction by copying pre-1970 emissions
+            # directly from the CMIP6 total emissions file
+            cols = ['X{}'.format(yr) for yr in config.CONFIG.ceds_meta['year_first'], 1971]
+            cmip_file = os.path.join(dir_cmip6, 'final-emissions', 'SO2_total_CEDS_emissions.csv')
+            logger.debug('Reading SO2 CMIP6 total emissions file from {}'.format(cmip_file))
+            cmip_df = pd.read_csv(cmip_file, sep=',', header=0)
+            cmip_so2 = cmip_df.loc[cmip_df['sector'] == '1A1bc_Other-transformation'].copy()
+            # Extract 1750-1970 emissions
+            cmip_so2 = cmip_so2[cols]
+            # Update the values of 1750-1970 emissions for the 1A1bc_Other-transformation
+            # sector in the master final emissions dataframe
+            emissions_df.update(cmip_so2)
+            
         f_name = '{}_total_CEDS_emissions.csv'.format(species)
         
         f_out = os.path.join(dir_output, f_name)
