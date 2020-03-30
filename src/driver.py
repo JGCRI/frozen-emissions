@@ -272,10 +272,10 @@ def calc_emissions():
         logger.debug('Concatinating meta_cols and emissions_df DataFrames along axis 1')
         emissions_df = pd.concat([meta_cols, emissions_df], axis=1)
         
-        if (species == 'SO2'):
+        if (species == 'SO2' or species == 'CO2'):
             # Correct for mass-balance correction by copying pre-1970 emissions
             # directly from the CMIP6 total emissions file
-            cols = ['X{}'.format(yr) for yr in config.CONFIG.ceds_meta['year_first'], 1971]
+            cols = ['X{}'.format(yr) for yr in range(config.CONFIG.ceds_meta['year_first'], 1971)]
             cmip_file = os.path.join(dir_cmip6, 'final-emissions', 'SO2_total_CEDS_emissions.csv')
             logger.debug('Reading SO2 CMIP6 total emissions file from {}'.format(cmip_file))
             cmip_df = pd.read_csv(cmip_file, sep=',', header=0)
@@ -285,11 +285,12 @@ def calc_emissions():
             # Update the values of 1750-1970 emissions for the 1A1bc_Other-transformation
             # sector in the master final emissions dataframe
             emissions_df.update(cmip_so2)
-        
-        # Correct missing tanker loading sector or else gridding fails
+            
+        # Correct missing tanker loading sector or else gridding fails due to versioning.
+        logger.debug('Adding missing 1A3di_Oil_Tanker_Loading sector')
         tls_row = ['global', '1A3di_Oil_Tanker_Loading',  'process', 'kt'] + [0] * len(data_col_headers)
-        tls_df = pd.DataFrame(tls_row, columns=emissions_df.columns)
-        emissions_df = emissions_df.append(tls_df)
+        tls = pd.Series(tls_row)
+        emissions_df = emissions_df.append(tls, ignore_index=True)
         
         f_name = '{}_total_CEDS_emissions.csv'.format(species)
         
