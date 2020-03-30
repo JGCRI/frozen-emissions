@@ -285,7 +285,12 @@ def calc_emissions():
             # Update the values of 1750-1970 emissions for the 1A1bc_Other-transformation
             # sector in the master final emissions dataframe
             emissions_df.update(cmip_so2)
-            
+        
+        # Correct missing tanker loading sector or else gridding fails
+        tls_row = ['global', '1A3di_Oil_Tanker_Loading',  'process', 'kt'] + [0] * len(data_col_headers)
+        tls_df = pd.DataFrame(tls_row, columns=emissions_df.columns)
+        emissions_df = emissions_df.append(tls_df)
+        
         f_name = '{}_total_CEDS_emissions.csv'.format(species)
         
         f_out = os.path.join(dir_output, f_name)
