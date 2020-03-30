@@ -28,7 +28,9 @@ os.chdir(ceds_dir)
 
 for species in em_species:
     # Execute the summary script for each emissions species defined in the above list
-    print('\nProcessing {}...'.format(species))
+    print('=' * 60)
+    print('Processing {}...'.format(species))
+    print('=' * 60)
     cmd = 'Rscript {} {} --nosave --no-restore'.format(script_path, species)
     os.system(cmd)
     
