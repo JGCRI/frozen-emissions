@@ -7,10 +7,8 @@ The scripts to produce the frozen emissions are written and tested in Python 3.6
 conda env create -f environment.yml
 ```
 # Producing Frozen Emissions
-## 1. Producing Frozen Emission Files
-This repository holds the code needed to produce frozen emission factor (EF) files from CEDS EF files.
-
-`driver.py` contains the two functions that do the heavy lifting: `freeze_emissions()` and `calc_emissions()`. 
+## 1. Freezing Emissions Factors & Producing Total Frozen Emissions
+`src/driver.py` contains the two functions that do the heavy lifting: `freeze_emissions()` and `calc_emissions()`. 
 * `freeze_emissions()` reads a CMIP6 emissions factors file for a given species (or list of species) and writes a new emissions factors file containing the frozen EFs. 
 * `calc_emissions()` constructs a final emissions file for each species using the species' frozen EF file and the corresponding activity file.
 
