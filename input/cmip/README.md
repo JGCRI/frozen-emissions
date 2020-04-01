@@ -1,0 +1,1 @@
+This directory holds the original, unmodified CMIP emissions factors & activity files
