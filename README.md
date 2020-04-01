@@ -6,6 +6,14 @@ The scripts to produce the frozen emissions are written and tested in Python 3.6
 ```
 conda env create -f environment.yml
 ```
+
+The production of the final frozen emissions files depends on scripts from the [Community Emissions Data System (CEDS)](https://github.com/JGCRI/CEDS). Installation instructions can be found in the [User's Guide](https://github.com/JGCRI/CEDS/wiki/User_Guide). Make sure to install CEDS into the same parent directory as this repository, i.e., 
+```
+/my_code_dir
+  |- /CEDS
+  |- /frozen-emissions
+```
+
 # Producing Frozen Emissions
 ## 1. Freezing Emissions Factors & Producing Total Frozen Emissions
 `src/driver.py` contains the two functions that do the heavy lifting: `freeze_emissions()` and `calc_emissions()`. 
