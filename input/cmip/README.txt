@@ -1,1 +1,0 @@
-This directory holds the original, unmodified CMIP6 files

@@ -1,0 +1,1 @@
+This directory holds scripts for gridding frozen emissions files on the pic HPC cluster using the CEDS package.

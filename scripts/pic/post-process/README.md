@@ -1,0 +1,1 @@
+This directory holds scipts to post-process gridded frozen emissions files on the pic HPC cluster.

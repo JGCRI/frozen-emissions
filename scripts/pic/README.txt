@@ -1,1 +1,0 @@
-This directory holds bash scripts to run CEDS gridding on pic.

@@ -1,0 +1,1 @@
+This directory holds bash scripts to run CEDS gridding on the pic HPC cluster.
