@@ -96,7 +96,7 @@ class ConfigObj:
         self.dirs['ceds']   = info['dirs'][op_sys]['ceds']
         self.dirs['input']  = os.path.join(self.dirs['root'], 'input')
         self.dirs['output'] = os.path.join(self.dirs['root'], 'output')
-        self.dirs['cmip6']  = os.path.join(self.dirs['input'], 'cmip6')
+        self.dirs['cmip6']  = os.path.join(self.dirs['input'], 'cmip')
         self.freeze_year    = int(info['freeze']['year'])
         try:     # Is freeze_isos a string?
             self.freeze_isos = info['freeze']['isos'].lower()

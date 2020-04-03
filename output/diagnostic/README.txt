@@ -1,1 +1,0 @@
-This directory holds diagnostic output created by src/diag/diagnostics.py

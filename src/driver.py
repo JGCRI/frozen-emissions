@@ -4,7 +4,6 @@ Main script that produces the frozen emissions
 Matt Nicholson
 7 Feb 2020
 """
-# import logging
 import argparse
 import logging
 import os
@@ -143,8 +142,8 @@ def freeze_emissions():
                     logger.debug("Overwriting original EF DataFrame with new EF values")
                 else:
                     logger.warning("Subsetted EF dataframe is empty")
-            # END fuel loop -----
-        # END sector loop -----
+            # --- END fuel loop -----
+        # --- END sector loop -----
         # Freeze the combustion emissions
         logger.debug("Freezing emissions...")
         ef_obj.freeze_emissions(year_strs)
@@ -162,10 +161,10 @@ def freeze_emissions():
         
         ef_obj.all_factors.to_csv(f_out, sep=',', header=True, index=False)
         logger.info("--- Finished processing {} ---\n".format(species))
-        
-    # END EF file loop -----
-    [logger.warning('Emissions calculation failed for {}'.format(failure))
-            for failure in failed_species if failure != '']
+    # --- END EF file loop -----
+    for failure in failed_species:
+        if failure != '':
+            logger.warning('Emissions calculation failed for {}'.format(failure))
     logger.info("Finished processing all species\nLeaving main::freeze_emissions()\n")
     
     
@@ -287,13 +286,13 @@ def calc_emissions():
             emissions_df.update(cmip_so2)
             
         # Correct missing tanker loading sector or else gridding fails due to versioning.
-        logger.debug('Adding missing 1A3di_Oil_Tanker_Loading sector')
-        tls_row = ['global', '1A3di_Oil_Tanker_Loading',  'process', 'kt'] + [0] * len(data_col_headers)
-        tls = pd.Series(tls_row)
-        emissions_df = emissions_df.append(tls, ignore_index=True)
+        logger.debug('Adding missing global 1A3di_Oil_Tanker_Loading sector')
+        zeros = [0] * len(data_col_headers)
+        tls_row = ['global', '1A3di_Oil_Tanker_Loading',  'process', 'kt'] + zeros
+        tls_df = pd.DataFrame([tls_row], columns=emissions_df.columns.values.tolist())
+        emissions_df = emissions_df.append(tls_df, ignore_index=True)
         
         f_name = '{}_total_CEDS_emissions.csv'.format(species)
-        
         f_out = os.path.join(dir_output, f_name)
         
         info_str = 'Writing emissions DataFrame to {}'.format(f_out)
@@ -302,11 +301,11 @@ def calc_emissions():
         
         emissions_df.to_csv(f_out, sep=',', header=True, index=False)
         logger.info('Finished calculating total emissions for {}'.format(species))
-        
-    # End species loop
-    [logger.warning('Emissions calculation failed for {}'.format(failure))
-            for failure in failed_species if failure != '']
-    logger.info("Finished processing all species! Leaving validate::calc_emissions()\n")
+    # --- End species loop ---
+    for failure in failed_species:
+        if failure != '':
+            logger.warning('Emissions calculation failed for {}'.format(failure))
+    logger.info('Finished processing all species! Leaving validate::calc_emissions()\n')
 
 
 def main():
@@ -321,28 +320,21 @@ def main():
     logger = log_config.init_logger('logs', 'main', level='debug')
     logger.info('Input file {}'.format(args.input_file))
     
-    info_str = "Function(s) to execute: {}"
+    info_str = 'Function(s) to execute: {}'
     # Execute the specified function(s)
     if (args.function == 'all'):
-        func_str = "freeze_emissions() & calc_emissions()"
-        logger.info(info_str.format(func_str))
-        # --- Func Calls ---
+        logger.info(info_str.format('freeze_emissions() & calc_emissions()'))
         freeze_emissions()
         calc_emissions()
     elif (args.function == 'freeze_emissions'):
-        func_str = "freeze_emissions()"
-        logger.info(info_str.format(func_str))
-        # --- Func Calls ---
+        logger.info(info_str.format('freeze_emissions()'))
         freeze_emissions()
     elif (args.function == 'calc_emissions'):
-        func_str = "calc_emissions()"
-        logger.info(info_str.format(func_str))
-        # --- Func Calls ---
+        logger.info(info_str.format('calc_emissions()'))
         calc_emissions()
     else:
         raise ValueError('Invalid function argument. Valid args are "all", "freeze_emissions", or "calc_emissions"')
         
-
 
 if __name__ == '__main__':
     main()

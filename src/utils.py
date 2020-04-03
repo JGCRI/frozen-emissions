@@ -4,7 +4,7 @@ Utility functions
 Matt Nicholson
 18 Feb 2020
 """
-import os
+from pathlib import Path
 
 def get_root_dir():
     """
@@ -18,6 +18,5 @@ def get_root_dir():
     -------
     str : Absolute path of the project's root directory
     """
-    root, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
+    root = str(Path(os.path.abspath(__file__)).parents[1])
     return root
-

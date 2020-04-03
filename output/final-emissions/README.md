@@ -1,0 +1,1 @@
+This directory holds final frozen emissions files produced by the CEDS summary script. They must be copy & pasted into this directory in order to run the frozen-emissions diagnostic code.
