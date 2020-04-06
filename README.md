@@ -70,10 +70,11 @@ Within RStudio, set the current working directory to the `CEDS_Data` directory, 
 
 ## Summary
 ### Produce Frozen Emission Factor Files
-  1. Navigate to the repository's `src/` directory and run `python driver.py <config_file> <options>` to produce frozen EF files and final emission files
+  1. Navigate to the repository's `src/` directory and run `python driver.py <config_file> <options>` to produce frozen EF files and total emission files. The frozen files will be placed in the `/output` directory.
 ### Produce Emission Summary Data
   1. Copy and paste the frozen emission files from `/output` to `CEDS/intermediate-output` 
   2. CD to `/scripts` and execute the summary script: `python make_final_emissions.py /path/to/ceds`
+  3. Retrieve the final frozen emissions from `CEDS/final-emissions/current-versions`.
 ### Compare Frozen Emissions to Normal Emissions
   1. Configure the `current_CEDS_version` and `previous_CEDS_version` in `CEDS_version_comparison.R` to match the frozen emission & normal emission versions
   2. Run `CEDS_version_comparison.R`
