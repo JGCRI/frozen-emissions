@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -A ceds
-#SBATCH -t 10:00:00
+#SBATCH -t 40:00:00
 #SBATCH -N 1
 #SBATCH -p shared
 
@@ -16,7 +16,40 @@ now=$(date)
 echo "Current time : $now"
 
 cd /pic/projects/GCAM/mnichol/ceds/worktrees/CEDS-frozen-em
-make NMVOC-gridded
+
+# Grid & chunk bulk emissiona
+Rscript code/module-G/G1.1.grid_bulk_emissions.R NMVOC --nosave --no-restore
+Rscript code/module-G/G2.1.chunk_bulk_emissions.R NMVOC --nosave --no-restore 
+
+# Grid & chunk sub-VOCs
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC01 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC02 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC03 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC04 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC05 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC06 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC07 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC08 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC09 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC12 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC13 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC14 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC15 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC16 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC17 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC18 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC19 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC20 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC21 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC22 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC23 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC24 --nosave --no-restore
+Rscript code/module-G/G2.2.chunk_subVOC_emissions.R VOC25 --nosave --no-restore
+
+# Grid & chunk biofuel emissions
+Rscript code/module-G/G1.4.grid_solidbiofuel_emissions.R NMVOC --nosave --no-restore
+Rscript code/module-G/G2.4.chunk_solidbiofuel_emissions.R NMVOC --nosave --no-restore
+
 
 now=$(date)
 echo "Current time : $now"

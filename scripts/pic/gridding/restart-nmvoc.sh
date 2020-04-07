@@ -12,7 +12,9 @@
 # sbatch restart-nmvoc.sh VOC04
 
 module purge
-module load python
+module load R
+# HACK: Use pyreshaper env or else pic freaks out
+source activate pyreshaper
 
 now=$(date)
 echo "Current time : $now"

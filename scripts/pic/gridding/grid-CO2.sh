@@ -16,7 +16,14 @@ now=$(date)
 echo "Current time : $now"
 
 cd /pic/projects/GCAM/mnichol/ceds/worktrees/CEDS-frozen-em
-make CO2-gridded
+
+# Grid & chunk bulk emissions
+Rscript code/module-G/G1.1.grid_bulk_emissions.R CO2 --nosave --no-restore
+Rscript code/module-G/G2.1.chunk_bulk_emissions.R CO2 --nosave --no-restore 
+
+# Grid & chunk biofuel emissions
+Rscript code/module-G/G1.4.grid_solidbiofuel_emissions.R CO2 --nosave --no-restore
+Rscript code/module-G/G2.4.chunk_solidbiofuel_emissions.R CO2 --nosave --no-restore
 
 now=$(date)
 echo "Current time : $now"

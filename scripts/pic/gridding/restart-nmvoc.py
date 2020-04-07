@@ -50,7 +50,7 @@ voc_num = voc_arg[3:]
 idx_start = voc_nums.index(voc_num)
 voc_subset = voc_nums[idx_start:]
 
-for voc in voc_num_subset:
+for voc in voc_subset:
     print('Processing {}'.format(voc))
     os.system(cmd_grid.format(voc))
     os.system(cmd_chunk.format(voc))
