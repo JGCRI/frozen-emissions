@@ -14,6 +14,12 @@ The production of the final frozen emissions files depends on scripts from the [
   |- /frozen-emissions
 ```
 
+The frozen-emissions scripts also depend on CMIP6 emissions factors and activity files. These files **must** be placed in the repository's `input/cmip` directory in order for the scripts to produce any output. They must also follow the CEDS intermediate output naming conventions: 
+* Emissions factors files: `H.<species>_total_EFs_extended.csv` 
+* Activity files: `H.<species>_total_activity_extended.csv`
+
+For example, the CMIP6 emissions factors and activity files for SO2 must be `H.SO2_total_EFs_extended.csv` and `H.SO2_total_activity_extended.csv`, respectively.
+
 # Producing Frozen Emissions
 ## 1. Freezing Emissions Factors & Producing Total Frozen Emissions
 `src/driver.py` contains the two functions that do the heavy lifting: `freeze_emissions()` and `calc_emissions()`. 
@@ -32,6 +38,8 @@ The global configuration files contain directory paths and other information nee
 ```
 python driver.py ../input/config-basic.yml
 ```
+
+More information on the configuration files can be found [here](input/README.md)
 
 ### Command line options
 * `config_file`: Configuration file (required)
