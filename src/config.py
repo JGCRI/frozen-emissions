@@ -3,6 +3,14 @@ A class to hold configuration information used by the frozen emission scripts
 
 Matt Nicholson
 7 Feb 2020
+
+Change log
+----------
+1 April 2020
+    * Rename dirs CMIP6 value to reflect input CMIP6 directory name change.
+9 April 2020
+    * From class 'dirs' attribute, remove 'ceds' key & val.
+    * Remove OS-specific directory code.
 """
 import yaml
 import os
@@ -56,15 +64,25 @@ class ConfigObj:
     
     def _init_dirs(self):
         """
-        Initialize the 'dirs' instance attr
+        Initialize the 'dirs' instance attr.
+        
+        Keys
+        ----
+        'root'
+            Root project directory.
+        'cmip6'
+            Directory holding CMIP6 EF & activity files.
+        'input'
+            Input directory.
+        'output'
+            Output directory.
         """
         # Get the project root, which will be one level up
         project_root, _ = os.path.split(os.path.dirname(os.path.abspath(__file__)))
-        dirs = {'root': project_root,
+        dirs = {'root'   : project_root,
                 'cmip6'  : None,
                 'input'  : None,
-                'output' : None,
-                'ceds'   : None}
+                'output' : None}
         self.dirs = dirs
         
     def _parse_yaml(self, yaml_path):
@@ -81,19 +99,8 @@ class ConfigObj:
                 info = yaml.safe_load(in_stream)
             except yaml.YAMLError as e:
                 print(e)
-                
-        # Determine whether to use Windows or Linux paths based off the OS executing
-        # the script
-        if (platform.startswith('win')):
-            op_sys = 'win'
-        elif (platform.startswith('linux')):
-            op_sys = 'linux'
-        else:
-            raise ValueError('Only Windows and Linux systems are currently supported')
-            
-        self._init_dirs()      # Initialize the instance's directory dictionary
-        # self.dirs['cmip6']  = info['dirs'][op_sys]['cmip6']
-        self.dirs['ceds']   = info['dirs'][op_sys]['ceds']
+        # Initialize the instance's directory dictionary
+        self._init_dirs()
         self.dirs['input']  = os.path.join(self.dirs['root'], 'input')
         self.dirs['output'] = os.path.join(self.dirs['root'], 'output')
         self.dirs['cmip6']  = os.path.join(self.dirs['input'], 'cmip')
@@ -105,8 +112,7 @@ class ConfigObj:
         self.freeze_species  = info['freeze']['species']
         self.init_file       = os.path.basename(yaml_path)
         self.ceds_meta['year_first'] = info['ceds']['year_first']
-        self.ceds_meta['year_last'] = info['ceds']['year_last']
-        
+        self.ceds_meta['year_last']  = info['ceds']['year_last']
         
     def __repr__(self):
         return "<ConfigObj object {}>".format(self.init_file)
