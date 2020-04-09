@@ -19,10 +19,10 @@ Each YAML configuration file has numerous fields that pass crucial information t
   * `year_first`: int; First year of emissions.
   * `year_last` : int; Final year of emissions.
   
-  # Log configuration YAML file
-  `log-config.yml` contains information to configure the frozen emissions logger. The log is written to `src/logs/main.log`.
+ # Log configuration YAML file
+ `log-config.yml` contains information to configure the frozen emissions logger. The log is written to `src/logs/main.log`.
   
-  # Other files in the directory
-  * `ceds_isos.csv` : Maps CEDS ISOs to their country name & region.
-  * `combustion_sectors.csv` : Contains the names of all CEDS combustion-related sectors.
-  * `master_sector.csv` : Master list of CEDS sectors.
+ # Other files in the directory
+ * `ceds_isos.csv` : Maps CEDS ISOs to their country name & region.
+ * `combustion_sectors.csv` : Contains the names of all CEDS combustion-related sectors.
+ * `master_sector.csv` : Master list of CEDS sectors.
