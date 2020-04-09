@@ -17,11 +17,7 @@ module load python
 now=$(date)
 echo "Current time : $now"
 
-python update_gridded_meta_anthro.py $ROOT_DIR
-python update_gridded_meta_biomass.py $ROOT_DIR
-python rename_gridded_files.py $ROOT_DIR
 python rename_gridded_checksum.py $ROOT_DIR
-python nc_meta_dump.py $ROOT_DIR
 
 now=$(date)
 echo "Current time : $now"
