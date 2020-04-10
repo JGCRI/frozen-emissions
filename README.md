@@ -79,7 +79,10 @@ Within RStudio, set the current working directory to the `CEDS_Data` directory, 
 ## 4. Producing Gridded Frozen Emissions
 The CEDS package can be used to produce gridded bulk and biofuel frozen emissions netCDF files. Scripts to submit batch gridding jobs for emissions species on the `pic` HPC cluster can be found in `scripts/pic/gridding`. 
 
-Before submitting a gridding job, the frozen final emissions files produced by the summary script in step 2 must be moved to your `CEDS/final-emissions/current-versions` directory. Annual gridded emissions files and their checksum files will be placed in `CEDS/intermediate-output/gridded-emissions`. The chunked bulk and biofuel gridded emissions will be placed in `CEDS/final-emissions/gridded-emissions`. 
+
+Before submitting a gridding job, the frozen final emissions files produced by the summary script in step 2 must be moved to your `CEDS/final-emissions/current-versions` directory. The metadata fields of the gridded frozen emissions netCDF files, such as the user's institution, project name, and contact information, can be set within the CEDS gridding code located in `CEDS/code/parameters/nc_generation_functions.R`.
+
+Annual gridded emissions files and their checksum files will be placed in `CEDS/intermediate-output/gridded-emissions`. The chunked bulk and biofuel gridded emissions will be placed in `CEDS/final-emissions/gridded-emissions`. 
 
 **NOTE**: The gridding functions **must** be run via the commands illustrated in the gridding bash scripts in order to produce correct gridded emissions. Using the `Make` targets (i.e., `make so2-gridded`) will cause the frozen emissions files that have been placed in `CEDS/final-emissions/current-versions` to be overwritten with non-frozen emissions, leading to incorrect grids.
 

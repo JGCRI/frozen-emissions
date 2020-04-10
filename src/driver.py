@@ -1,5 +1,10 @@
 """
-Main script that produces the frozen emissions
+This file contains the functions that freeze emissions factors and produce 
+frozen total emissions files.
+
+Usage
+-----
+python driver.py <config_file> <options>
 
 Matt Nicholson
 7 Feb 2020
@@ -15,15 +20,16 @@ import config
 import z_stats
 import emission_factor_file
 
+
 def init_parser():
     """
-    Initialize a new argparse parser
+    Initialize a new argparse parser.
     
     Parameters
-    -----------
+    ----------
     None
     
-    Return
+    Returns
     -------
     argparse.ArgumentParser object
     
@@ -54,20 +60,26 @@ def init_parser():
 
 def freeze_emissions():
     """
-    Freeze emissions factors for years >= 'year'
+    Freeze CMIP6 emissions factors for years >= 'year'.
     
     'Freezing' the emissions factors means setting the values for years > a given
     year equal to their value for that year. For example, freezing emissions factors
     at 1970 means the emissions factors for years 1971-present are set to their
-    1970 value
+    1970 value.
     
     Parameters
-    -----------
+    ----------
     None, uses global CONFIG object
     
-    Return
+    Input files
+    -----------
+    CMIP6 emissions factors
+        Located in /input/cmip.
+        Filename format: H.<species>_total_EFs_extended.csv
+    
+    Returns
     -------
-    None
+    None, writes frozen emissions factors files to /output directory.
     """
     failed_species = [''] * len(config.CONFIG.freeze_species)
     fail_idx = 0
@@ -170,18 +182,28 @@ def freeze_emissions():
     
 def calc_emissions():
     """
-    Calculate the hypothetical emissions from the frozen emissions and the CMIP6
-    activity files
+    Produce frozen total emissions files using frozen emission emissions factors
+    produced by freeze_emissions() and CMIP6 activity files. Frozen total emissions
+    files are written to the output/ directory.
     
     Emissions = EF x Activity
     
     Parameters
+    ----------
+    None, uses global CONFIG object.
+    
+    Input files
     -----------
-    None, uses global CONFIG object
+    Frozen emissions factors
+        Located in /output.
+        Filename format: H.<species>_total_EFs_extended.csv
+    CMIP6 species activity
+        Located in /input/cmip.
+        Filename format: H.<species>_total_activity_extended.csv
         
-    Return
+    Returns
     -------
-    None, writes to file
+    None, writes frozen total emissions files to /output directory.
     """
     failed_species = [''] * len(config.CONFIG.freeze_species)
     fail_idx = 0

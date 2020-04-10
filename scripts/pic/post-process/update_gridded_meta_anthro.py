@@ -33,6 +33,22 @@ for fname in grid_files:
     cmd_str = '"Frozen EF USA. Based on CEDS CMIP6 ver 2017-05-18 data with combustion sector emissions factors for years after 1970 frozen at their 1970 value for the USA region."'
     cmd = 'ncatted -O -a comment,global,o,c,{} -h {}'.format(cmd_str, fname)
     os.system(cmd)
+    # --- Global Contact -------------------------------------------------------
+    cmd_str = '"Steven J Smith(ssmith@pnnl.gov)"'
+    cmd = 'ncatted -O -a contact,global,o,c,{} -h {}'.format(cmd_str, fname)
+    os.system(cmd)
+    # --- Global Further Info URL ----------------------------------------------
+    cmd_str = '"http://www.globalchange.umd.edu/ceds/"'
+    cmd = 'ncatted -O -a further_info_url,global,o,c,{} -h {}'.format(cmd_str, fname)
+    os.system(cmd)
+    # --- Global Institution ---------------------------------------------------
+    cmd_str = '"Joint Global Change Research Institute, Pacific Northwest National Laboratory"'
+    cmd = 'ncatted -O -a institution,global,o,c,{} -h {}'.format(cmd_str, fname)
+    os.system(cmd)
+    # --- Global Institution ID ------------------------------------------------
+    cmd_str = '"JGCRI/PNNL"'
+    cmd = 'ncatted -O -a institution_id,global,o,c,{} -h {}'.format(cmd_str, fname)
+    os.system(cmd)
     # --- Global MIP era ---------------------------------------------------
     cmd_str = '"postCMIP6"'
     cmd = 'ncatted -O -a mip_era,global,o,c,{} -h {}'.format(cmd_str, fname)
@@ -56,18 +72,6 @@ for fname in grid_files:
     # --- Global Title -----------------------------------------------------
     cmd_str = '"Annual Anthropogenic Emissions of {} - Frozen EF-USA"'.format(species)
     cmd = 'ncatted -O -a title,global,o,c,{} -h {}'.format(cmd_str, fname)
-    os.system(cmd)
-    # --- Global Contact -------------------------------------------------------
-    cmd_str = '"Steven J Smith(ssmith@pnnl.gov)"'
-    cmd = 'ncatted -O -a contact,global,o,c,{} -h {}'.format(cmd_str, fname)
-    os.system(cmd)
-    # --- Global Institution ---------------------------------------------------
-    cmd_str = '"Joint Global Change Research Institute, Pacific Northwest National Laboratory"'
-    cmd = 'ncatted -O -a institution,global,o,c,{} -h {}'.format(cmd_str, fname)
-    os.system(cmd)
-    # --- Global Institution ID ------------------------------------------------
-    cmd_str = '"JGCRI/PNNL"'
-    cmd = 'ncatted -O -a institution_id,global,o,c,{} -h {}'.format(cmd_str, fname)
     os.system(cmd)
     
 print('Success!')
