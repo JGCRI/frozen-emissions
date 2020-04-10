@@ -57,9 +57,9 @@ More information on the configuration files can be found [here](input/README.md)
 
 
 ## 2. Producing Emission Summary Data
-The next step is to produce final emission files using the CEDS `S1.1.write_summary_data.R` script. 
+The next step is to produce final emission files using the CEDS `S1.1.write_summary_data.R` script. Since the frozen emissions files are formatted for an older version of CEDS, this summary script `scripts/S1.1.write_summary_data.R` **must** be copied and pasted into your `CEDS/code/module-S` directory, overwriting the current CEDS summary script file.
 
-Copy and paste the frozen emission files from the `/output` directory to your CEDS `/intermediate-output` directory. There are two scripts, one written in Python (`make_final_emissions.py`) and one in R (`make_final_emissions.R`), located in `/scripts`, that will run the CEDS summary script to produce final frozen emissions files. 
+Next, copy and paste the frozen emission files from the `/output` directory to your CEDS `/intermediate-output` directory. There are two scripts, one written in Python (`make_final_emissions.py`) and one in R (`make_final_emissions.R`), located in `/scripts`, that will run the CEDS summary script to produce final frozen emissions files. 
 
 The Python script can be called via the command line:
 ```
@@ -76,14 +76,30 @@ The comparison script will look for the previous release CEDS emission files in 
 
 Within RStudio, set the current working directory to the `CEDS_Data` directory, and run the script. Assuming there are no errors (ahem, CH4), comparison `.pdf` graphs should be placed in `/CEDS/final-emissions/diagnostics`
 
+## 4. Producing Gridded Frozen Emissions
+The CEDS package can be used to produce gridded bulk and biofuel frozen emissions netCDF files. Scripts to submit batch gridding jobs for emissions species on the `pic` HPC cluster can be found in `scripts/pic/gridding`. 
+
+Before submitting a gridding job, the frozen final emissions files produced by the summary script in step 2 must be moved to your `CEDS/final-emissions/current-versions` directory. Annual gridded emissions files and their checksum files will be placed in `CEDS/intermediate-output/gridded-emissions`. The chunked bulk and biofuel gridded emissions will be placed in `CEDS/final-emissions/gridded-emissions`. 
+
+**NOTE**: The gridding functions **must** be run via the commands illustrated in the gridding bash scripts in order to produce correct gridded emissions. Using the `Make` targets (i.e., `make so2-gridded`) will cause the frozen emissions files that have been placed in `CEDS/final-emissions/current-versions` to be overwritten with non-frozen emissions, leading to incorrect grids.
+
+## 5. Post-Processing Gridded Emissions Files
+CEDS produces the gridded frozen emissions files with the same filenames as normal gridded emissions. To avoid confusion, scripts located in `scripts/pic/post-process` can assist in re-naming the files. These directories also hold scripts that can modify the gridded netCDF file metadata. 
+
 ## Summary
 ### Produce Frozen Emission Factor Files
   1. Navigate to the repository's `src/` directory and run `python driver.py <config_file> <options>` to produce frozen EF files and total emission files. The frozen files will be placed in the `/output` directory.
 ### Produce Emission Summary Data
-  1. Copy and paste the frozen emission files from `/output` to `CEDS/intermediate-output` 
-  2. CD to `/scripts` and execute the summary script: `python make_final_emissions.py /path/to/ceds`
-  3. Retrieve the final frozen emissions from `CEDS/final-emissions/current-versions`.
+  1. Copy and paste `scripts/S1.1.write_summary_data.R` into your `CEDS/code/module-S` directory.
+  2. Copy and paste the frozen emission files from `/output` to `CEDS/intermediate-output`.
+  3. CD to `/scripts` and execute the summary script: `python make_final_emissions.py /path/to/ceds`.
+  4. Retrieve the final frozen emissions from `CEDS/final-emissions/current-versions`.
 ### Compare Frozen Emissions to Normal Emissions
-  1. Configure the `current_CEDS_version` and `previous_CEDS_version` in `CEDS_version_comparison.R` to match the frozen emission & normal emission versions
-  2. Run `CEDS_version_comparison.R`
-  3. Comparison plots will be placed into `CEDS/final-emissions/diagnostics`
+  1. Configure the `current_CEDS_version` and `previous_CEDS_version` in `CEDS_version_comparison.R` to match the frozen emission & normal emission versions.
+  2. Run `CEDS_version_comparison.R`.
+  3. Comparison plots will be placed into `CEDS/final-emissions/diagnostics`.
+### Producing Gridded Emissions Files (optional)
+  1. Copy and paste the frozen final emissions files into `CEDS/final-emissions/current-versions`.
+  2. Launch the gridding job.
+  3. Retrieve the gridded frozen emissions files & checksum files from `CEDS/final-emissions/gridded-emissions.`
+  4. Modify the gridded frozen emissions filenames.

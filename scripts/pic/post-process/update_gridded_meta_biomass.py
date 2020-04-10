@@ -57,7 +57,19 @@ for fname in grid_files:
     cmd_str = '"Annual SOLID BIOFUEL Anthropogenic Emissions of {} - Frozen EF-USA"'.format(species)
     cmd = 'ncatted -O -a title,global,o,c,{} -h {}'.format(cmd_str, fname)
     os.system(cmd)
-    # ----------------------------------------------------------------------
+    # --- Global Contact -------------------------------------------------------
+    cmd_str = '"Steven J Smith(ssmith@pnnl.gov)"'
+    cmd = 'ncatted -O -a contact,global,o,c,{} -h {}'.format(cmd_str, fname)
+    os.system(cmd)
+    # --- Global Institution ---------------------------------------------------
+    cmd_str = '"Joint Global Change Research Institute, Pacific Northwest National Laboratory"'
+    cmd = 'ncatted -O -a institution,global,o,c,{} -h {}'.format(cmd_str, fname)
+    os.system(cmd)
+    # --- Global Institution ID ------------------------------------------------
+    cmd_str = '"JGCRI/PNNL"'
+    cmd = 'ncatted -O -a institution_id,global,o,c,{} -h {}'.format(cmd_str, fname)
+    os.system(cmd)
+    
 print('Success!')
     
     
