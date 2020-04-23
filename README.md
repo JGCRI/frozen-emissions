@@ -87,7 +87,7 @@ Annual gridded emissions files and their checksum files will be placed in `CEDS/
 **NOTE**: The gridding functions **must** be run via the commands illustrated in the gridding bash scripts in order to produce correct gridded emissions. Using the `Make` targets (i.e., `make so2-gridded`) will cause the frozen emissions files that have been placed in `CEDS/final-emissions/current-versions` to be overwritten with non-frozen emissions, leading to incorrect grids.
 
 ## 5. Post-Processing Gridded Emissions Files
-CEDS produces the gridded frozen emissions files with the same filenames as normal gridded emissions. To avoid confusion, scripts located in `scripts/pic/post-process` can assist in re-naming the files. These directories also hold scripts that can modify the gridded netCDF file metadata. 
+CEDS produces the gridded frozen emissions files with the same filenames as normal gridded emissions. To avoid confusion, scripts located in `scripts/pic/post-process` can assist in re-naming the files. These directories also hold scripts that can modify the gridded netCDF file metadata. See the README files in those directories for further documentation.
 
 ## Summary
 ### Produce Frozen Emission Factor Files
