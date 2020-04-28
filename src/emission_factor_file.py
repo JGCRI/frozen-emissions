@@ -1,8 +1,16 @@
 """
-Class to represent a CMIP6 Emissions Factors (EF) File
+Class to represent a CMIP6 Emissions Factors (EF) File.
+
+Change log
+----------
+* 2020-04-28
+    * Shipping & aviation sectors removed and will not be frozen.
+        * 1A3ai_International-aviation
+        * 1A3aii_Domestic-aviation
+        * 1A3di_International-shipping
 
 Matt Nicholson
-12 Feb 2020
+28 April 2020
 """
 import logging
 import pandas as pd
@@ -16,28 +24,28 @@ class EmissionFactorFile:
     
     def __init__(self, species, f_path):
         """
-        Constructor for an EmissionFactorFile instance
+        Constructor for an EmissionFactorFile instance.
         
         Parameters
         -----------
         species : str
-            Emission species represented in the EF file
+            Emission species represented in the EF file.
         f_path : str
-            Path of the EF file
+            Path of the EF file.
             
         Attributes
         -----------
         species : str
-            Name of the emission species represented in the EF file
+            Name of the emission species represented in the EF file.
         path : str  
-            Path of the EF file being processed
+            Path of the EF file being processed.
         all_factors : Pandas DataFrame
-            DataFrame containing the entirety of the EF file
+            DataFrame containing the entirety of the EF file.
         combustion_factors : Pandas DataFrame
-            DataFrame containing only emissions factors from combustion-related sectors
+            DataFrame containing only emissions factors from combustion-related sectors.
         freeze_year : str
             Year at which to freeze the EFs, formatted to match the format of 
-            the EF dataframe year column headers (ex: 'X1970')
+            the EF dataframe year column headers (ex: 'X1970').
         """
         logger.debug('Creating EmissionFactorFile instance {} from {}'.format(species, f_path))
         self.species = species
@@ -228,12 +236,12 @@ class EmissionFactorFile:
         
     def _parse_file(self, f_path):
         """
-        Parse a CMIP6 EF file
+        Parse a CMIP6 EF file.
         
         Parameters
         -----------
         ef_path : str
-            Path of the EF file to parse
+            Path of the EF file to parse.
             
         Return
         -------
@@ -246,7 +254,7 @@ class EmissionFactorFile:
     def _get_comb_factors(self):
         """
         Get a subset of the emissions factors that are from combustion-related
-        sectors. Filter if applicable
+        sectors. Filter if applicable.
         
         Parameters
         -----------
@@ -264,8 +272,7 @@ class EmissionFactorFile:
                               '1A2g_Ind-Comb-transpequip', '1A2g_Ind-Comb-machinery',
                               '1A2g_Ind-Comb-mining-quarying', '1A2g_Ind-Comb-wood-products',
                               '1A2g_Ind-Comb-textile-leather', '1A2g_Ind-Comb-other',
-                              '1A3ai_International-aviation', '1A3aii_Domestic-aviation',
-                              '1A3b_Road', '1A3c_Rail', '1A3di_International-shipping',
+                              '1A3b_Road', '1A3c_Rail',
                               '1A3dii_Domestic-navigation', '1A3eii_Other-transp',
                               '1A4a_Commercial-institutional', '1A4b_Residential',
                               '1A4c_Agriculture-forestry-fishing', '1A5_Other-unspecified']
