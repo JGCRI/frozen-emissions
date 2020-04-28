@@ -8,6 +8,7 @@ Change log
         * 1A3ai_International-aviation
         * 1A3aii_Domestic-aviation
         * 1A3di_International-shipping
+        * 1A3dii_Domestic-navigation
 
 Matt Nicholson
 28 April 2020
@@ -272,8 +273,7 @@ class EmissionFactorFile:
                               '1A2g_Ind-Comb-transpequip', '1A2g_Ind-Comb-machinery',
                               '1A2g_Ind-Comb-mining-quarying', '1A2g_Ind-Comb-wood-products',
                               '1A2g_Ind-Comb-textile-leather', '1A2g_Ind-Comb-other',
-                              '1A3b_Road', '1A3c_Rail',
-                              '1A3dii_Domestic-navigation', '1A3eii_Other-transp',
+                              '1A3b_Road', '1A3c_Rail', '1A3eii_Other-transp',
                               '1A4a_Commercial-institutional', '1A4b_Residential',
                               '1A4c_Agriculture-forestry-fishing', '1A5_Other-unspecified']
         combustion_df = self.all_factors.loc[self.all_factors['sector'].isin(combustion_sectors)].copy()
