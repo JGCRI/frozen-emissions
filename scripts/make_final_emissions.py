@@ -34,7 +34,7 @@ os.chdir(ceds_dir)
 
 # Remove previously-generated final emissions files
 prev_files = [os.path.join(final_out, f) for f in os.listdir(final_out)
-              if os.path.isfile(final_out, f) and f.endswith('.csv')]
+              if os.path.isfile(os.path.join(final_out, f)) and f.endswith('.csv')]
 map(delete_file, prev_files)
 
 for species in em_species:
