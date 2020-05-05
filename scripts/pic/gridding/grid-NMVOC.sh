@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -A ceds
-#SBATCH -t 40:00:00
+#SBATCH -t 12:00:00
 #SBATCH -N 1
 #SBATCH -p shared
 #SBATCH --mail-user YOUR_EMAIL_HERE
