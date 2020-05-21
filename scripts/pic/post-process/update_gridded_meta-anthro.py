@@ -20,7 +20,7 @@ print("*************************************************************************
 species_pattern = re.compile(r'^(\w{2,5})-em')
 
 grid_files = [f for f in os.listdir(os.getcwd()) if os.path.isfile(f)
-              and f[-3:] == '.nc' and 'BIOMASS' not in f]
+              and f.endswith('.nc') and 'SOLID-BIOFUEL' not in f]
               
 for fname in grid_files:
     match = species_pattern.search(fname)
@@ -29,6 +29,7 @@ for fname in grid_files:
     else:
         print('Unable to parse species from filename: {}'.format(fname))
         continue
+    print('Processing {}...'.format(fname))
     # --- Global comment ---------------------------------------------------
     cmd_str = '"Frozen EF USA. Based on CEDS CMIP6 ver 2017-05-18 data with combustion sector emissions factors for years after 1970 frozen at their 1970 value for the USA region."'
     cmd = 'ncatted -O -a comment,global,o,c,{} -h {}'.format(cmd_str, fname)

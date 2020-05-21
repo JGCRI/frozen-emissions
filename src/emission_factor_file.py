@@ -1,5 +1,67 @@
 """
-Class to represent a CMIP6 Emissions Factors (EF) File
+Python 3.6
+emissions_factor_file.py
+
+Class to represent a CMIP6 Emissions Factors (EF) File.
+
+Instance Attributes
+-------------------
+species : str
+    Name of the emission species represented in the EF file.
+path : str  
+    Path of the EF file being processed.
+all_factors : Pandas DataFrame
+    DataFrame containing the entirety of the EF file.
+combustion_factors : Pandas DataFrame
+    DataFrame containing only emissions factors from combustion-related sectors.
+freeze_year : str
+    Year at which to freeze the EFs, formatted to match the format of 
+    the EF dataframe year column headers (ex: 'X1970').
+    
+Class Methods
+-------------
+__init__()
+    Constructor. Initializes a new EmissionFactorFile instance.
+get_species()
+    Return the emissions species represented in an EmissionFactorFile instance.
+get_path()
+    Return the path of the parent emissions factor file.
+get_shape()
+    Return the shape of the instance's dataframe containing all emissions factors.
+get_comb_shape() 
+    Return the shape of the instance's dataframe containing emissions factors 
+    from combustion-related sectors only.
+get_sectors()
+    Return a list of unique sectors present in an EmissionFactorFile's master or
+    combustion EF dataframe.
+get_fuels()
+    Return a list of uniquefuels present in an EmissionFactorFile's master or
+    combustion EF dataframe.
+get_factors_all()
+    Return the instance's dataframe that contains all emissions factors,
+    regardless of their sector. 
+get_factors_combustion()
+    Return the instance's dataframe that contains only emissions factors from 
+    combustion-related sectors.
+get_isos()
+    Return a list of ISOs present in an instance's EF dataframe. Can access both
+    the master EF and combustion EF dataframes.
+freeze_emissions()
+    Set all combustion-related EFs for years greater than the
+    freeze year equal to their value at the freeze year.
+reconstruct_emissions()
+    Update the EF values in the original, unedited EF dataframe with their
+    corresponding frozen EF values.
+_filter_isos()
+    Remove any ISOs from the combustion EF DataFrame that are not meant to be frozen.
+_parse_file()
+    Parse a CMIP6 emissions factor file.
+_get_comb_factors()
+    Get a subset of the emissions factors that are from combustion-related sectors.
+_log_init()
+    Write information about the newly-initialized EmissionFactorFile instance
+    to the main log file.
+
 
 Matt Nicholson
 12 Feb 2020
@@ -16,37 +78,37 @@ class EmissionFactorFile:
     
     def __init__(self, species, f_path):
         """
-        Constructor for an EmissionFactorFile instance
+        Constructor for an EmissionFactorFile instance.
         
         Parameters
         -----------
         species : str
-            Emission species represented in the EF file
+            Emission species represented in the EF file.
         f_path : str
-            Path of the EF file
+            Path of the EF file.
             
         Attributes
         -----------
         species : str
-            Name of the emission species represented in the EF file
+            Name of the emission species represented in the EF file.
         path : str  
-            Path of the EF file being processed
+            Path of the EF file being processed.
         all_factors : Pandas DataFrame
-            DataFrame containing the entirety of the EF file
+            DataFrame containing the entirety of the EF file.
         combustion_factors : Pandas DataFrame
-            DataFrame containing only emissions factors from combustion-related sectors
+            DataFrame containing only emissions factors from combustion-related sectors.
         freeze_year : str
             Year at which to freeze the EFs, formatted to match the format of 
-            the EF dataframe year column headers (ex: 'X1970')
+            the EF dataframe year column headers (ex: 'X1970').
         """
-        logger.debug('Creating EmissionFactorFile instance {} from {}'.format(species, f_path))
-        self.species = species
-        self.path = f_path
+        self.species     = species
+        self.path        = f_path
         self.all_factors = self._parse_file(f_path)
-        self.combustion_factors = self._get_comb_factors()
         self.freeze_year = 'X{}'.format(config.CONFIG.freeze_year)
+        self.combustion_factors = self._get_comb_factors()
         if (config.CONFIG.freeze_isos != 'all' and config.CONFIG.freeze_isos != ['all']):
             self._filter_isos()
+        self._log_init()
     
     def get_species(self):
         """
@@ -66,23 +128,29 @@ class EmissionFactorFile:
     
     def get_shape(self):
         """
+        Get the shape of an instance's dataframe that contains all emissions
+        factors. 
+        
         Return
         -------
-        tuple of int : The shape of the instance's 'all_factors' dataframe
+        tuple of int
         """
         return self.all_factors.shape
         
     def get_comb_shape(self):
         """
+        Get the shape of an instance's dataframe that contains emissions factors
+        from combustion-related sectors only.
+        
         Return
         -------
-        tuple of int : The shape of the instance's 'combustion_factors' dataframe
+        tuple of int
         """
         return self.combustion_factors.shape
     
     def get_sectors(self, ef='comb'):
         """
-        Get the sectors in the EF file
+        Get the sectors in the EF file.
         
         Parameters
         -----------
@@ -122,9 +190,12 @@ class EmissionFactorFile:
     
     def get_factors_all(self):
         """
+        Return the instance's dataframe that contains all emissions factors,
+        regardless of their sector. 
+        
         Return
         -------
-        Pandas DataFrame : The instance's dataframe containing all emissions factors
+        Pandas DataFrame
         """
         return self.all_factors
         
@@ -139,7 +210,7 @@ class EmissionFactorFile:
     
     def get_isos(self, ef='comb', unique=True):
         """
-        Return a list of ISOs present in an instance's EF dataframe
+        Return a list of ISOs present in an instance's EF dataframe.
         
         Parameters
         -----------
@@ -185,7 +256,7 @@ class EmissionFactorFile:
             
         Return
         -------
-        None
+        None.
         """
         year_0 = year_strs[0]
         for year in year_strs[1:]:
@@ -200,25 +271,25 @@ class EmissionFactorFile:
         
         Parameters
         -----------
-        None
+        None.
         
         Return
         -------
-        None
+        None.
         """
         self.all_factors.update(self.combustion_factors)
     
     def _filter_isos(self):
         """
-        Remove any ISOs from the combustion EF DataFrame that are not meant to be frozen
+        Remove any ISOs from the combustion EF DataFrame that are not meant to be frozen.
         
         Parameters
         -----------
-        None
+        None.
         
         Return
         -------
-        None
+        None.
         """
         iso_list = config.CONFIG.freeze_isos
         logger.debug("Filtering ISOs for {}".format(iso_list))
@@ -228,12 +299,12 @@ class EmissionFactorFile:
         
     def _parse_file(self, f_path):
         """
-        Parse a CMIP6 EF file
+        Parse a CMIP6 EF file.
         
         Parameters
         -----------
         ef_path : str
-            Path of the EF file to parse
+            Path of the EF file to parse.
             
         Return
         -------
@@ -246,11 +317,11 @@ class EmissionFactorFile:
     def _get_comb_factors(self):
         """
         Get a subset of the emissions factors that are from combustion-related
-        sectors. Filter if applicable
+        sectors. Filter if applicable.
         
         Parameters
         -----------
-        None
+        None.
         
         Return
         -------
@@ -271,8 +342,25 @@ class EmissionFactorFile:
                               '1A4c_Agriculture-forestry-fishing', '1A5_Other-unspecified']
         combustion_df = self.all_factors.loc[self.all_factors['sector'].isin(combustion_sectors)].copy()
         return combustion_df
-    
+        
+    def _log_init(self):
+        """
+        Log information about the newly-initialized EmissionFactorFile instance.
+        
+        Parameters
+        ----------
+        None.
+            
+        Returns
+        -------
+        None.
+        """
+        logger.debug('New EmissionFactorFile instance created for {}'.format(self.species))
+        logger.debug('    Parent file....{}'.format(self.path))
+        logger.debug('    Freeze year....{}'.format(self.freeze_year))
+        logger.debug('    Comb DF shape: {}'.format(self.get_comb_shape()))
+        logger.debug('    Comb Sectors...{}'.format(self.get_sectors()))
+        logger.debug('    Comb ISOs......{}'.format(self.get_isos()))
+
     def __repr__(self):
         return "<EmissionFactorFile object - {} {}>".format(self.species, self.shape)
-    
-    

@@ -1,13 +1,15 @@
 #!/bin/bash
 #SBATCH -A ceds
-#SBATCH -t 1:00:00
+#SBATCH -t 30:00
 #SBATCH -N 1
 #SBATCH -p shared
-#SBATCH --mail-user matthew.nicholson@pnnl.gov
+#SBATCH --mail-user <YOUR_EMAIL@somewhere.com>
 #SBATCH --mail-type END
+#
+# Update the metadata of bulk emissions grids, both anthro & solid biofuel.
 
-ROOT_DIR="/pic/projects/GCAM/mnichol/ceds/worktrees/CEDS-frozen-em/final-emissions/gridded-emissions"
-#ROOT_DIR="/pic/dtn/data/gcam/frozen-emissions"
+# MODIFY THIS PATH 
+ROOT_DIR="/path/to/frozen/grids"
 
 module purge
 module load gcc
@@ -19,8 +21,6 @@ echo "Current time : $now"
 
 python update_gridded_meta_anthro.py $ROOT_DIR
 python update_gridded_meta_biomass.py $ROOT_DIR
-python rename_gridded_files.py $ROOT_DIR
-python rename_gridded_checksum.py $ROOT_DIR
 
 now=$(date)
 echo "Current time : $now"

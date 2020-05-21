@@ -116,7 +116,6 @@ def freeze_emissions():
             continue
 
         logger.info("Loading EF DataFrame from {}".format(f_path))
-        # ef_df = ceds_io.read_ef_file(f_path)
         ef_obj = emission_factor_file.EmissionFactorFile(species, f_path)
         
         # Get combustion sectors
