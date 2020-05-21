@@ -1,5 +1,6 @@
 # Directories
 logs/
+src/diagnostics
 
 # Those pesky pycache dirs
 **/__pycache__

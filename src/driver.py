@@ -141,6 +141,7 @@ def freeze_emissions():
                         # Set the EF value of each idenfitied outlier to the median of the EF values
                         for olr in outliers:
                             # Set outlier values to the calculated median val
+                            logger.debug('Outlier: {}-{}-{}-{}'.format(olr[0], sector, fuel, olr[1]))
                             ef_obj.combustion_factors.loc[
                                     (ef_obj.combustion_factors['iso'] == olr[0]) &
                                     (ef_obj.combustion_factors['sector'] == sector) &

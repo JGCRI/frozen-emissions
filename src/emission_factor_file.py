@@ -61,12 +61,16 @@ _get_comb_factors()
 _log_init()
     Write information about the newly-initialized EmissionFactorFile instance
     to the main log file.
+_write_diagnostics()
+    Write diagnostics files describing the ISOs and sectors of the EmissionFactorFile
+    instance that are to be frozen.
 
 
 Matt Nicholson
 12 Feb 2020
 """
 import logging
+import os
 import pandas as pd
 import numpy as np
 
@@ -109,6 +113,7 @@ class EmissionFactorFile:
         if (config.CONFIG.freeze_isos != 'all' and config.CONFIG.freeze_isos != ['all']):
             self._filter_isos()
         self._log_init()
+        self._write_diagnostics()
     
     def get_species(self):
         """
@@ -361,6 +366,36 @@ class EmissionFactorFile:
         logger.debug('    Comb DF shape: {}'.format(self.get_comb_shape()))
         logger.debug('    Comb Sectors...{}'.format(self.get_sectors()))
         logger.debug('    Comb ISOs......{}'.format(self.get_isos()))
+        
+    def _write_diagnostics(self):
+        """
+        Write some diagnostics files.
+        
+        Currently writes a CSV file containing the sectors and ISOs that are
+        going to be frozen.
+        
+        Parameters
+        ----------
+        None.
+        
+        Returns
+        -------
+        None.
+        
+        Output files
+        ------------
+        frozen_isos_sectors.csv
+            CSV file containing ISOs and their respective sectors that are going
+            to be frozen.
+        """
+        diag_fname = '{}_frozen_isos_sectors.csv'.format(self.species)
+        out_dir = os.path.join(config.CONFIG.dirs['root'], 'src', 'diagnostics')
+        if not os.path.isdir(out_dir):
+            logger.debug('Creating diagnostic directory {}'.format(out_dir))
+            os.mkdir(out_dir)
+        diag_df = self.combustion_factors[['iso', 'sector', 'fuel']]
+        logger.debug('Writing diagnostics file {}'.format(diag_fname))
+        diag_df.to_csv(os.path.join(out_dir, diag_fname), sep=',', header=True, index=False)
 
     def __repr__(self):
         return "<EmissionFactorFile object - {} {}>".format(self.species, self.shape)
